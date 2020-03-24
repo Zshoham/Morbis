@@ -1,0 +1,67 @@
+doc
+|   folder_structure.txt - this file.
+|
++---architecture - architectural components such as class and deployment diagrams.
+|       class_diagram.png
+|       Deployment Diagram.png
+|
++---meta - documents describing and defining the project itself and its scope.
+|       מילון מושגים.docx - definitions of the litreture used in this project.
+|       סקירה על התחום.docx - overview of the domain.
+|
++---spec - the specification and requirments for this project.
+|       General-requirement-document-2020.pdf
+|       version1-modeling.pdf
+|
+\---use_cases - all use cases and ssd describing them.
+    |   תרחישי שימוש.docx - all the use cases 
+    |
+    \---diagrams - ssd for the use cases sorted into folders - ssd_(role name), where each role contains the diagrams named after the use case.
+        +---ssd_admin
+        |       createRecomendation.png
+        |       deleteMember.png
+        |       deleteTeam.png
+        |       getComplaints.png
+        |       getLog.png
+        |       sendFeedback.png
+        |
+        +---ssd_fan
+        |       followGame.png
+        |       followPage.png
+        |       getMemberInfo.png
+        |       getSearchHistory.png
+        |       logout.png
+        |       report.png
+        |       updateMemberInfo.png
+        |
+        +---ssd_guest
+        |       getData.png
+        |       login.png
+        |       register.png
+        |       searchData.png
+        |
+        +---ssd_ref
+        |       getGame.png
+        |       updateGameEvent.png
+        |       updateOnGoingGameEvent.png
+        |       updateRef.png
+        |
+        +---ssd_rep
+        |       addLeaguepng.png
+        |       addRef.png
+        |       addRefsToSeason.png
+        |       addSeason.png
+        |       removeRefs.png
+        |       setSchedulingMethod.png
+        |       setScoringMethod.png
+        |
+	\---ssd_team_owner
+                addAsset.png
+                closeTeam.png
+                makeTeamManagers.png
+                makeTeamOwner.png
+                removeManagers.png
+                removeOwners.png
+                setPermissions.png
+                submitTransaction.png
+                updateAsset.png
