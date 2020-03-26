@@ -1,17 +1,14 @@
 package com.morbis.model.member;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.Entity;
 
 @Entity
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @ToString
+@EqualsAndHashCode(callSuper = true)
 public class AssociationRep extends Member {
 
 }

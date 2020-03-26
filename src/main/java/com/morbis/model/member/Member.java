@@ -13,8 +13,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 
-//TODO Need to understand how to do inheritance in DB.
-
 @Entity
 @Data
 @NoArgsConstructor
