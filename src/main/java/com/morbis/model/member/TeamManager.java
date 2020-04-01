@@ -3,10 +3,11 @@ package com.morbis.model.member;
 import com.morbis.model.team.Team;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
+import javax.validation.Constraint;
+import javax.validation.ConstraintValidator;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 @Data
@@ -16,8 +17,8 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = true)
 public class TeamManager extends Member {
     @NotNull
-    @OneToOne(targetEntity = ManagerPermissions.class)
-    private ManagerPermissions permissions;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<ManagerPermissions> permissions;
 
     @NotNull
     @ManyToOne(targetEntity = Team.class)

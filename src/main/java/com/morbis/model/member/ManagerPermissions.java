@@ -1,12 +1,22 @@
 package com.morbis.model.member;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+public enum ManagerPermissions {
 
-@Entity
-public class ManagerPermissions {
-    @Id
-    @GeneratedValue
-    private int id;
+    GET_ASSETS,
+    GET_ASSETS_TEAM_ID,
+    ADD_ASSETS,
+    REMOVE_ASSETS,
+    UPDATE_ASSETS,
+    GET_NON_OWNERS,
+    MAKE_TEAM_OWNER,
+    GET_APPOINTED_OWNERS,
+    REMOVE_OWNERS,
+    GET_NON_MANAGERS,
+    MAKE_TEAM_MANAGER,
+    GET_APPOINTED_MANAGERS,
+    REMOVE_MANAGERS,
+    CLOSE_TEAM,
+    OPEN_TEAM,
+    SET_PERMISSIONS,
+    SUBMIT_TRANSACTION
 }
