@@ -13,7 +13,6 @@ variables:
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
-  - export CODECOV_TOKEN="5bdfbd5b-0623-43c2-8ecb-ad1afeee9fb3"
 
 build:
   stage: build
@@ -29,9 +28,9 @@ test:
   stage: test
   script: 
     - gradle check
-    - gradle codeCoverageReport
-  after_success: 
-    - bash <(curl -s https://codecov.io/bash) 
+    - gradle jacocoTestReport
+  after_script:
+    - bash <(curl -s https://codecov.io/bash) -t 5bdfbd5b-0623-43c2-8ecb-ad1afeee9fb3
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
