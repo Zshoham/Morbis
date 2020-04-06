@@ -30,7 +30,7 @@ test:
     - gradle check
     - gradle jacocoTestReport
   after_script:
-    - bash <(curl -s https://codecov.io/bash) -t 5bdfbd5b-0623-43c2-8ecb-ad1afeee9fb3
+    - bash <(curl -s https://codecov.io/bash) -t 8e22fcd7-5d30-4148-84ce-14c7e73880ed
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
