@@ -29,8 +29,10 @@ test:
   script: 
     - gradle check
     - gradle jacocoTestReport
-  after_script:
-    - bash <(curl -s https://codecov.io/bash) -t 8e22fcd7-5d30-4148-84ce-14c7e73880ed
+    - cat build/jacocoHtml/index.html
+  artifacts:
+    paths:
+    - build/jacocoHtml
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
@@ -38,3 +40,15 @@ test:
       - build
       - .gradle
     
+pages:
+    stage: deploy
+    dependencies:
+      - test
+    script:
+      - mv build/jacocoHtml public
+    artifacts:
+      paths:
+      - public
+      expire_in: 30 days
+    only:
+      - master
