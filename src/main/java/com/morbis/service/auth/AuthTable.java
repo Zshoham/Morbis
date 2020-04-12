@@ -2,7 +2,7 @@ package com.morbis.service.auth;
 
 import com.morbis.model.member.entity.Member;
 
-import java.security.SecureRandom;
+import java.security.MessageDigest;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,11 +15,25 @@ class AuthTable {
     }
 
     public String createToken(Member member) {
-        SecureRandom generator = new SecureRandom();
-        byte[] tokenBytes = new byte[512];
-        generator.nextBytes(tokenBytes);
-        String token = new String(tokenBytes);
+
+        long salt = Double.doubleToLongBits(Math.random());
+
+        String input = member.getEmail() + member.getName()
+                + member.getUsername() + member.getMemberRole()
+                + salt;
+
+        String token = "e2f6c302d6af17940110dff226b9bf458601370b";
+        try {
+            MessageDigest crypt = MessageDigest.getInstance("SHA-256");
+            crypt.reset();
+            crypt.update(input.getBytes());
+            token = new String(crypt.digest());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         authTokens.put(token, member.getId());
+
         return token;
     }
 

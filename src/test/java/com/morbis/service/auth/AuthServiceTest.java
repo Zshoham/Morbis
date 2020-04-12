@@ -59,7 +59,7 @@ public class AuthServiceTest {
         // token length
         Optional<String> firstToken = authService.login(testMember.getUsername(), testMember.getPassword());
         assertThat(firstToken).isPresent();
-        assertThat(firstToken.get().length()).isEqualTo(512);
+        assertThat(firstToken.get().length()).isEqualTo(32);
 
         // duplicate login
         Optional<String> secondToken = authService.login(testMember.getUsername(), testMember.getPassword());
