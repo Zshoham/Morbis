@@ -36,8 +36,8 @@ public class AuthTableTest {
         assertThat(tokens).allSatisfy(token ->
                 assertThat(tokens).containsOnlyOnce(token));
 
-        // tokens are of length 512
-        assertThat(tokens).allSatisfy(token -> assertThat(token.length()).isEqualTo(32));
+        // tokens are of length 64 bytes or 128 characters in hex representation
+        assertThat(tokens).allSatisfy(token -> assertThat(token.length()).isEqualTo(128));
     }
 
     @Test

@@ -59,7 +59,7 @@ public class AuthServiceTest {
         // token length
         Optional<String> firstToken = authService.login(testMember.getUsername(), testMember.getPassword());
         assertThat(firstToken).isPresent();
-        assertThat(firstToken.get().length()).isEqualTo(32);
+        assertThat(firstToken.get().length()).isEqualTo(128); // token is 64 bytes and 128 characters is hex format
 
         // duplicate login
         Optional<String> secondToken = authService.login(testMember.getUsername(), testMember.getPassword());
