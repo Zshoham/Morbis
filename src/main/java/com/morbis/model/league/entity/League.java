@@ -1,9 +1,6 @@
 package com.morbis.model.league.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,14 +11,22 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@ToString
 public class League {
     @Id
     @GeneratedValue
     private int id;
+
+    public League(int id, String name) {
+        setId(id);
+        setName(name);
+    }
+
+    public League(String name) {
+        setName(name);
+    }
 
     @NotBlank
     @NotNull
@@ -29,4 +34,49 @@ public class League {
 
     @OneToMany(targetEntity = Season.class)
     private List<Season> seasons;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof League)) return false;
+
+        League league = (League) o;
+
+        if (id != league.id) return false;
+        return name.equals(league.name);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + name.hashCode();
+        return result;
+    }
+
+    public static LeagueBuilder newLeague(String name) {
+        return new LeagueBuilder(name);
+    }
+
+    public static class LeagueBuilder {
+
+        private final League result;
+
+        public LeagueBuilder(String name) {
+            result = new League(name);
+        }
+
+        public LeagueBuilder withId(int id) {
+            result.setId(id);
+            return this;
+        }
+
+        public LeagueBuilder withSeasons(List<Season> seasons) {
+            result.setSeasons(seasons);
+            return this;
+        }
+
+        public League build() {
+            return result;
+        }
+    }
 }
