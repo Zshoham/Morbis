@@ -76,6 +76,9 @@ public class Team {
     @OneToMany(targetEntity = Transaction.class)
     private List<Transaction> transactions;
 
+    @NotNull
+    private TeamStatus teamStatus;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
