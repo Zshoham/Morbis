@@ -2,13 +2,11 @@ package com.morbis.model.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.morbis.model.game.entity.Game;
+import com.morbis.model.league.entity.Season;
 import com.morbis.model.team.entity.Team;
 import lombok.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -29,6 +27,22 @@ public class Referee extends Member {
         setQualification(qualification);
     }
 
+    @NotBlank
+    @NotNull
+    private String qualification;
+
+    @OneToMany(targetEntity = Game.class, cascade = CascadeType.MERGE)
+    @JsonBackReference
+    private List<Game> mainGames;
+
+    @ManyToMany(targetEntity = Game.class, cascade = CascadeType.MERGE)
+    @JsonBackReference
+    private List<Game> supportGames;
+
+    @ManyToMany(targetEntity = Season.class)
+    @JsonBackReference
+    private List<Season> seasons;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -47,17 +61,7 @@ public class Referee extends Member {
         return result;
     }
 
-    @NotBlank
-    @NotNull
-    private String qualification;
 
-    @OneToMany(targetEntity = Game.class, cascade = CascadeType.MERGE)
-    @JsonBackReference
-    private List<Game> mainGames;
-
-    @ManyToMany(targetEntity = Game.class, cascade = CascadeType.MERGE)
-    @JsonBackReference
-    private List<Game> supportGames;
 
 
     public static AbstractMemberBuilder<RefereeBuilder> newReferee(String qualification) {
@@ -90,6 +94,11 @@ public class Referee extends Member {
 
         public RefereeBuilder withSupportingGames(List<Game> supportingGames) {
             result.setSupportGames(supportingGames);
+            return this;
+        }
+
+        public RefereeBuilder withSeasons(List<Season> seasons) {
+            result.setSeasons(seasons);
             return this;
         }
 

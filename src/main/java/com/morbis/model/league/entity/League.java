@@ -1,11 +1,9 @@
 package com.morbis.model.league.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -32,8 +30,16 @@ public class League {
     @NotNull
     private String name;
 
-    @OneToMany(targetEntity = Season.class)
+    @OneToMany(targetEntity = Season.class, fetch = FetchType.EAGER)
+    @JsonManagedReference
     private List<Season> seasons;
+
+    //TODO: change diagram, add scoring and scheduling method.
+    @Enumerated(EnumType.ORDINAL)
+    private ScoringMethod scoringMethod = ScoringMethod.THREE_POINTS_FOR_WIN;
+
+    @Enumerated(EnumType.ORDINAL)
+    private SchedulingMethod schedulingMethod = SchedulingMethod.TWO_FIXTURE;
 
     @Override
     public boolean equals(Object o) {
@@ -72,6 +78,16 @@ public class League {
 
         public LeagueBuilder withSeasons(List<Season> seasons) {
             result.setSeasons(seasons);
+            return this;
+        }
+
+        public LeagueBuilder withScoringMethod(ScoringMethod scoringMethod) {
+            result.setScoringMethod(scoringMethod);
+            return this;
+        }
+
+        public LeagueBuilder withSchedulingMethod(SchedulingMethod schedulingMethod) {
+            result.setSchedulingMethod(schedulingMethod);
             return this;
         }
 
