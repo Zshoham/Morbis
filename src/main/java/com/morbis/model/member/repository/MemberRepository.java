@@ -11,5 +11,7 @@ public interface MemberRepository extends JpaRepository<Member,Integer> {
 
     Optional<Member> findDistinctByUsername(String name);
 
-    List<Member> findAllByMemberRoleIsNot(MemberRole role);
+    List<Member> findAllByMemberRoleNotIn(List<MemberRole> roles);
+
+    boolean existsMemberByUsername(String username);
 }

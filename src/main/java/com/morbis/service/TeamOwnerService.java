@@ -3,6 +3,7 @@ package com.morbis.service;
 import com.morbis.model.game.entity.Game;
 import com.morbis.model.member.entity.*;
 import com.morbis.model.member.repository.*;
+import com.morbis.model.poster.entity.PosterData;
 import com.morbis.model.team.entity.Stadium;
 import com.morbis.model.team.entity.Team;
 import com.morbis.model.team.entity.TeamStatus;
@@ -10,6 +11,7 @@ import com.morbis.model.team.entity.Transaction;
 import com.morbis.model.team.repository.StadiumRepository;
 import com.morbis.model.team.repository.TeamRepository;
 import com.morbis.model.team.repository.TransactionRepository;
+import com.morbis.service.randomString.RandomStringGenerator;
 import com.morbis.service.viewable.Asset;
 import com.morbis.service.viewable.SearchResult;
 import com.morbis.service.viewable.ViewableEntityType;
@@ -18,6 +20,8 @@ import org.apache.catalina.Manager;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import static com.morbis.service.viewable.ViewableEntityType.*;
@@ -63,15 +67,16 @@ public class TeamOwnerService {
         return teamlessAssets;
     }
 
-    public List<Asset> getAssets(int teamID) {
-        List<Asset> teamAssets = new LinkedList<>();
-        Team team;
-        team = teamRepository.findById(teamID).get();
-        team.getPlayers().stream().map(player ->
-                teamAssets.add(new Asset(PLAYER, player.getId())));
-        team.getCoaches().stream().map(coach ->
-                teamAssets.add(new Asset(COACH, coach.getId())));
-        teamAssets.add(new Asset(STADIUM, team.getStadium().getId()));
+    public List<Asset<?>> getAssets(int teamID) {
+        List<Asset<?>> teamAssets = new LinkedList<>();
+        Optional<Team> team = teamRepository.findById(teamID);
+        if(team.isEmpty())
+            return teamAssets;
+        team.get().getPlayers().forEach(player ->
+                teamAssets.add(new Asset<Player>(PLAYER, player.getId())));
+        team.get().getCoaches().forEach(coach ->
+                teamAssets.add(new Asset<Coach>(COACH, coach.getId())));
+        teamAssets.add(new Asset<Stadium>(STADIUM, team.get().getStadium().getId()));
         return teamAssets;
     }
 
@@ -155,18 +160,47 @@ public class TeamOwnerService {
         }
     }
 
-    public List<Member> getNonOwners() {
-        return memberRepository.findAllByMemberRoleIsNot(MemberRole.TEAM_OWNER);
+    public List<Member> getPossibleOwners() {
+        List<MemberRole> roles = new LinkedList<>();
+        roles.add(MemberRole.ASSOCIATION_REP);
+        roles.add(MemberRole.ADMIN);
+        roles.add(MemberRole.TEAM_OWNER);
+        roles.add(MemberRole.TEAM_MANAGER);
+        List<Member> possibleOwners = memberRepository.findAllByMemberRoleNotIn(roles);
+        List<String> possibleOwnersEmails = new LinkedList<>();
+        possibleOwners.forEach(member ->
+                possibleOwnersEmails.add(member.getEmail()));
+        List<Member> existOwners = teamOwnerRepository.findAllByEmailIn(possibleOwnersEmails);
+        possibleOwners.removeAll(existOwners);
+        List<Member> existManagers = teamManagerRepository.findAllByEmailIn(possibleOwnersEmails);
+        for(Member manager : existManagers) {
+            if (possibleOwners.contains(manager)) {
+                possibleOwners.remove(manager);
+            }
+            possibleOwners.add(manager);
+        }
+        return possibleOwners;
     }
 
     public void makeTeamOwner(int ownerID,List<Integer> memberIDs) {
         TeamOwner currentOwner = teamOwnerRepository.findById(ownerID).get();
-        for(int memberID : memberIDs) {
-            Member member = memberRepository.findById(memberID).get();
-            //TODO: need to make a new Team Owner with same info but different username and password and mail it to the member
-            TeamOwner newTeamOwner = new TeamOwner(member.getUsername(),member.getPassword(),member.getName(),member.getEmail(),currentOwner.getTeam());
+        List<Integer> possibleOwners = new LinkedList<>();
+        getPossibleOwners().forEach(member -> possibleOwners.add(member.getId()));
+        memberIDs.retainAll(possibleOwners);//to check if every1 can be owners
+        for(Member member : memberRepository.findAllById(memberIDs)) {
+            String randomUsername = RandomStringGenerator.getRandomString();
+            String randomPassword = RandomStringGenerator.getRandomString();
+            while(memberRepository.existsMemberByUsername(randomUsername)) { //we generate again and again till we find something that is not taken
+                randomUsername = RandomStringGenerator.getRandomString();
+            }
+            TeamOwner newTeamOwner = new TeamOwner(randomUsername,randomPassword,member.getName(),member.getEmail(),currentOwner.getTeam());
             currentOwner.getAppointedOwners().add(newTeamOwner);
+            currentOwner.getTeam().getOwners().add(newTeamOwner);
             teamOwnerRepository.save(newTeamOwner);
+            //TODO: send email to the member with the info we made
+            if(member.getMemberRole() == MemberRole.TEAM_MANAGER) { // if he's a team manager we delete its team manager account
+                teamManagerRepository.deleteById(member.getId());
+            }
         }
         teamOwnerRepository.save(currentOwner);
     }
@@ -191,10 +225,53 @@ public class TeamOwnerService {
         }
     }
 
-    public List<Member> getNonManagers() {
-        return memberRepository.findAllByMemberRoleIsNot(MemberRole.TEAM_OWNER);
+    public List<Member> getPossibleManagers() {
+        List<MemberRole> roles = new LinkedList<>();
+        roles.add(MemberRole.ASSOCIATION_REP);
+        roles.add(MemberRole.ADMIN);
+        roles.add(MemberRole.TEAM_OWNER);
+        roles.add(MemberRole.TEAM_MANAGER);
+        List<Member> possibleManagers = memberRepository.findAllByMemberRoleNotIn(roles);
+        List<String> possibleManagersEmails = new LinkedList<>();
+        possibleManagers.forEach(member ->
+                possibleManagersEmails.add(member.getEmail()));
+        List<Member> existOwners = teamOwnerRepository.findAllByEmailIn(possibleManagersEmails);
+        List<Member> existManagers = teamManagerRepository.findAllByEmailIn(possibleManagersEmails);
+        possibleManagers.removeAll(existOwners);
+        possibleManagers.removeAll(existManagers);
+        return possibleManagers;
     }
 
+    public void makeTeamManager(int ownerID,List<Integer> memberIDs, List<List<ManagerPermissions>> permissions) {
+        TeamOwner currentOwner = teamOwnerRepository.findById(ownerID).get();
+        List<Integer> possibleManagers = new LinkedList<>();
+        getPossibleOwners().forEach(member -> possibleManagers.add(member.getId()));
+        memberIDs.retainAll(possibleManagers);//to check if every1 can be owners
+        for(Member member : memberRepository.findAllById(memberIDs)) {
+            String randomUsername = RandomStringGenerator.getRandomString();
+            String randomPassword = RandomStringGenerator.getRandomString();
+            while(memberRepository.existsMemberByUsername(randomUsername)) { //we generate again and again till we find something that is not taken
+                randomUsername = RandomStringGenerator.getRandomString();
+            }
+            TeamManager newTeamManager = new TeamManager(randomUsername,randomPassword,member.getName(),member.getEmail(),permissions,currentOwner.getTeam());
+            currentOwner.getAppointedManagers().add(newTeamManager);
+            currentOwner.getTeam().getManagers().add(newTeamManager);
+            teamManagerRepository.save(newTeamManager);
+            //TODO: send email to the member with the info we made
+        }
+        teamOwnerRepository.save(currentOwner);
+    }
+
+    public List<TeamManager> getAppointedManagers(int ownerID) {
+        TeamOwner currentOwner = teamOwnerRepository.findById(ownerID).get();
+        return currentOwner.getAppointedManagers();
+    }
+
+    public void removeManagers(List<Integer> ownersIDs) {
+        for(int ownerID : ownersIDs) {
+            teamOwnerRepository.deleteById(ownerID);
+        }
+    }
 
     //TODO: need to add functions to remove/make some1 manager/owner
 

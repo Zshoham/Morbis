@@ -15,14 +15,16 @@ import java.util.List;
 @NoArgsConstructor
 public class TeamManager extends Member {
 
-    public TeamManager(int id, String username, String password, String name, String email, List<ManagerPermissions> permissions) {
+    public TeamManager(int id, String username, String password, String name, String email, List<ManagerPermissions> permissions, Team team) {
         super(id, MemberRole.TEAM_MANAGER, username, password, name, email);
         setPermissions(permissions);
+        setTeam(team);
     }
 
-    public TeamManager(String username, String password, String name, String email, List<ManagerPermissions> permissions) {
+    public TeamManager(String username, String password, String name, String email, List<ManagerPermissions> permissions, Team team) {
         super(MemberRole.TEAM_MANAGER, username, password, name, email);
         setPermissions(permissions);
+        setTeam(team);
     }
 
     @NotNull
