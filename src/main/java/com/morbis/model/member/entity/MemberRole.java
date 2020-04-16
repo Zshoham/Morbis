@@ -14,11 +14,11 @@ public enum MemberRole {
     REFEREE,
     COACH;
 
-    public static List<ManagerPermissions> canBecomeOwner = Stream.of(
-        FAN,
-        PLAYER,
+    public static List<MemberRole> canBecomeOwner = Stream.of(
+            FAN,
+            PLAYER,
             TEAM_MANAGER,
             REFEREE,
-            COACH,
+            COACH
     ).collect(Collectors.toList());
 }
