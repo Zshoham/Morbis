@@ -12,7 +12,6 @@ import com.morbis.model.member.entity.Referee;
 import com.morbis.model.member.repository.RefereeRepository;
 import com.morbis.service.notification.EmailService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.mail.MessagingException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,6 +46,7 @@ public class AssociationRepServiceTest {
     @Before
     public void setUp() {
         ViewableEntitySource.initWithID();
+
         when(leagueRepository.findAllByName(league.getName())).thenReturn(Collections.singletonList(league));
         when(leagueRepository.findById(league.getId())).thenReturn(Optional.of(league));
         when(seasonRepository.findByLeagueAndYear(league, 2020)).thenReturn(Optional.of(season));
@@ -111,7 +112,7 @@ public class AssociationRepServiceTest {
     }
 
     @Test
-    public void addRef() {
+    public void addRef() throws MessagingException {
         associationRepService.addRef("mail", "name");
 
         // the new referee is saved.

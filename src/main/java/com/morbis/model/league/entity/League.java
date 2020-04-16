@@ -34,7 +34,6 @@ public class League {
     @JsonManagedReference
     private List<Season> seasons;
 
-    //TODO: change diagram, add scoring and scheduling method.
     @Enumerated(EnumType.ORDINAL)
     private ScoringMethod scoringMethod = ScoringMethod.THREE_POINTS_FOR_WIN;
 

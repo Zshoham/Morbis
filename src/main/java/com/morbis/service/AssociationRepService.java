@@ -9,14 +9,16 @@ import com.morbis.model.league.repository.SeasonRepository;
 import com.morbis.model.member.entity.Referee;
 import com.morbis.model.member.repository.RefereeRepository;
 import com.morbis.service.notification.EmailService;
+import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Service
 public class AssociationRepService {
 
     private final SeasonRepository seasonRepository;
@@ -95,7 +97,7 @@ public class AssociationRepService {
         leagueRepository.save(league);
     }
 
-    public void addRef(String email, String name) {
+    public void addRef(String email, String name) throws MessagingException {
         String tempUsername = UUID.randomUUID().toString();
         String tempPassword = UUID.randomUUID().toString();
 
@@ -103,18 +105,16 @@ public class AssociationRepService {
                 .fromMember(tempUsername, tempPassword, name, email)
                 .build();
 
-        newAccount = refereeRepository.save(newAccount);
-
         emailService.registerReferee(newAccount);
+
+        refereeRepository.save(newAccount);
     }
 
-    //TODO: change diagram to return ref not id.
     public List<Referee> getRefs() {
         return refereeRepository.findAll();
     }
 
-    //TODO: change diagram to accept ref and not id
-    //TODO: change diagram, add refs to season connection (many to many).
+
     public void addRefsToSeason(int chosenSeasonID, List<Referee> referees) {
         Season chosen = seasonRepository.findById(chosenSeasonID).orElseThrow(
                 () -> new IllegalArgumentException("the chosen season does not exist.")
@@ -124,8 +124,6 @@ public class AssociationRepService {
         seasonRepository.save(chosen);
     }
 
-    //TODO: change diagram, add season to ref (many to many).
-    //TODO: change diagram to accept Ref not id.
     public void removeRefs(List<Integer> refIDs) {
         List<Referee> referees = refereeRepository.findAllById(refIDs);
 
