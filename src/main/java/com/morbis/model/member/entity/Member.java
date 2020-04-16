@@ -1,10 +1,13 @@
 package com.morbis.model.member.entity;
 
+import com.morbis.model.poster.entity.PosterData;
 import lombok.*;
+import org.aspectj.apache.bcel.generic.TargetLostException;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 
 @Entity
@@ -54,6 +57,12 @@ public abstract class Member {
     @NotNull
     @NotBlank
     protected String email;
+
+    @ManyToMany(targetEntity = PosterData.class)
+    protected List<PosterData> pagesFollowing;
+
+    @OneToMany(targetEntity = MemberSearch.class)
+    protected List<MemberSearch> searches;
 
     @Override
     public boolean equals(Object o) {

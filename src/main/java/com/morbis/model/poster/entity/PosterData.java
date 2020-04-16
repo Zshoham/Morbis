@@ -17,7 +17,7 @@ public class PosterData {
     @GeneratedValue
     private int id;
 
-    @OneToMany(targetEntity = Member.class)
+    @ManyToMany(targetEntity = Member.class)
     private List<Member> followers;
 
     @OneToMany(targetEntity = Post.class)
