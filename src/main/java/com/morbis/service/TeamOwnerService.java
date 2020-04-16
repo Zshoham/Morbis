@@ -243,6 +243,7 @@ public class TeamOwnerService {
     }
 
     public void makeTeamManager(int ownerID,List<Integer> memberIDs, List<List<ManagerPermissions>> permissions) {
+        int counter = 0;
         TeamOwner currentOwner = teamOwnerRepository.findById(ownerID).get();
         List<Integer> possibleManagers = new LinkedList<>();
         getPossibleOwners().forEach(member -> possibleManagers.add(member.getId()));
@@ -253,11 +254,12 @@ public class TeamOwnerService {
             while(memberRepository.existsMemberByUsername(randomUsername)) { //we generate again and again till we find something that is not taken
                 randomUsername = RandomStringGenerator.getRandomString();
             }
-            TeamManager newTeamManager = new TeamManager(randomUsername,randomPassword,member.getName(),member.getEmail(),permissions,currentOwner.getTeam());
+            TeamManager newTeamManager = new TeamManager(randomUsername,randomPassword,member.getName(),member.getEmail(),permissions.get(counter),currentOwner.getTeam());
             currentOwner.getAppointedManagers().add(newTeamManager);
             currentOwner.getTeam().getManagers().add(newTeamManager);
             teamManagerRepository.save(newTeamManager);
             //TODO: send email to the member with the info we made
+            counter++;
         }
         teamOwnerRepository.save(currentOwner);
     }

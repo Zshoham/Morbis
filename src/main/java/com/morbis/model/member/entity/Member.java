@@ -112,5 +112,11 @@ public abstract class Member {
 
             return builder;
         }
+
+        public BUILDER fromMember(Member member) {
+            builder.populate(role, member.getUsername(), member.getPassword(),member.getName(), member.getEmail());
+
+            return builder;
+        }
     }
 }
