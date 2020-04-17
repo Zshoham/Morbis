@@ -7,7 +7,10 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -28,7 +31,7 @@ public class TeamManager extends Member {
     }
 
     @NotNull
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<ManagerPermissions> permissions;
 
     @ManyToOne(targetEntity = Team.class)

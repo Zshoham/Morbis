@@ -90,9 +90,7 @@ public class Team {
 
         if (id != team.id) return false;
         if (!name.equals(team.name)) return false;
-        if (!players.equals(team.players)) return false;
-        if (!owners.equals(team.owners)) return false;
-        if (!coaches.equals(team.coaches)) return false;
+        if (!teamStatus.equals(team.teamStatus)) return false;
         return stadium.equals(team.stadium);
     }
 
@@ -101,6 +99,7 @@ public class Team {
         int result = id;
         result = 31 * result + name.hashCode();
         result = 31 * result + stadium.hashCode();
+        result = 31 * result + teamStatus.hashCode();
         return result;
     }
 
