@@ -8,7 +8,9 @@ import com.morbis.model.team.entity.Stadium;
 import com.morbis.model.team.entity.Team;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 public class ViewableEntitySource {
 
@@ -102,12 +104,12 @@ public class ViewableEntitySource {
                 .refs(main, Collections.singletonList(supporting))
                 .build();
 
-        season = Season.newSeason(2020)
-                .withSeasons(Collections.singletonList(game))
-                .build();
 
         league = League.newLeague("name")
-                .withSeasons(Collections.singletonList(season))
+                .build();
+
+        season = Season.newSeason(2020, league)
+                .withGames(Collections.singletonList(game))
                 .build();
 
         createALlLinks();
@@ -199,14 +201,14 @@ public class ViewableEntitySource {
                 .withId(15)
                 .build();
 
-        season = Season.newSeason(2020)
-                .withSeasons(Collections.singletonList(game))
-                .withId(16)
-                .build();
 
         league = League.newLeague("name")
-                .withSeasons(Collections.singletonList(season))
                 .withId(17)
+                .build();
+
+        season = Season.newSeason(2020, league)
+                .withGames(Collections.singletonList(game))
+                .withId(16)
                 .build();
 
         createALlLinks();
@@ -230,6 +232,8 @@ public class ViewableEntitySource {
 
         main.setMainGames(Collections.singletonList(game));
         supporting.setSupportGames(Collections.singletonList(game));
+
+        league.setSeasons(Collections.singletonList(season));
     }
 
 }

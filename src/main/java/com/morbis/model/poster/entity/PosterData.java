@@ -17,7 +17,7 @@ public class PosterData {
     @GeneratedValue
     private int id;
 
-    @OneToMany(targetEntity = Member.class)
+    @ManyToMany(targetEntity = Member.class)
     private List<Member> followers;
 
     @OneToMany(targetEntity = Post.class)
@@ -38,7 +38,7 @@ public class PosterData {
         return 31 + 31 * id;
     }
 
-    public PosterDataBuilder newPosterData() {
+    public static PosterDataBuilder newPosterData() {
         return new PosterDataBuilder();
     }
 

@@ -1,13 +1,13 @@
 package com.morbis.model.league.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.morbis.model.game.entity.Game;
+import com.morbis.model.member.entity.Referee;
 import lombok.*;
 import org.hibernate.validator.constraints.Range;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
@@ -20,32 +20,42 @@ public class Season {
     @GeneratedValue
     private int id;
 
-    public Season(int id, int year) {
+    public Season(int id, int year, League league) {
         setId(id);
         setYear(year);
+        setLeague(league);
     }
 
-    public Season(int year) {
+    public Season(int year, League league) {
         setYear(year);
+        setLeague(league);
     }
 
     @Range(min = 1900)
     private int year;
 
+    @ManyToOne(targetEntity = League.class)
+    @JsonBackReference
+    private League league;
+
     @OneToMany(targetEntity = Game.class)
     private List<Game> games;
 
+    @ManyToMany(targetEntity = Referee.class)
+    @JsonManagedReference
+    private List<Referee> referees;
 
-    public static SeasonBuilder newSeason(int year) {
-        return new SeasonBuilder(year);
+
+    public static SeasonBuilder newSeason(int year, League league) {
+        return new SeasonBuilder(year, league);
     }
 
     public static class SeasonBuilder {
 
         private final Season result;
 
-        public SeasonBuilder(int year) {
-            result = new Season(year);
+        public SeasonBuilder(int year, League league) {
+            result = new Season(year, league);
         }
 
         public SeasonBuilder withId(int id) {
@@ -53,8 +63,13 @@ public class Season {
             return this;
         }
 
-        public SeasonBuilder withSeasons(List<Game> seasons) {
+        public SeasonBuilder withGames(List<Game> seasons) {
             result.setGames(seasons);
+            return this;
+        }
+
+        public SeasonBuilder withReferees(List<Referee> referees) {
+            result.setReferees(referees);
             return this;
         }
 

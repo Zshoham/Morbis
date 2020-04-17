@@ -51,6 +51,6 @@ public class AuthService {
 
         // return true if the requested role is the same as the accrual role.
         // if the requested role is of a fan, all others roles would also get authorization.
-        return accrualMember.get().getMemberRole() == role || role == MemberRole.FAN;
+        return accrualMember.get().getMemberRole().contains(role) || role == MemberRole.FAN;
     }
 }

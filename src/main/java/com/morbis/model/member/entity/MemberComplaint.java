@@ -4,6 +4,7 @@ import com.morbis.model.poster.entity.Post;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -15,15 +16,21 @@ public class MemberComplaint {
     @GeneratedValue
     private int id;
 
-    public MemberComplaint(int id, Member member, Post post) {
+    @NotNull
+    @NotBlank
+    private String complaintDescription;
+
+    public MemberComplaint(int id, Member member, Post post, String complaintDescription) {
         setId(id);
         setMember(member);
         setPost(post);
+        setComplaintDescription(complaintDescription);
     }
 
-    public MemberComplaint(Member member, Post post) {
+    public MemberComplaint(Member member, Post post, String complaintDescription) {
         setMember(member);
         setPost(post);
+        setComplaintDescription(complaintDescription);
     }
 
     @NotNull
@@ -54,16 +61,16 @@ public class MemberComplaint {
         return result;
     }
 
-    public static ComplaintBuilder newPost(Member member, Post post) {
-        return new ComplaintBuilder(member, post);
+    public static ComplaintBuilder newPost(Member member, Post post, String complaintDescription) {
+        return new ComplaintBuilder(member, post, complaintDescription);
     }
 
     public static class ComplaintBuilder {
 
         private final MemberComplaint result;
 
-        public ComplaintBuilder(Member member, Post post) {
-            result = new MemberComplaint(member, post);
+        public ComplaintBuilder(Member member, Post post, String complaintDescription) {
+            result = new MemberComplaint(member, post, complaintDescription);
         }
 
         public ComplaintBuilder withId(int id) {
