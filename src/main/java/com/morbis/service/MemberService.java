@@ -13,7 +13,6 @@ import com.morbis.model.poster.repository.PostRepository;
 import com.morbis.model.poster.repository.PosterDataRepository;
 import com.morbis.service.viewable.SearchResult;
 import com.morbis.service.viewable.ViewableEntityType;
-import jdk.jshell.spi.ExecutionControl;
 
 import java.util.Collection;
 import java.util.List;
