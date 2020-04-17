@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.morbis.data.ViewableEntitySource.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,7 +48,6 @@ public class TeamOwnerServiceTest {
 
     @Test
     public void getTeamlessAssets() {
-                            // setup mock
         // initiallize player
         LinkedList<Player> teamlessPlayers = new LinkedList<>();
         Player testPlayer = new Player(1, "playerUser", "playerPass", "playerName", "playerEmail",LocalDateTime.now(),"Goal Keeper");
@@ -143,11 +143,11 @@ public class TeamOwnerServiceTest {
         Player testPlayer = new Player(101, "playerUser", "playerPass", "playerName", "playerEmail",LocalDateTime.now(),"Goal Keeper");
         List<Asset<?>> newAssets = new LinkedList<>();
         Stadium testStadium = new Stadium(102, "Sami Ofer");
-        Asset<Coach> assetCoach = new Asset<Coach>(ViewableEntityType.COACH,100);
+        Asset<Coach> assetCoach = new Asset<>(ViewableEntityType.COACH, 100);
         assetCoach.putRecord(testCoach);
-        Asset<Player> assetPlayer = new Asset<Player>(ViewableEntityType.PLAYER,101);
+        Asset<Player> assetPlayer = new Asset<>(ViewableEntityType.PLAYER, 101);
         assetPlayer.putRecord(testPlayer);
-        Asset<Stadium> assetStadium = new Asset<Stadium>(ViewableEntityType.STADIUM,102);
+        Asset<Stadium> assetStadium = new Asset<>(ViewableEntityType.STADIUM, 102);
         assetStadium.putRecord(testStadium);
         newAssets.add(assetCoach);
         newAssets.add(assetPlayer);
@@ -163,11 +163,11 @@ public class TeamOwnerServiceTest {
     public void removeAssets() {
         setUp();
 
-        Asset<Coach> assetCoach = new Asset<Coach>(ViewableEntityType.COACH,9);
+        Asset<Coach> assetCoach = new Asset<>(ViewableEntityType.COACH, 9);
         assetCoach.putRecord(homeCoach);
-        Asset<Player> assetPlayer = new Asset<Player>(ViewableEntityType.PLAYER,3);
+        Asset<Player> assetPlayer = new Asset<>(ViewableEntityType.PLAYER, 3);
         assetPlayer.putRecord(homePlayer);
-        Asset<Stadium> assetStadium = new Asset<Stadium>(ViewableEntityType.STADIUM,1);
+        Asset<Stadium> assetStadium = new Asset<>(ViewableEntityType.STADIUM, 1);
         assetStadium.putRecord(homeStadium);
         List<Asset<?>> assetsToRemove = new LinkedList<>();
         assetsToRemove.add(assetCoach);
@@ -187,15 +187,15 @@ public class TeamOwnerServiceTest {
         setUp();
 
         Coach updatedCoach = new Coach(9,"coachUser","coachPass" ,"coachName" ,"coachEmail" ,"Qualifications are for losers" ,"Manager Assistant");
-        Asset<Coach> updatedAssetCoach = new Asset<Coach>(ViewableEntityType.COACH,9);
+        Asset<Coach> updatedAssetCoach = new Asset<>(ViewableEntityType.COACH, 9);
         updatedAssetCoach.putRecord(updatedCoach);
         teamOwnerService.updateAsset(updatedAssetCoach);
         Player updatedPlayer = new Player(3, "playerUser", "playerPass", "playerName", "playerEmail",LocalDateTime.now(),"Goal Keeper");
-        Asset<Player> updatedAssetPlayer = new Asset<Player>(ViewableEntityType.PLAYER,9);
+        Asset<Player> updatedAssetPlayer = new Asset<>(ViewableEntityType.PLAYER, 9);
         updatedAssetPlayer.putRecord(updatedPlayer);
         teamOwnerService.updateAsset(updatedAssetPlayer);
         Stadium updatedStadium = new Stadium(2, "Sami Ofer");
-        Asset<Stadium> updatedAssetStadium = new Asset<Stadium>(ViewableEntityType.STADIUM,9);
+        Asset<Stadium> updatedAssetStadium = new Asset<>(ViewableEntityType.STADIUM, 9);
         updatedAssetStadium.putRecord(updatedStadium);
         teamOwnerService.updateAsset(updatedAssetStadium);
         //can't really check the function because it just save a temp to the database
@@ -303,13 +303,14 @@ public class TeamOwnerServiceTest {
     @Test
     public void removeMangers() {
         setUp();
+        List<TeamManager> managers = new LinkedList<>();
+        managers.add(homeManager);
+        managers.add(awayManager);
+        List<Integer> ids = managers.stream().map(TeamManager::getId).collect(Collectors.toList());
+        when(teamManagerRepository.findAllById(ids)).thenReturn(managers);
 
-        List<Integer> managersIDs = new LinkedList<>();
-        managersIDs.add(7);
-        managersIDs.add(8);
-        teamOwnerService.removeManagers(managersIDs);
-        verify(teamManagerRepository, times(1)).deleteById(homeManager.getId());
-        verify(teamManagerRepository, times(1)).deleteById(awayManager.getId());
+        teamOwnerService.removeManagers(ids);
+        verify(teamManagerRepository, times(1)).deleteAll(managers);
     }
 
     @Test

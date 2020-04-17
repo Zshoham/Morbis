@@ -102,7 +102,9 @@ public class TeamOwnerService {
     }
 
     public void removeAssets(int teamID, List<Asset<?>> assets) {
-        Team team = teamRepository.findById(teamID).get();
+        Team team = teamRepository.findById(teamID).orElseThrow(
+                () -> new IllegalArgumentException("invalid team id"));
+
         for (Asset<?> asset : assets) {
             switch (asset.getType()) {
                 case COACH:
@@ -157,8 +159,11 @@ public class TeamOwnerService {
         return memberRepository.findAllByMemberRoleNotIn(roles);
     }
 
-    public void makeTeamOwner(int ownerID,List<Integer> memberIDs) {
-        TeamOwner currentOwner = teamOwnerRepository.findById(ownerID).get();
+    public void makeTeamOwner(int ownerID, List<Integer> memberIDs) {
+        TeamOwner currentOwner = teamOwnerRepository.findById(ownerID).orElseThrow(
+                () -> new IllegalArgumentException("invalid owner id")
+        );
+
         List<Integer> possibleOwners = new LinkedList<>();
         getPossibleOwners().forEach(member -> possibleOwners.add(member.getId()));
         memberIDs.retainAll(possibleOwners);//to check if every1 can be owners
@@ -240,33 +245,37 @@ public class TeamOwnerService {
     }
 
     public void removeManagers(List<Integer> managerIDs) {
-        for(int ownerID : managerIDs) {
-            teamManagerRepository.findById(ownerID).get().getMemberRole().remove(MemberRole.TEAM_OWNER);
-            teamManagerRepository.deleteById(ownerID);
-        }
+        List<TeamManager> managers = teamManagerRepository.findAllById(managerIDs);
+        teamManagerRepository.deleteAll(managers);
     }
 
     public void closeTeam(int teamID) {
-        Team team = teamRepository.findById(teamID).get();
+        Team team = teamRepository.findById(teamID).orElseThrow(
+                () -> new IllegalArgumentException("invalid team id"));
+
         if(team.getTeamStatus() != TeamStatus.PERMANENTLY_CLOSED) {
             team.setTeamStatus(TeamStatus.TEMPORARY_CLOSED);
         }
     }
 
     public void openTeam(int teamID) {
-        Team team = teamRepository.findById(teamID).get();
+        Team team = teamRepository.findById(teamID).orElseThrow(
+                () -> new IllegalArgumentException("invalid team id"));
+
         if(team.getTeamStatus() != TeamStatus.PERMANENTLY_CLOSED) {
             team.setTeamStatus(TeamStatus.OPENED);
         }
     }
 
     public void setPermissions(int managerID, List<ManagerPermissions> permissions) {
-        TeamManager teamManager = teamManagerRepository.findById(managerID).get();
-        teamManager.setPermissions(permissions);
+        teamManagerRepository.findById(managerID).ifPresent(
+                manager -> manager.setPermissions(permissions));
     }
 
     public void submitTransaction(int teamID, String description, int value) {
-        Team team = teamRepository.findById(teamID).get();
+        Team team = teamRepository.findById(teamID).orElseThrow(
+                () -> new IllegalArgumentException("invalid team id"));
+
         Transaction transaction = new Transaction(value,description);
         if(team.getTransactions() == null) {
            team.setTransactions(new LinkedList<>());
