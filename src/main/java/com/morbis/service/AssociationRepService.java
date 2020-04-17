@@ -115,10 +115,12 @@ public class AssociationRepService {
     }
 
 
-    public void addRefsToSeason(int chosenSeasonID, List<Referee> referees) {
+    public void addRefsToSeason(int chosenSeasonID, List<Integer> refIDs) {
         Season chosen = seasonRepository.findById(chosenSeasonID).orElseThrow(
                 () -> new IllegalArgumentException("the chosen season does not exist.")
         );
+
+        List<Referee> referees = refereeRepository.findAllById(refIDs);
 
         chosen.getReferees().addAll(referees);
         seasonRepository.save(chosen);

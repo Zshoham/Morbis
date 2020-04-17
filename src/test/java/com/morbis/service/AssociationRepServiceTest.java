@@ -125,7 +125,7 @@ public class AssociationRepServiceTest {
     @Test
     public void addRefsToSeason() {
         // throws when season does not exist.
-        assertThatThrownBy(() -> associationRepService.addRefsToSeason(999, Collections.singletonList(main)))
+        assertThatThrownBy(() -> associationRepService.addRefsToSeason(999, Collections.singletonList(main.getId())))
                 .hasMessageContaining("season");
 
         // the season is saved
@@ -136,7 +136,7 @@ public class AssociationRepServiceTest {
 
         main.setSeasons(seasons);
         season.setReferees(referees);
-        associationRepService.addRefsToSeason(season.getId(), List.copyOf(referees));
+        associationRepService.addRefsToSeason(season.getId(), referees.stream().map(Referee::getId).collect(Collectors.toList()));
         verify(seasonRepository, times(1)).save(season);
     }
 
