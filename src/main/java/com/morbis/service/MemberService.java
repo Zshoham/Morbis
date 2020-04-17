@@ -63,6 +63,7 @@ public class MemberService {
         Optional<Member> member = memberRepository.findById(memberID);
         if(member.isEmpty())
             throw new IllegalArgumentException("Invalid member id");
+
         game.get().getFollowers().add(member.get());
         gameRepository.save(game.get());
     }
@@ -78,7 +79,7 @@ public class MemberService {
         memberComplaintRepository.save(complaint);
     }
 
-    public List<MemberSearch> getSearchHistory(int memberID) throws ExecutionControl.NotImplementedException {
+    public List<MemberSearch> getSearchHistory(int memberID) {
         Optional<Member> member = memberRepository.findById(memberID);
         if(member.isEmpty())
             throw new IllegalArgumentException("Invalid member id");

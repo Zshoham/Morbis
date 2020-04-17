@@ -38,7 +38,7 @@ public class PosterData {
         return 31 + 31 * id;
     }
 
-    public PosterDataBuilder newPosterData() {
+    public static PosterDataBuilder newPosterData() {
         return new PosterDataBuilder();
     }
 
