@@ -31,6 +31,7 @@ public class Team {
         setManagers(managers);
         setCoaches(coaches);
         setStadium(stadium);
+        setTeamStatus(TeamStatus.OPENED);
     }
 
     public Team(String name, List<Player> players, List<TeamOwner> owners, List<TeamManager> managers, List<Coach> coaches, Stadium stadium) {
@@ -40,6 +41,7 @@ public class Team {
         setManagers(managers);
         setCoaches(coaches);
         setStadium(stadium);
+        setTeamStatus(TeamStatus.OPENED);
     }
 
     @NotNull
@@ -121,16 +123,18 @@ public class Team {
         TeamBuildFinalizer withManagers(List<TeamManager> managers);
         TeamBuildFinalizer withPosterData(PosterData posterData);
         TeamBuildFinalizer withTransactions(List<Transaction> transactions);
+        TeamBuildFinalizer withTeamStatus(TeamStatus teamStatus);
         Team build();
     }
 
     public static class BaseTeamBuilder implements
-            TeamNameBuilder, TeamPlayersBuilder, TeamOwnersBuilder, TeamCoachesBuilder, TeamStadiumBuilder, TeamBuildFinalizer {
+            TeamNameBuilder, TeamPlayersBuilder, TeamOwnersBuilder, TeamCoachesBuilder, TeamStadiumBuilder,TeamBuildFinalizer {
 
         private final Team result;
 
         private BaseTeamBuilder() {
             this.result = new Team();
+            this.result.setTeamStatus(TeamStatus.OPENED);
         }
 
         @Override
@@ -184,6 +188,12 @@ public class Team {
         @Override
         public TeamBuildFinalizer withTransactions(List<Transaction> transactions) {
             result.setTransactions(transactions);
+            return this;
+        }
+
+        @Override
+        public TeamBuildFinalizer withTeamStatus(TeamStatus teamStatus) {
+            result.setTeamStatus(teamStatus);
             return this;
         }
 
