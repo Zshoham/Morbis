@@ -1,17 +1,141 @@
 package com.morbis.service;
 
+import com.morbis.model.league.entity.League;
+import com.morbis.model.league.entity.SchedulingMethod;
+import com.morbis.model.league.entity.ScoringMethod;
+import com.morbis.model.league.entity.Season;
 import com.morbis.model.league.repository.LeagueRepository;
 import com.morbis.model.league.repository.SeasonRepository;
+import com.morbis.model.member.entity.Referee;
 import com.morbis.model.member.repository.RefereeRepository;
+import com.morbis.service.notification.EmailService;
+import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@Service
 public class AssociationRepService {
-    private SeasonRepository seasonRepository;
-    private LeagueRepository leagueRepository;
-    private RefereeRepository refereeRepository;
 
-    public AssociationRepService(SeasonRepository seasonRepository, LeagueRepository leagueRepository, RefereeRepository refereeRepository) {
+    private final SeasonRepository seasonRepository;
+    private final LeagueRepository leagueRepository;
+    private final RefereeRepository refereeRepository;
+
+    private final EmailService emailService;
+
+    public AssociationRepService(SeasonRepository seasonRepository,
+                                 LeagueRepository leagueRepository,
+                                 RefereeRepository refereeRepository,
+                                 EmailService emailService) {
         this.seasonRepository = seasonRepository;
         this.leagueRepository = leagueRepository;
         this.refereeRepository = refereeRepository;
+        this.emailService = emailService;
+    }
+
+
+    public boolean addLeague(String leagueName) {
+        if (leagueRepository.findAllByName(leagueName).isEmpty()) {
+            leagueRepository.save(new League(leagueName));
+            return true;
+        }
+
+        return false;
+    }
+
+    public void addSeason(int leagueID, int year) throws IllegalArgumentException {
+        League league = leagueRepository.findById(leagueID)
+                .orElseThrow(() -> new IllegalArgumentException("trying to add season to non existent league"));
+
+        if (seasonRepository.findByLeagueAndYear(league, year).isPresent())
+            throw new IllegalArgumentException("the league " + league.getName() + "already contains the " + year + "season.");
+
+        Season newSeason = new Season(year, league);
+        seasonRepository.save(newSeason);
+        league.getSeasons().add(newSeason);
+        leagueRepository.save(league);
+    }
+
+    public List<League> getLeagues() {
+        return leagueRepository.findAll();
+    }
+
+    public List<Season> getSeasons(int leagueID) {
+        List<Season> result = new ArrayList<>();
+
+        leagueRepository.findById(leagueID).ifPresent(league ->
+                result.addAll(league.getSeasons()));
+
+        return result;
+    }
+
+    public List<ScoringMethod> getScoringMethods() {
+        return Stream.of(ScoringMethod.values()).collect(Collectors.toList());
+    }
+
+    public void setScoringMethod(int leagueID, ScoringMethod method) throws IllegalArgumentException {
+        League league = leagueRepository.findById(leagueID)
+                .orElseThrow(() -> new IllegalArgumentException("trying to add season to non existent league"));
+
+        league.setScoringMethod(method);
+        leagueRepository.save(league);
+    }
+
+    public List<SchedulingMethod> getSchedulingMethod() {
+        return Stream.of(SchedulingMethod.values()).collect(Collectors.toList());
+    }
+
+    public void setSchedulingMethod(int leagueID, SchedulingMethod method) throws IllegalArgumentException {
+        League league = leagueRepository.findById(leagueID)
+                .orElseThrow(() -> new IllegalArgumentException("trying to add season to non existent league"));
+
+        league.setSchedulingMethod(method);
+        leagueRepository.save(league);
+    }
+
+    public void addRef(String email, String name) throws MessagingException {
+        String tempUsername = UUID.randomUUID().toString();
+        String tempPassword = UUID.randomUUID().toString();
+
+        Referee newAccount = Referee.newReferee("NA")
+                .fromMember(tempUsername, tempPassword, name, email)
+                .build();
+
+        emailService.registerReferee(newAccount);
+
+        refereeRepository.save(newAccount);
+    }
+
+    public List<Referee> getRefs() {
+        return refereeRepository.findAll();
+    }
+
+
+    public void addRefsToSeason(int chosenSeasonID, List<Integer> refIDs) {
+        Season chosen = seasonRepository.findById(chosenSeasonID).orElseThrow(
+                () -> new IllegalArgumentException("the chosen season does not exist.")
+        );
+
+        List<Referee> referees = refereeRepository.findAllById(refIDs);
+
+        chosen.getReferees().addAll(referees);
+        seasonRepository.save(chosen);
+    }
+
+    public void removeRefs(List<Integer> refIDs) {
+        List<Referee> referees = refereeRepository.findAllById(refIDs);
+
+        for (Referee ref : referees) {
+            for (Season season : ref.getSeasons()) {
+                season.getReferees().remove(ref);
+                seasonRepository.save(season);
+            }
+        }
+
+        referees.forEach(refereeRepository::delete);
     }
 }

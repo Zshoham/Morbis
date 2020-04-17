@@ -8,4 +8,6 @@ import java.util.List;
 public interface LeagueRepository extends JpaRepository<League,Integer> {
 
     List<League> findAllByNameContaining(String query);
+
+    List<League> findAllByName(String name);
 }

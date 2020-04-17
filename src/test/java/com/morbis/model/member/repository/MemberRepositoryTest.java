@@ -36,7 +36,6 @@ public class MemberRepositoryTest {
     @Test
     @Rollback
     public void save() {
-        //TODO: WHY ARE YOU RUNNING ?
         // saving the same member twice has no effect.
         memberRepository.save(testMember);
         assertThat(memberRepository.findAll()).containsExactly(testMember);
