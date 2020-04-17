@@ -5,13 +5,15 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.LinkedList;
+import java.util.List;
 
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Member {
     @Id
     @GeneratedValue
@@ -23,7 +25,9 @@ public abstract class Member {
         setPassword(password);
         setName(name);
         setEmail(email);
-        setMemberRole(role);
+        List<MemberRole> roleAsList = new LinkedList<>();
+        roleAsList.add(role);
+        setMemberRole(roleAsList);
     }
 
     protected Member(MemberRole role, String username, String password, String name, String email) {
@@ -31,12 +35,14 @@ public abstract class Member {
         setPassword(password);
         setName(name);
         setEmail(email);
-        setMemberRole(role);
+        List<MemberRole> roleAsList = new LinkedList<>();
+        roleAsList.add(role);
+        setMemberRole(roleAsList);
     }
 
     @NotNull
-    @Enumerated(EnumType.ORDINAL)
-    protected MemberRole memberRole;
+    @ElementCollection(fetch = FetchType.EAGER)
+    protected List<MemberRole> memberRole;
 
     @NotNull
     @NotBlank
@@ -87,7 +93,9 @@ public abstract class Member {
 
         public void populate(MemberRole role, String username, String password, String name, String email) {
             Member result = getResultMember();
-            result.setMemberRole(role);
+            List<MemberRole> roleAsList = new LinkedList<>();
+            roleAsList.add(role);
+            result.setMemberRole(roleAsList);
             result.setUsername(username);
             result.setPassword(password);
             result.setName(name);
@@ -109,6 +117,12 @@ public abstract class Member {
 
         public BUILDER fromMember(String username, String password, String name, String email) {
             builder.populate(role, username, password, name, email);
+
+            return builder;
+        }
+
+        public BUILDER fromMember(Member member) {
+            builder.populate(role, member.getUsername(), member.getPassword(),member.getName(), member.getEmail());
 
             return builder;
         }
