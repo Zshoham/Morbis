@@ -1,13 +1,16 @@
 package com.morbis.model.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.morbis.model.team.entity.Team;
 import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 @Getter
@@ -28,6 +31,12 @@ public class TeamOwner extends Member {
     @ManyToOne(targetEntity = Team.class)
     @JsonBackReference
     private Team team;
+
+    @OneToMany(targetEntity = TeamOwner.class)
+    private List<TeamOwner> appointedOwners;
+
+    @OneToMany(targetEntity = TeamManager.class)
+    private List<TeamManager> appointedManagers;
 
     public static AbstractMemberBuilder<OwnerBuilder> newTeamOwner() {
         return new AbstractMemberBuilder<>(MemberRole.TEAM_OWNER, new OwnerBuilder());
@@ -53,6 +62,16 @@ public class TeamOwner extends Member {
 
         public OwnerBuilder withTeam(Team team) {
             result.setTeam(team);
+            return this;
+        }
+
+        public OwnerBuilder withAppointedOwners(List<TeamOwner> owners) {
+            result.setAppointedOwners(owners);
+            return this;
+        }
+
+        public OwnerBuilder withAppointedManagers(List<TeamManager> managers) {
+            result.setAppointedManagers(managers);
             return this;
         }
 

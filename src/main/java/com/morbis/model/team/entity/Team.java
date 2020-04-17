@@ -31,6 +31,7 @@ public class Team {
         setManagers(managers);
         setCoaches(coaches);
         setStadium(stadium);
+        setTeamStatus(TeamStatus.OPENED);
     }
 
     public Team(String name, List<Player> players, List<TeamOwner> owners, List<TeamManager> managers, List<Coach> coaches, Stadium stadium) {
@@ -40,6 +41,7 @@ public class Team {
         setManagers(managers);
         setCoaches(coaches);
         setStadium(stadium);
+        setTeamStatus(TeamStatus.OPENED);
     }
 
     @NotNull
@@ -76,6 +78,9 @@ public class Team {
     @OneToMany(targetEntity = Transaction.class)
     private List<Transaction> transactions;
 
+    @NotNull
+    private TeamStatus teamStatus;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -85,9 +90,7 @@ public class Team {
 
         if (id != team.id) return false;
         if (!name.equals(team.name)) return false;
-        if (!players.equals(team.players)) return false;
-        if (!owners.equals(team.owners)) return false;
-        if (!coaches.equals(team.coaches)) return false;
+        if (!teamStatus.equals(team.teamStatus)) return false;
         return stadium.equals(team.stadium);
     }
 
@@ -96,6 +99,7 @@ public class Team {
         int result = id;
         result = 31 * result + name.hashCode();
         result = 31 * result + stadium.hashCode();
+        result = 31 * result + teamStatus.hashCode();
         return result;
     }
 
@@ -118,16 +122,18 @@ public class Team {
         TeamBuildFinalizer withManagers(List<TeamManager> managers);
         TeamBuildFinalizer withPosterData(PosterData posterData);
         TeamBuildFinalizer withTransactions(List<Transaction> transactions);
+        TeamBuildFinalizer withTeamStatus(TeamStatus teamStatus);
         Team build();
     }
 
     public static class BaseTeamBuilder implements
-            TeamNameBuilder, TeamPlayersBuilder, TeamOwnersBuilder, TeamCoachesBuilder, TeamStadiumBuilder, TeamBuildFinalizer {
+            TeamNameBuilder, TeamPlayersBuilder, TeamOwnersBuilder, TeamCoachesBuilder, TeamStadiumBuilder,TeamBuildFinalizer {
 
         private final Team result;
 
         private BaseTeamBuilder() {
             this.result = new Team();
+            this.result.setTeamStatus(TeamStatus.OPENED);
         }
 
         @Override
@@ -181,6 +187,12 @@ public class Team {
         @Override
         public TeamBuildFinalizer withTransactions(List<Transaction> transactions) {
             result.setTransactions(transactions);
+            return this;
+        }
+
+        @Override
+        public TeamBuildFinalizer withTeamStatus(TeamStatus teamStatus) {
+            result.setTeamStatus(teamStatus);
             return this;
         }
 
