@@ -19,6 +19,9 @@ public class GameEvent {
     @GeneratedValue
     private int id;
 
+    @ManyToOne(targetEntity = Game.class)
+    private Game game;
+
     public GameEvent(int id, GameEventType type, LocalDateTime date, int gameTime, String description) {
         this.id = id;
         this.type = type;
