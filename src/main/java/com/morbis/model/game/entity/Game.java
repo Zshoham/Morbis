@@ -1,6 +1,7 @@
 package com.morbis.model.game.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.morbis.model.member.entity.Member;
 import com.morbis.model.member.entity.Referee;
 import com.morbis.model.team.entity.Team;
 import lombok.*;
@@ -51,6 +52,9 @@ public class Game {
 
     @ManyToOne(targetEntity = Team.class, cascade = CascadeType.ALL)
     private Team away;
+
+    @ManyToMany(targetEntity = Member.class)
+    private List<Member> followers;
 
     @NotNull
     private LocalDateTime startDate;
