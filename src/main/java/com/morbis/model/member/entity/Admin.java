@@ -1,8 +1,14 @@
 package com.morbis.model.member.entity;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
+import com.morbis.model.member.repository.MemberComplaintRepository;
+import com.morbis.model.member.repository.MemberRepository;
+import com.morbis.model.team.entity.Team;
+import com.morbis.model.team.repository.TeamRepository;
 import lombok.*;
 
 import javax.persistence.Entity;
+import java.util.List;
 
 @Entity
 @Getter
@@ -45,4 +51,7 @@ public class Admin extends Member {
             return result;
         }
     }
+
+
+
 }

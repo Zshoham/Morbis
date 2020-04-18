@@ -9,4 +9,5 @@ import java.util.List;
 public interface TeamRepository extends JpaRepository<Team,Integer> {
 
     List<Team> findAllByNameContaining(String query);
+
 }

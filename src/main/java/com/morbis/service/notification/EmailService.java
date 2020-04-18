@@ -1,6 +1,9 @@
 package com.morbis.service.notification;
 
 import com.morbis.model.member.entity.Referee;
+import com.morbis.model.member.entity.TeamManager;
+import com.morbis.model.member.entity.TeamOwner;
+import com.morbis.model.team.entity.Team;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -32,14 +35,17 @@ public class EmailService {
                     "Your new password is: %s\n" +
                     "Please change your username and password after the first login.";
 
+    public static final String TEAM_CLOSE_MESSAGE =
+            "Hello %s,\n" +
+                    "The Team %s that you are part of has been closed";
+
     EmailService() {
-        props= new Properties();
+        props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.port", "587");
     }
-
 
 
     public void sendMessage(String address, String subject, String content) throws MessagingException {
@@ -66,8 +72,20 @@ public class EmailService {
                 String.format(REF_MESSAGE, referee.getName(), referee.getUsername(), referee.getPassword()));
     }
 
-    public void closeTeam() {
-        throw new UnsupportedOperationException("this method wasnt implemented yet");
+    public void closeTeam(Team team) throws MessagingException {
+        String subject = "Morbis - Team Termination";
+        for (TeamManager manager : team.getManagers()) {
+            sendMessage(manager.getEmail(),
+                    subject,
+                    String.format(TEAM_CLOSE_MESSAGE, manager.getName(), team.getName()));
+        }
+        for (TeamOwner owner : team.getOwners()) {
+            sendMessage(owner.getEmail(),
+                    subject,
+                    String.format(TEAM_CLOSE_MESSAGE, owner.getName(), team.getName()));
+        }
+
+
     }
 
 }
