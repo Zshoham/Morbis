@@ -4,6 +4,8 @@
 
 [![codecov](https://codecov.io/gl/Zshoham/Morbis/branch/master/graph/badge.svg?token=9Rm5sKYMsQ)](https://codecov.io/gl/Zshoham/Morbis)
 
+[![Traceabillity Matrix](https://img.shields.io/badge/-traceability--matrix-informational)](https://docs.google.com/spreadsheets/d/16uEsQn1krlVqtcKuEiSGGFGlWQyg7g0BaGvJhJdVOWc/edit?ts=5e9c2063#gid=0)
+
 
 Authors: Shoham Zarfati, Yuval Khoramian, Hod Twito, Ron Zeidman, Haim Reyes
 
