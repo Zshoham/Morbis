@@ -4,6 +4,12 @@
 # https://github.com/gradle/gradle
 image: gradle:jdk11
 
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_ID               # Execute jobs in merge request context
+    - if: $CI_COMMIT_BRANCH == 'master'      # Execute jobs when a new commit is pushed to master branch
+
+
 # Disable the Gradle daemon for Continuous Integration servers as correctness
 # is usually a priority over speed in CI environments. Using a fresh
 # runtime for each build is more reliable since the runtime is completely
