@@ -92,15 +92,15 @@ public class TeamOwnerServiceTest {
         chooseManagerRoles.add(MemberRole.TEAM_OWNER);
         chooseManagerRoles.add(MemberRole.TEAM_MANAGER);
 
-        when(stadiumRepository.findById(1)).thenReturn(Optional.ofNullable(homeStadium));
-        when(playerRepository.findById(3)).thenReturn(Optional.ofNullable(homePlayer));
-        when(teamRepository.findById(11)).thenReturn(Optional.ofNullable(home));
-        when(teamRepository.findById(12)).thenReturn(Optional.ofNullable(away));
+        when(stadiumRepository.findById(homeStadium.getId())).thenReturn(Optional.ofNullable(homeStadium));
+        when(playerRepository.findById(homePlayer.getId())).thenReturn(Optional.ofNullable(homePlayer));
+        when(teamRepository.findById(home.getId())).thenReturn(Optional.ofNullable(home));
+        when(teamRepository.findById(away.getId())).thenReturn(Optional.ofNullable(away));
         when(memberRepository.findAllByMemberRoleNotIn(chooseOwnerRoles)).thenReturn(List.of(homeCoach,homeManager,homePlayer));
         when(memberRepository.findAllByMemberRoleNotIn(chooseManagerRoles)).thenReturn(List.of(homeCoach,homePlayer));
-        when(teamOwnerRepository.findById(5)).thenReturn(Optional.ofNullable(homeOwner));
-        when(teamManagerRepository.findById(7)).thenReturn(Optional.ofNullable(homeManager));
-        when(teamManagerRepository.findById(8)).thenReturn(Optional.of(awayManager));
+        when(teamOwnerRepository.findById(homeOwner.getId())).thenReturn(Optional.ofNullable(homeOwner));
+        when(teamManagerRepository.findById(homeManager.getId())).thenReturn(Optional.ofNullable(homeManager));
+        when(teamManagerRepository.findById(awayManager.getId())).thenReturn(Optional.of(awayManager));
         homeOwner.setAppointedOwners(new LinkedList<>());
         homeOwner.setAppointedManagers(new LinkedList<>());
         List<TeamOwner> teamOwners = new LinkedList<>();
@@ -115,22 +115,20 @@ public class TeamOwnerServiceTest {
         List<Coach> coaches = new LinkedList<>();
         coaches.add(homeCoach);
         home.setCoaches(coaches);
-        when(memberRepository.findAllById(List.of(9,7,3))).thenReturn(List.of(homeCoach,homeManager,homePlayer));
-        when(memberRepository.findAllById(List.of(9,3))).thenReturn(List.of(homeCoach,homePlayer));
-        when(memberRepository.findAllById(List.of(9))).thenReturn(List.of(homeCoach));
-        when(teamOwnerRepository.findById(5)).thenReturn(Optional.ofNullable(homeOwner));
+        when(memberRepository.findAllById(List.of(homeCoach.getId(),homeManager.getId(),homePlayer.getId()))).thenReturn(List.of(homeCoach,homeManager,homePlayer));
+        when(memberRepository.findAllById(List.of(homeCoach.getId(),homePlayer.getId()))).thenReturn(List.of(homeCoach,homePlayer));
+        when(memberRepository.findAllById(List.of(homeCoach.getId()))).thenReturn(List.of(homeCoach));
     }
 
     @Test
     public void getAssets() {
-        ViewableEntitySource.initWithID();
-        when(teamRepository.findById(11)).thenReturn(Optional.ofNullable(home));
-        when(teamRepository.findById(12)).thenReturn(Optional.ofNullable(away));
+        setUp();
+
         List<Asset<?>> teamAssets;
-        teamAssets = teamOwnerService.getAssets(11); //stadium,player,coach,manager
+        teamAssets = teamOwnerService.getAssets(home.getId()); //stadium,player,coach,manager
         assertThat(teamAssets)
                 .hasSize(4);
-        teamAssets = teamOwnerService.getAssets(12);
+        teamAssets = teamOwnerService.getAssets(away.getId());
         assertThat(teamAssets)
                 .hasSize(4);
     }
@@ -143,16 +141,16 @@ public class TeamOwnerServiceTest {
         Player testPlayer = new Player(101, "playerUser", "playerPass", "playerName", "playerEmail",LocalDateTime.now(),"Goal Keeper");
         List<Asset<?>> newAssets = new LinkedList<>();
         Stadium testStadium = new Stadium(102, "Sami Ofer");
-        Asset<Coach> assetCoach = new Asset<>(ViewableEntityType.COACH, 100);
+        Asset<Coach> assetCoach = new Asset<>(ViewableEntityType.COACH, testCoach.getId());
         assetCoach.putRecord(testCoach);
-        Asset<Player> assetPlayer = new Asset<>(ViewableEntityType.PLAYER, 101);
+        Asset<Player> assetPlayer = new Asset<>(ViewableEntityType.PLAYER, testPlayer.getId());
         assetPlayer.putRecord(testPlayer);
-        Asset<Stadium> assetStadium = new Asset<>(ViewableEntityType.STADIUM, 102);
+        Asset<Stadium> assetStadium = new Asset<>(ViewableEntityType.STADIUM, testStadium.getId());
         assetStadium.putRecord(testStadium);
         newAssets.add(assetCoach);
         newAssets.add(assetPlayer);
         newAssets.add(assetStadium);
-        teamOwnerService.addAssets(11,newAssets);
+        teamOwnerService.addAssets(home.getId(),newAssets);
         assertThat(home.getCoaches())
                 .hasSize(2);
         assertThat(home.getPlayers())
@@ -163,11 +161,11 @@ public class TeamOwnerServiceTest {
     public void removeAssets() {
         setUp();
 
-        Asset<Coach> assetCoach = new Asset<>(ViewableEntityType.COACH, 9);
+        Asset<Coach> assetCoach = new Asset<>(ViewableEntityType.COACH, homeCoach.getId());
         assetCoach.putRecord(homeCoach);
-        Asset<Player> assetPlayer = new Asset<>(ViewableEntityType.PLAYER, 3);
+        Asset<Player> assetPlayer = new Asset<>(ViewableEntityType.PLAYER, homePlayer.getId());
         assetPlayer.putRecord(homePlayer);
-        Asset<Stadium> assetStadium = new Asset<>(ViewableEntityType.STADIUM, 1);
+        Asset<Stadium> assetStadium = new Asset<>(ViewableEntityType.STADIUM, homeStadium.getId());
         assetStadium.putRecord(homeStadium);
         List<Asset<?>> assetsToRemove = new LinkedList<>();
         assetsToRemove.add(assetCoach);
@@ -187,15 +185,15 @@ public class TeamOwnerServiceTest {
         setUp();
 
         Coach updatedCoach = new Coach(9,"coachUser","coachPass" ,"coachName" ,"coachEmail" ,"Qualifications are for losers" ,"Manager Assistant");
-        Asset<Coach> updatedAssetCoach = new Asset<>(ViewableEntityType.COACH, 9);
+        Asset<Coach> updatedAssetCoach = new Asset<>(ViewableEntityType.COACH, updatedCoach.getId());
         updatedAssetCoach.putRecord(updatedCoach);
         teamOwnerService.updateAsset(updatedAssetCoach);
         Player updatedPlayer = new Player(3, "playerUser", "playerPass", "playerName", "playerEmail",LocalDateTime.now(),"Goal Keeper");
-        Asset<Player> updatedAssetPlayer = new Asset<>(ViewableEntityType.PLAYER, 9);
+        Asset<Player> updatedAssetPlayer = new Asset<>(ViewableEntityType.PLAYER, updatedPlayer.getId());
         updatedAssetPlayer.putRecord(updatedPlayer);
         teamOwnerService.updateAsset(updatedAssetPlayer);
-        Stadium updatedStadium = new Stadium(2, "Sami Ofer");
-        Asset<Stadium> updatedAssetStadium = new Asset<>(ViewableEntityType.STADIUM, 9);
+        Stadium updatedStadium = new Stadium(1, "Sami Ofer");
+        Asset<Stadium> updatedAssetStadium = new Asset<>(ViewableEntityType.STADIUM, 1);
         updatedAssetStadium.putRecord(updatedStadium);
         teamOwnerService.updateAsset(updatedAssetStadium);
         //can't really check the function because it just save a temp to the database
@@ -217,7 +215,7 @@ public class TeamOwnerServiceTest {
         memberIDs.add(homeCoach.getId());
         memberIDs.add(homeManager.getId());
         memberIDs.add(homePlayer.getId());
-        teamOwnerService.makeTeamOwner(5,memberIDs);
+        teamOwnerService.makeTeamOwner(homeOwner.getId(),memberIDs);
         assertThat(homeCoach.getMemberRole())
                 .containsExactly(MemberRole.COACH,MemberRole.TEAM_OWNER);
     }
@@ -228,8 +226,8 @@ public class TeamOwnerServiceTest {
         List<Integer> coach = new LinkedList<>();
         coach.add(homeCoach.getId());
 
-        teamOwnerService.makeTeamOwner(5,coach);
-        assertThat(teamOwnerService.getAppointedOwners(5)).hasSize(1);
+        teamOwnerService.makeTeamOwner(homeOwner.getId(),coach);
+        assertThat(teamOwnerService.getAppointedOwners(homeOwner.getId())).hasSize(1);
     }
 
     @Test
@@ -246,8 +244,8 @@ public class TeamOwnerServiceTest {
         teamOwner1.setAppointedOwners(secondAppointedOwners);
         List<Integer> ownersIDs = new LinkedList<>();
         ownersIDs.add(5);
-        when(teamOwnerRepository.findById(0)).thenReturn(Optional.of(teamOwner1));
-        when(teamOwnerRepository.findById(100)).thenReturn(Optional.of(teamOwner2));
+        when(teamOwnerRepository.findById(teamOwner1.getId())).thenReturn(Optional.of(teamOwner1));
+        when(teamOwnerRepository.findById(teamOwner2.getId())).thenReturn(Optional.of(teamOwner2));
         teamOwnerService.removeOwners(ownersIDs);
         verify(teamOwnerRepository, times(1)).deleteById(teamOwner1.getId());
         verify(teamOwnerRepository, times(1)).deleteById(teamOwner2.getId());
@@ -279,7 +277,7 @@ public class TeamOwnerServiceTest {
         List<Integer> memberIDs = new LinkedList<>();
         memberIDs.add(homeCoach.getId());
         memberIDs.add(homePlayer.getId());
-        teamOwnerService.makeTeamManager(5,memberIDs,managersPermissions);
+        teamOwnerService.makeTeamManager(homeOwner.getId(),memberIDs,managersPermissions);
         assertThat(homeCoach.getMemberRole())
                 .containsExactly(MemberRole.COACH,MemberRole.TEAM_MANAGER);
     }
@@ -296,8 +294,8 @@ public class TeamOwnerServiceTest {
         List<List<ManagerPermissions>> managersPermissions = new LinkedList<>();
         managersPermissions.add(coachPermissions);
 
-        teamOwnerService.makeTeamManager(5,coach,managersPermissions);
-        assertThat(teamOwnerService.getAppointedManagers(5)).hasSize(1);
+        teamOwnerService.makeTeamManager(homeOwner.getId(),coach,managersPermissions);
+        assertThat(teamOwnerService.getAppointedManagers(homeOwner.getId())).hasSize(1);
     }
 
     @Test
@@ -317,11 +315,11 @@ public class TeamOwnerServiceTest {
     public void closeTeam() {
         setUp();
         //close a team that is opened
-        teamOwnerService.closeTeam(11);
+        teamOwnerService.closeTeam(home.getId());
         assertThat(home.getTeamStatus())
                 .isEqualTo(TeamStatus.TEMPORARY_CLOSED);
         //close a team that is closed
-        teamOwnerService.closeTeam(11);
+        teamOwnerService.closeTeam(home.getId());
         assertThat(home.getTeamStatus())
                 .isEqualTo(TeamStatus.TEMPORARY_CLOSED);
     }
@@ -331,12 +329,12 @@ public class TeamOwnerServiceTest {
         setUp();
 
         //if we open a team that is already opened
-        teamOwnerService.openTeam(11);
+        teamOwnerService.openTeam(home.getId());
         assertThat(home.getTeamStatus())
                 .isEqualTo(TeamStatus.OPENED);
         //if we open a team that is closed
         home.setTeamStatus(TeamStatus.TEMPORARY_CLOSED);
-        teamOwnerService.openTeam(11);
+        teamOwnerService.openTeam(home.getId());
         assertThat(home.getTeamStatus())
                 .isEqualTo(TeamStatus.OPENED);
     }
@@ -349,7 +347,7 @@ public class TeamOwnerServiceTest {
         permissions.add(ManagerPermissions.ADD_ASSETS);
         permissions.add(ManagerPermissions.CLOSE_TEAM);
 
-        teamOwnerService.setPermissions(7,permissions);
+        teamOwnerService.setPermissions(homeManager.getId(),permissions);
 
         assertThat(homeManager.getPermissions())
                 .containsExactly(ManagerPermissions.ADD_ASSETS,ManagerPermissions.CLOSE_TEAM);
@@ -360,7 +358,7 @@ public class TeamOwnerServiceTest {
     public void testSubmitTransaction() {
         setUp();
 
-        teamOwnerService.submitTransaction(11,"Sold Messi to Real Madrid",300000000);
+        teamOwnerService.submitTransaction(homeOwner.getId(),"Sold Messi to Real Madrid",300000000);
         assertThat(home.getTransactions())
                 .hasSize(1);
     }
