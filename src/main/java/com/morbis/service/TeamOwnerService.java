@@ -237,8 +237,8 @@ public class TeamOwnerService {
         teamOwnerRepository.save(currentOwner.get());
     }
 
-    public List<TeamManager> getAppointedManagers(int managerID) {
-        Optional<TeamOwner> currentOwner = teamOwnerRepository.findById(managerID);
+    public List<TeamManager> getAppointedManagers(int ownerID) {
+        Optional<TeamOwner> currentOwner = teamOwnerRepository.findById(ownerID);
         if(currentOwner.isEmpty())
             return new LinkedList<>();
         return currentOwner.get().getAppointedManagers();
