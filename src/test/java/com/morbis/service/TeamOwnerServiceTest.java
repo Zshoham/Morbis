@@ -358,7 +358,7 @@ public class TeamOwnerServiceTest {
     public void testSubmitTransaction() {
         setUp();
 
-        teamOwnerService.submitTransaction(homeOwner.getId(),"Sold Messi to Real Madrid",300000000);
+        teamOwnerService.submitTransaction(home.getId(),"Sold Messi to Real Madrid",300000000);
         assertThat(home.getTransactions())
                 .hasSize(1);
     }
