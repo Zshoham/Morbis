@@ -110,4 +110,7 @@ gradle-app.setting
 **/build/
 
 # End of https://www.gitignore.io/api/gradle,intellij
+
+# morbis ignores
 log.txt
+src/main/resources/scripts/application.properties
