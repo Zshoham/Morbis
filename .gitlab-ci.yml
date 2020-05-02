@@ -2,13 +2,17 @@
 # This is the Gradle build system for JVM applications
 # https://gradle.org/
 # https://github.com/gradle/gradle
+
+include: 'https://gitlab.com/x4v13r/gitlab-ci/raw/master/ssh.yml'
+
 image: gradle:jdk11
+
+
 
 workflow:
   rules:
     - if: $CI_MERGE_REQUEST_ID               # Execute jobs in merge request context
-    - if: $CI_COMMIT_BRANCH == 'master'      # Execute jobs when a new commit is pushed to master branch
-
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'dev-backend' || $CI_COMMIT_BRANCH == 'dev-frontend'
 
 # Disable the Gradle daemon for Continuous Integration servers as correctness
 # is usually a priority over speed in CI environments. Using a fresh
@@ -43,3 +47,16 @@ test:
     paths:
       - build
       - .gradle
+
+deploy-dev:
+  stage: deploy
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$DEP_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  script:
+    - ssh -o StrictHostKeyChecking=no morbis@"$DEP_SERVER" "cd dev && ./update.sh" >> /dev/null
+  only:
+    - dev-backend

@@ -113,4 +113,6 @@ gradle-app.setting
 
 # morbis ignores
 log.txt
-src/main/resources/scripts/application.properties
+scripts/application.properties
+src/main/resources/static/
+release/

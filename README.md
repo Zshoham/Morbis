@@ -19,6 +19,10 @@ architecture.
 * src - under com.morbis contains all the java source files separated into model, service
 and presentation.
 
+* webapp - contains the web front-end of the application - a vue app, which compiles 
+to static html and javascript files that are later placed in src/main/resources/static
+to be served by the server. 
+
 ### Dependencies
 
 The major project dependencies are jdk11 and gradle (6+ is preferred), 
@@ -26,14 +30,34 @@ in addition there are dependencies that are managed by gradle
 those include:
  - Spring Boot
  - Spring Data JPA
- - Spring WebFlux (Netty)
+ - Spring Web (Tomcat)
  - lombok
  - h2 (debug database)
+
+ For the front-end the project uses npm for dependency managment
+ and the application itself is written in vue.js and has the following
+ major dependencies:
+  - babel
+  - cypress (for e2e testing)
+  - jest (for unit testing)
+  - vue raouter
  
- ### Building From Sources
- 
- Gradle makes the build process extremely easy to build the project 
- run `./gradlew build`, to run the test use `./gradlew test`
- for additional tasks run `./gradlew tasks`
- 
- > Note that the generated jar can be found in build/libs
+### Building From Sources
+
+* back-end: 
+	Gradle makes the build process extremely easy to build the project 
+	run `./gradlew build` (`./gradlew build` to generate a jar),
+	to run the test use `./gradlew test`
+	for additional tasks run `./gradlew tasks`
+	> Note that the generated jar can be found in build/libs
+	
+* front-end:
+	The build is managed by npm, you may run `npm run serve` for 
+	a dev version of the app to launch, or `npm run build` to compile
+	the vue app into static html and javascript files.
+
+* packeging:
+	There is a pack.py script inside the scripts folder that will automate 
+	the build stages descrived above and also copy the static files generated 
+	from the webapp into thier place inside the server. The script will generate
+	a release folder with a jar file and a run.py script.
