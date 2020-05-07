@@ -1,37 +1,3 @@
-/*import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import About from '../views/About.vue'
-import RegisterPage from '../views/RegisterPage.vue'
-
-Vue.use(VueRouter)
-
-const routerRoutes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/',
-    name: 'RegisterPage',
-    component: RegisterPage
-  },
-  {
-    path: '/About',
-    name: 'About',
-    component: About
-  }
-]
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes: routerRoutes 
-})
-
-export default router
-*/
-
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '../views/Home.vue'
@@ -52,7 +18,7 @@ export default new Router({
     {
       path: '/about',
       name: 'about',
-      component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+      component: () => import('../views/About.vue')
     },
     {
       path: '/RegisterPage',

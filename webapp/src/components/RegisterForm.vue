@@ -1,58 +1,74 @@
 <template>
-  <v-row align="center">
-    <v-spacer></v-spacer>
-    <v-form ref="form" v-model="valid" :lazy-validation="lazy">
-      <v-text-field v-model="username" label="Username" required width="200px"></v-text-field>
-      <v-text-field v-model="password" :type="'password'" label="Password" required></v-text-field>
-      <v-text-field v-model="name" :rules="nameRules" label="Name" required></v-text-field>
-      <v-text-field v-model="email" :type="'email'" :rules="emailRules" label="E-mail" required></v-text-field>
-
-      <v-select
-        v-model="roleSelected"
-        :items="role"
-        :rules="[v => !!v || 'Item is required']"
-        label="Role"
-        required
-      ></v-select>
-
-      <div v-if="roleSelected == 'Player'">
-        <v-menu
-          ref="menu"
-          v-model="menu"
-          :close-on-content-click="false"
-          transition="scale-transition"
-          offset-y
-          min-width="290px"
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field v-model="date" label="Birthday date" readonly v-on="on"></v-text-field>
-          </template>
-          <v-date-picker
-            ref="picker"
-            v-model="date"
-            :max="new Date().toISOString().substr(0, 10)"
-            min="1950-01-01"
-            @change="save"
-          ></v-date-picker>
-        </v-menu>
+  <v-card raised class="mx-auto my-auto" max-width="500">
+    <div align="center" class="primary mb-10 py-3 white--text">
+      <h1 class="primary">Register</h1>
+    </div>
+    
+    <div align="center">
+      
+      <v-form ref="form" v-model="valid" :lazy-validation="lazy">
+        <v-text-field class="mx-5" outlined v-model="username" :prepend-icon="'mdi-account'" label="Username" required></v-text-field>
+        <v-text-field class="mx-5" outlined v-model="password" :prepend-icon="'mdi-lock'" :append-icon="passwordVisable ? 'mdi-eye' : 'mdi-eye-off'" @click:append="passwordVisable = !passwordVisable"  :type="passwordVisable ? 'text' : 'password'" label="Password" required></v-text-field>
+        <v-text-field class="mx-5" outlined v-model="name" :prepend-icon="'mdi-account'" :rules="nameRules" label="Name" required></v-text-field>
+        <v-text-field class="mx-5" outlined v-model="email" :prepend-icon="'mdi-email'" :type="'email'" :rules="emailRules" label="E-mail" required></v-text-field>
 
         <v-select
-          v-model="positionSelected"
-          :items="position"
+          v-model="roleSelected"
+          :items="role"
           :rules="[v => !!v || 'Item is required']"
-          label="Position"
+          label="Role"
+          :prepend-icon="'mdi-account-cog'"
+          class="mx-5"
+          outlined
           required
         ></v-select>
-      </div>
 
-      <div v-if="roleSelected == 'Coach'">
-        <v-textarea name="qualification" rows="1" counter="512" label="Qualification" auto-grow></v-textarea>
-      </div>
+        <div v-if="roleSelected == 'Player'">
+          <v-menu
+            ref="menu"
+            v-model="menu"
+            :close-on-content-click="false"
+            transition="scale-transition"
+            offset-y
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on }">
+              <v-text-field v-model="date" :prepend-icon="'mdi-calendar'" outlined label="Birthdate" class="mx-5" readonly v-on="on"></v-text-field>
+            </template>
+              <v-date-picker
+                ref="picker"
+                v-model="date"
+                :max="new Date().toISOString().substr(0, 10)"
+                min="1950-01-01"
+                @change="save"
+              ></v-date-picker>
+          </v-menu>
 
-      <v-btn color="success" class="mr-4" @click="validate">Register</v-btn>
-    </v-form>
-    <v-spacer></v-spacer>
-  </v-row>
+          <v-select
+            v-model="positionSelected"
+            :items="position"
+            :rules="[v => !!v || 'Item is required']"
+            label="Position"
+            :prepend-icon="'mdi-soccer'"
+            class="mx-5"
+            outlined
+            required
+          ></v-select>
+        </div>
+
+        <div v-if="roleSelected == 'Coach'">
+          <v-textarea outlined :prepend-icon="'mdi-card-text'" class="mx-5" name="qualification" rows="1" counter="512" label="Qualification" auto-grow></v-textarea>
+        </div>
+      
+        <v-btn color="success" block @click="validate">
+          Register
+          <v-icon right>mdi-check-circle</v-icon>
+        </v-btn>  
+      </v-form>
+    </div>
+    <v-spacer ></v-spacer>
+  </v-card>
+  
 </template>
 
 <script>
@@ -67,7 +83,7 @@ export default {
     ],
     date: null,
     menu: false,
-
+    passwordVisable: false,
     roleSelected: {
       role: "Fan"
     },
@@ -112,7 +128,4 @@ export default {
 </script>
 
 <style scoped>
-.v-text-field {
-  width: 300px;
-}
 </style>
