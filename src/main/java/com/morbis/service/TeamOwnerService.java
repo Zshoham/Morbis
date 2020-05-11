@@ -10,6 +10,8 @@ import com.morbis.model.team.repository.StadiumRepository;
 import com.morbis.model.team.repository.TeamRepository;
 import com.morbis.model.team.repository.TransactionRepository;
 import com.morbis.service.viewable.Asset;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -24,6 +26,8 @@ public class TeamOwnerService {
     private final TeamRepository teamRepository;
     private final MemberRepository memberRepository;
     private final TransactionRepository transactionRepository;
+    private Logger logger;
+
 
     public TeamOwnerService(TeamOwnerRepository teamOwnerRepository, TeamManagerRepository teamManagerRepository, PlayerRepository playerRepository, StadiumRepository stadiumRepository, CoachRepository coachRepository, TeamRepository teamRepository, MemberRepository memberRepository, TransactionRepository transactionRepository) {
         this.teamOwnerRepository = teamOwnerRepository;
@@ -34,9 +38,11 @@ public class TeamOwnerService {
         this.teamRepository = teamRepository;
         this.memberRepository = memberRepository;
         this.transactionRepository = transactionRepository;
+        this.logger = LoggerFactory.getLogger(TeamOwnerService.class);
     }
 
     public List<Asset<?>> getTeamlessAssets() {
+        logger.trace("called function: RefereeService->getTeamlessAssets.");
         List<Asset<?>> teamlessAssets = new LinkedList<>();
         for(Player player : playerRepository.findAllByTeamIsNull()) {
             if(player.getTeam()==null){
@@ -57,6 +63,8 @@ public class TeamOwnerService {
     }
 
     public List<Asset<?>> getAssets(int teamID) {
+        logger.trace("called function: RefereeService->getAssets. with team ID of: " + teamID);
+
         List<Asset<?>> teamAssets = new LinkedList<>();
         Optional<Team> team = teamRepository.findById(teamID);
         if(team.isEmpty())
@@ -72,6 +80,8 @@ public class TeamOwnerService {
     }
 
     public void addAssets(int teamID, List<Asset<?>> assets) {
+        logger.trace("called function: RefereeService->addAssets. to team with the ID of: " + teamID);
+
         Optional<Team> team = teamRepository.findById(teamID);
         if(team.isEmpty())
             return;
@@ -102,6 +112,7 @@ public class TeamOwnerService {
     }
 
     public void removeAssets(int teamID, List<Asset<?>> assets) {
+        logger.trace("called function: RefereeService->removeAssets. to team with the ID of: " + teamID);
         Team team = teamRepository.findById(teamID).orElseThrow(
                 () -> new IllegalArgumentException("invalid team id"));
 
@@ -132,6 +143,7 @@ public class TeamOwnerService {
     }
 
     public void updateAsset(Asset<?> asset) {
+        logger.trace("called function: RefereeService->updateAsset.");
         switch (asset.getType()) {
             case COACH:
                 Coach coach = (Coach) asset.getAsset();
@@ -152,6 +164,7 @@ public class TeamOwnerService {
     }
 
     public List<Member> getPossibleOwners() {
+        logger.trace("called function: RefereeService->getPossibleOwners.");
         List<MemberRole> roles = new LinkedList<>();
         roles.add(MemberRole.ASSOCIATION_REP);
         roles.add(MemberRole.ADMIN);
@@ -160,6 +173,8 @@ public class TeamOwnerService {
     }
 
     public void makeTeamOwner(int ownerID, List<Integer> memberIDs) {
+        logger.trace("called function: RefereeService->makeTeamOwner. owner ID: " + ownerID);
+
         TeamOwner currentOwner = teamOwnerRepository.findById(ownerID).orElseThrow(
                 () -> new IllegalArgumentException("invalid owner id")
         );
@@ -182,6 +197,7 @@ public class TeamOwnerService {
     }
 
     public List<TeamOwner> getAppointedOwners(int ownerID) {
+        logger.trace("called function: RefereeService->getAppointedOwners. owner ID: " + ownerID);
         Optional<TeamOwner> currentOwner = teamOwnerRepository.findById(ownerID);
         if(currentOwner.isEmpty())
             return new LinkedList<>();
@@ -189,6 +205,7 @@ public class TeamOwnerService {
     }
 
     public void removeOwners(List<Integer> ownersIDs) {
+        logger.trace("called function: RefereeService->removeOwners. owner ID's:" + ownersIDs.toString());
         for(int ownerID : ownersIDs) {
             Optional<TeamOwner> owner = teamOwnerRepository.findById(ownerID);
             if(owner.isEmpty())
@@ -210,6 +227,7 @@ public class TeamOwnerService {
     }
 
     public List<Member> getPossibleManagers() {
+        logger.trace("called function: RefereeService->getPossibleManagers.");
         List<MemberRole> roles = new LinkedList<>();
         roles.add(MemberRole.ASSOCIATION_REP);
         roles.add(MemberRole.ADMIN);
@@ -219,6 +237,8 @@ public class TeamOwnerService {
     }
 
     public void makeTeamManager(int ownerID,List<Integer> memberIDs, List<List<ManagerPermissions>> permissions) {
+        logger.trace("called function: RefereeService->makeTeamManager. Owner ID: " + ownerID + "memberIDs: " + memberIDs.toString());
+
         int counter = 0;
         Optional<TeamOwner> currentOwner = teamOwnerRepository.findById(ownerID);
         if(currentOwner.isEmpty())
@@ -238,6 +258,7 @@ public class TeamOwnerService {
     }
 
     public List<TeamManager> getAppointedManagers(int ownerID) {
+        logger.trace("called function: RefereeService->getAppointedManagers. Owner ID: " + ownerID);
         Optional<TeamOwner> currentOwner = teamOwnerRepository.findById(ownerID);
         if(currentOwner.isEmpty())
             return new LinkedList<>();
@@ -245,11 +266,13 @@ public class TeamOwnerService {
     }
 
     public void removeManagers(List<Integer> managerIDs) {
+        logger.trace("called function: RefereeService->removeManagers. manager IDs: " + managerIDs.toString());
         List<TeamManager> managers = teamManagerRepository.findAllById(managerIDs);
         teamManagerRepository.deleteAll(managers);
     }
 
     public void closeTeam(int teamID) {
+        logger.trace("called function: RefereeService->closeTeam. teamID: " + teamID);
         Team team = teamRepository.findById(teamID).orElseThrow(
                 () -> new IllegalArgumentException("invalid team id"));
 
@@ -259,20 +282,22 @@ public class TeamOwnerService {
     }
 
     public void openTeam(int teamID) {
+        logger.trace("called function: RefereeService->openTeam. teamID: " + teamID);
         Team team = teamRepository.findById(teamID).orElseThrow(
                 () -> new IllegalArgumentException("invalid team id"));
-
         if(team.getTeamStatus() != TeamStatus.PERMANENTLY_CLOSED) {
             team.setTeamStatus(TeamStatus.OPENED);
         }
     }
 
     public void setPermissions(int managerID, List<ManagerPermissions> permissions) {
+        logger.trace("called function: RefereeService->setPermissions. manager ID: " + managerID);
         teamManagerRepository.findById(managerID).ifPresent(
                 manager -> manager.setPermissions(permissions));
     }
 
     public void submitTransaction(int teamID, String description, int value) {
+        logger.trace("called function: RefereeService->submitTransaction. team ID: " + teamID);
         Team team = teamRepository.findById(teamID).orElseThrow(
                 () -> new IllegalArgumentException("invalid team id"));
 
