@@ -1,8 +1,7 @@
 package com.morbis.service.auth;
 
-import com.goterl.lazycode.lazysodium.LazySodiumJava;
-import com.goterl.lazycode.lazysodium.SodiumJava;
-import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
+
+import com.morbis.MorbisApplication;
 import com.morbis.model.member.entity.Admin;
 import com.morbis.model.member.entity.Fan;
 import com.morbis.model.member.entity.Member;
@@ -11,24 +10,23 @@ import com.morbis.model.member.repository.MemberRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
 
-import static com.goterl.lazycode.lazysodium.interfaces.PwHash.MEMLIMIT_INTERACTIVE;
-import static com.goterl.lazycode.lazysodium.interfaces.PwHash.OPSLIMIT_INTERACTIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ContextConfiguration(classes = AuthService.class)
+@ContextConfiguration(classes = { AuthService.class, MorbisApplication.class })
 public class AuthServiceTest {
 
     @Autowired
@@ -44,21 +42,21 @@ public class AuthServiceTest {
     private Admin testAdmin;
 
     @Before
-    public void setUp() throws SodiumException {
+    public void setUp() {
         authService.cleanAuthTable();
         testMember = Fan.newFan()
                 .fromMember("user", "pass", "name", "email")
                 .withId(1)
                 .build();
 
-        SodiumJava sodiumJava = new SodiumJava();
-        LazySodiumJava lazySodium = new LazySodiumJava(sodiumJava);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
         Member tempMember = Fan.newFan()
                 .fromMember(testMember)
                 .withId(1)
                 .build();
         tempMember.setPassword(
-                lazySodium.cryptoPwHashStr(testMember.getPassword(), OPSLIMIT_INTERACTIVE, MEMLIMIT_INTERACTIVE));
+                passwordEncoder.encode(testMember.getPassword()));
 
         when(memberRepository.findDistinctByUsername("user")).thenReturn(Optional.of(tempMember));
         when(memberRepository.findById(1)).thenReturn(Optional.of(testMember));
@@ -73,7 +71,7 @@ public class AuthServiceTest {
                 .withId(2)
                 .build();
         tempAdmin.setPassword(
-                lazySodium.cryptoPwHashStr(testAdmin.getPassword(), OPSLIMIT_INTERACTIVE, MEMLIMIT_INTERACTIVE));
+                passwordEncoder.encode(testAdmin.getPassword()));
         when(memberRepository.findDistinctByUsername("admin")).thenReturn(Optional.of(tempAdmin));
         when(memberRepository.findById(2)).thenReturn(Optional.of(testAdmin));
     }

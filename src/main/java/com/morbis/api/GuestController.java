@@ -1,6 +1,5 @@
 package com.morbis.api;
 
-import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
 import com.morbis.api.dto.LoginDTO;
 import com.morbis.api.dto.RegisterDTO;
 import com.morbis.service.GuestService;
@@ -28,7 +27,7 @@ public class GuestController {
     @PostMapping("/register")
     @Operation(summary = "register a new member to the system")
     @ApiResponse(responseCode = "202", description = "successfully registered")
-    public ResponseEntity<?> register(@RequestBody RegisterDTO register) throws SodiumException {
+    public ResponseEntity<?> register(@RequestBody RegisterDTO register)  {
         if (!authService.register(register.asMember()))
             throw new IllegalArgumentException("user already registered");
 
@@ -43,6 +42,7 @@ public class GuestController {
                     "and put the token in it to have the user authenticated in later requests." +
                     "Note: the authentication lasts for 15 minutes, after which a new token must be requested."
     )
+    @ApiResponse(responseCode = "401", description = "login credentials were invalid")
     public ResponseEntity<String> login(@RequestBody LoginDTO login) {
         Optional<String> token = authService.login(login.username, login.password);
         if (token.isEmpty())

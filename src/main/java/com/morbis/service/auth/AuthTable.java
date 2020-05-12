@@ -54,8 +54,11 @@ class AuthTable {
     }
 
     public void removeToken(String token) {
-        authTokens.remove(token);
+        if (!authTokens.containsKey(token))
+            return;
 
+        userPool.remove(authTokens.get(token));
+        authTokens.remove(token);
     }
 
 }
