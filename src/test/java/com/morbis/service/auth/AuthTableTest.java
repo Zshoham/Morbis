@@ -29,8 +29,14 @@ public class AuthTableTest {
 
     @Test
     public void createToken() {
+        var counter = new Object() { int value; };
         List<String> tokens = Stream.generate(() ->
-                testTable.createToken(testMember)).limit(100).collect(Collectors.toList());
+                testTable.createToken(
+                        Fan.newFan()
+                                .fromMember(testMember)
+                                .withId(counter.value++)
+                                .build()))
+                .limit(100).collect(Collectors.toList());
 
         // tokens are unique.
         assertThat(tokens).allSatisfy(token ->

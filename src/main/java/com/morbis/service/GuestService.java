@@ -72,33 +72,21 @@ public class GuestService {
         this.logger = LoggerFactory.getLogger(GuestService.class);
     }
 
-
-    public boolean register(Member member) {
-        logger.trace("called function: GuestService->register.");
-        if (memberRepository.findDistinctByUsername(member.getUsername()).isPresent()) {
-            logger.error("called function: GuestService->register. the userName: " + member.getUsername() + " is already used.");
-            return false;
-        }
-        memberRepository.save(member);
-        logger.info("member with the username: " + member.getUsername() + " has been registered.");
-        return true;
-    }
-
     public Collection<SearchResult> searchData(List<ViewableEntityType> filter, String query) {
         logger.trace("called function: GuestService->searchData.");
         Collection<SearchResult> results = new ConcurrentLinkedDeque<>();
 
         ViewableEntityType.match(filter)
-                .inCase(GAME, () -> results.addAll(findGames(query)))
-                .inCase(LEAGUE, () -> results.addAll(findLeagues(query)))
-                .inCase(SEASON, () -> results.addAll(findSeasons(query)))
-                .inCase(COACH, () -> results.addAll(findCoaches(query)))
-                .inCase(PLAYER, () -> results.addAll(findPlayers(query)))
-                .inCase(REFEREE, () -> results.addAll(findReferees(query)))
-                .inCase(TEAM_OWNER, () -> results.addAll(findTeamOwners(query)))
-                .inCase(TEAM_MANAGER, () -> results.addAll(findTeamManagers(query)))
-                .inCase(STADIUM, () -> results.addAll(findStadiums(query)))
-                .inCase(TEAM, () -> results.addAll(findTeams(query)))
+                .inCase(GAME,            () -> results.addAll(findGames(query)))
+                .inCase(LEAGUE,          () -> results.addAll(findLeagues(query)))
+                .inCase(SEASON,          () -> results.addAll(findSeasons(query)))
+                .inCase(COACH,           () -> results.addAll(findCoaches(query)))
+                .inCase(PLAYER,          () -> results.addAll(findPlayers(query)))
+                .inCase(REFEREE,         () -> results.addAll(findReferees(query)))
+                .inCase(TEAM_OWNER,      () -> results.addAll(findTeamOwners(query)))
+                .inCase(TEAM_MANAGER,    () -> results.addAll(findTeamManagers(query)))
+                .inCase(STADIUM,         () -> results.addAll(findStadiums(query)))
+                .inCase(TEAM,            () -> results.addAll(findTeams(query)))
                 .execute();
 
         return results;

@@ -1,56 +1,105 @@
 package com.morbis.service.auth;
 
+import com.goterl.lazycode.lazysodium.LazySodiumJava;
+import com.goterl.lazycode.lazysodium.SodiumJava;
+import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
 import com.morbis.model.member.entity.Member;
 import com.morbis.model.member.entity.MemberRole;
 import com.morbis.model.member.repository.MemberRepository;
+import com.morbis.service.GuestService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+
+import static com.goterl.lazycode.lazysodium.interfaces.PwHash.MEMLIMIT_INTERACTIVE;
+import static com.goterl.lazycode.lazysodium.interfaces.PwHash.OPSLIMIT_INTERACTIVE;
 
 @Service
 public class AuthService {
 
     private final MemberRepository memberRepository;
 
-    private final AuthTable auth;
+    private AuthTable auth;
+
+    private final LazySodiumJava lazySodium;
+
+    private final Logger logger;
 
 
     public AuthService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
         auth = new AuthTable();
+        SodiumJava sodiumJava = new SodiumJava();
+        lazySodium = new LazySodiumJava(sodiumJava);
+        this.logger = LoggerFactory.getLogger(AuthService.class);
     }
 
+    protected void cleanAuthTable() {
+        logger.trace("called function: AuthService->cleanAuthTable.");
+        auth = new AuthTable();
+    }
+
+
+    public boolean register(Member member) throws SodiumException {
+        logger.trace("called function: AuthService->register.");
+        if (memberRepository.findDistinctByUsername(member.getUsername()).isPresent()) {
+            logger.info("the userName: " + member.getUsername() + " is already used.");
+            return false;
+        }
+
+        String hashedPassword = lazySodium.cryptoPwHashStr(member.getPassword(), OPSLIMIT_INTERACTIVE, MEMLIMIT_INTERACTIVE);
+        member.setPassword(hashedPassword);
+
+        memberRepository.save(member);
+        logger.info("member with the username: " + member.getUsername() + " has been registered.");
+        return true;
+    }
+
+
     public Optional<String> login(String username, String password) {
+        logger.trace("called function: AuthService->login.");
         Optional<Member> user = memberRepository.findDistinctByUsername(username);
-        if (user.isEmpty())
+        if (user.isEmpty()) {
+            logger.info("invalid login information, username -  " + username + " does not exist");
             return Optional.empty();
+        }
 
-        if (!password.equals(user.get().getPassword()))
+        if (!lazySodium.cryptoPwHashStrVerify(user.get().getPassword(), password)) {
+            logger.info("invalid login information, password is incorrect");
             return Optional.empty();
+        }
 
+        logger.info("the member " + username + " has successfully logged in.");
         return Optional.of(auth.createToken(user.get()));
     }
 
     public void logout(String token) {
+        logger.trace("called function: AuthService->logout.");
         auth.removeToken(token);
     }
 
     public boolean authorize(String token, MemberRole role) {
+        logger.trace("called function: AuthService->authorize.");
         Optional<Integer> authority = auth.validate(token);
 
         // the token is invalid.
-        if (authority.isEmpty())
+        if (authority.isEmpty()) {
+            logger.info("token is invalid");
             return false;
+        }
 
-        Optional<Member> accrualMember = memberRepository.findById(authority.get());
+        Optional<Member> actualMember = memberRepository.findById(authority.get());
 
         // the logged in member does not exist in the database.
-        if (accrualMember.isEmpty())
+        if (actualMember.isEmpty()) {
+            logger.error("the member owning the token does not exist in the database (id=" + authority.get());
             return false;
+        }
 
         // return true if the requested role is the same as the accrual role.
         // if the requested role is of a fan, all others roles would also get authorization.
-        return accrualMember.get().getMemberRole().contains(role) || role == MemberRole.FAN;
+        return actualMember.get().getMemberRole().contains(role) || role == MemberRole.FAN;
     }
 }
