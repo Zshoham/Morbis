@@ -23,7 +23,7 @@ public class Team {
     @GeneratedValue
     private int id;
 
-    private Team(int id, String name, List<Player> players, List<TeamOwner> owners, List<TeamManager> managers, List<Coach> coaches, Stadium stadium) {
+    private Team(int id, String name, List<Player> players, List<TeamOwner> owners, List<Coach> coaches, Stadium stadium) {
         setId(id);
         setName(name);
         setPlayers(players);
@@ -34,7 +34,7 @@ public class Team {
         setTeamStatus(TeamStatus.OPENED);
     }
 
-    public Team(String name, List<Player> players, List<TeamOwner> owners, List<TeamManager> managers, List<Coach> coaches, Stadium stadium) {
+    public Team(String name, List<Player> players, List<TeamOwner> owners, List<Coach> coaches, Stadium stadium) {
         setName(name);
         setPlayers(players);
         setOwners(owners);

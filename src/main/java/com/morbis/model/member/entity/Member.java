@@ -1,8 +1,9 @@
 package com.morbis.model.member.entity;
 
 import com.morbis.model.poster.entity.PosterData;
-import lombok.*;
-import org.aspectj.apache.bcel.generic.TargetLostException;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -53,6 +54,7 @@ public abstract class Member {
 
     @NotNull
     @NotBlank
+    @Column(length = 512)
     protected String password;
 
     @NotNull

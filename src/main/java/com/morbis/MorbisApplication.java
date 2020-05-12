@@ -2,15 +2,12 @@ package com.morbis;
 
 import com.morbis.model.member.entity.Admin;
 import com.morbis.model.member.repository.AdminRepository;
-import com.morbis.service.AdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.util.List;
 
 @SpringBootApplication
 public class MorbisApplication implements ApplicationRunner {
