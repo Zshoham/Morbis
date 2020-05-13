@@ -1,20 +1,20 @@
 package com.morbis.service.auth;
 
-import com.goterl.lazycode.lazysodium.LazySodiumJava;
-import com.goterl.lazycode.lazysodium.SodiumJava;
-import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
 import com.morbis.model.member.entity.Member;
 import com.morbis.model.member.entity.MemberRole;
 import com.morbis.model.member.repository.MemberRepository;
-import com.morbis.service.GuestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
+
 
 import java.util.Optional;
 
-import static com.goterl.lazycode.lazysodium.interfaces.PwHash.MEMLIMIT_INTERACTIVE;
-import static com.goterl.lazycode.lazysodium.interfaces.PwHash.OPSLIMIT_INTERACTIVE;
 
 @Service
 public class AuthService {
@@ -23,17 +23,18 @@ public class AuthService {
 
     private AuthTable auth;
 
-    private final LazySodiumJava lazySodium;
+    private final PasswordEncoder passwordEncoder;
 
     private final Logger logger;
 
 
-    public AuthService(MemberRepository memberRepository) {
+    public AuthService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         auth = new AuthTable();
-        SodiumJava sodiumJava = new SodiumJava();
-        lazySodium = new LazySodiumJava(sodiumJava);
+//        SodiumJava sodiumJava = new SodiumJava();
+//        lazySodium = new LazySodiumJava(sodiumJava);
         this.logger = LoggerFactory.getLogger(AuthService.class);
+        this.passwordEncoder = passwordEncoder;
     }
 
     protected void cleanAuthTable() {
@@ -42,14 +43,15 @@ public class AuthService {
     }
 
 
-    public boolean register(Member member) throws SodiumException {
+    public boolean register(Member member) {
         logger.trace("called function: AuthService->register.");
         if (memberRepository.findDistinctByUsername(member.getUsername()).isPresent()) {
             logger.info("the userName: " + member.getUsername() + " is already used.");
             return false;
         }
 
-        String hashedPassword = lazySodium.cryptoPwHashStr(member.getPassword(), OPSLIMIT_INTERACTIVE, MEMLIMIT_INTERACTIVE);
+        String hashedPassword = passwordEncoder.encode(member.getPassword());
+//                lazySodium.cryptoPwHashStr(member.getPassword(), OPSLIMIT_INTERACTIVE, MEMLIMIT_INTERACTIVE);
         member.setPassword(hashedPassword);
 
         memberRepository.save(member);
@@ -66,7 +68,7 @@ public class AuthService {
             return Optional.empty();
         }
 
-        if (!lazySodium.cryptoPwHashStrVerify(user.get().getPassword(), password)) {
+        if (!passwordEncoder.matches(password, user.get().getPassword())) {
             logger.info("invalid login information, password is incorrect");
             return Optional.empty();
         }
