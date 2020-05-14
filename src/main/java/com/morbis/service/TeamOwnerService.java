@@ -183,17 +183,19 @@ public class TeamOwnerService {
         getPossibleOwners().forEach(member -> possibleOwners.add(member.getId()));
         memberIDs.retainAll(possibleOwners);//to check if every1 can be owners
         for(Member member : memberRepository.findAllById(memberIDs)) {
-            TeamOwner newTeamOwner = new TeamOwner(member.getId(),member.getUsername(),member.getPassword(),member.getName(),member.getEmail(),currentOwner.getTeam());
-            member.getMemberRole().add(MemberRole.TEAM_OWNER);
-            currentOwner.getAppointedOwners().add(newTeamOwner);
-            currentOwner.getTeam().getOwners().add(newTeamOwner);
-            teamOwnerRepository.save(newTeamOwner);
             if(member.getMemberRole().contains(MemberRole.TEAM_MANAGER)) { // if he's a team manager we delete its team manager role
                 teamManagerRepository.deleteById(member.getId());
                 member.getMemberRole().remove(MemberRole.TEAM_MANAGER);
             }
+            TeamOwner newTeamOwner = new TeamOwner(member.getId(),member.getUsername(),member.getPassword(),member.getName(),member.getEmail(),currentOwner.getTeam());
+            member.getMemberRole().add(MemberRole.TEAM_OWNER);
+            currentOwner.getAppointedOwners().add(newTeamOwner);
+            currentOwner.getTeam().getOwners().add(newTeamOwner);
+            teamOwnerRepository.save(newTeamOwner);//save the new team owner
+            memberRepository.save(member);
+
         }
-        teamOwnerRepository.save(currentOwner);
+        teamOwnerRepository.save(currentOwner);//save current owner's appointed owners
     }
 
     public List<TeamOwner> getAppointedOwners(int ownerID) {
@@ -250,8 +252,9 @@ public class TeamOwnerService {
             TeamManager newTeamManager = new TeamManager(member.getId(),member.getUsername(),member.getPassword(),member.getName(),member.getEmail(),permissions.get(counter),currentOwner.get().getTeam());
             currentOwner.get().getAppointedManagers().add(newTeamManager);
             currentOwner.get().getTeam().getManagers().add(newTeamManager);
-            teamManagerRepository.save(newTeamManager);
             member.getMemberRole().add(MemberRole.TEAM_MANAGER);
+            teamManagerRepository.save(newTeamManager);
+            memberRepository.save(member);
             counter++;
         }
         teamOwnerRepository.save(currentOwner.get());
