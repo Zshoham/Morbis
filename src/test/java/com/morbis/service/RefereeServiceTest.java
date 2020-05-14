@@ -94,11 +94,12 @@ public class RefereeServiceTest {
     }
     @Test
     public void updateOnGoingGameEventTest() {
-        refereeService.updateGameEvent(main.getId(),gameEventList.get(0));
+        refereeService.updateOnGoingGameEvent(main.getId(), gameEventList.get(0));
         verify(gameEventRepository).save(gameEventList.get(0));
         gameEventList.get(0).setDate(LocalDateTime.now());
         gameEventList.get(0).getGame().setEndDate(LocalDateTime.now().minusDays(1));
-        refereeService.updateGameEvent(main.getId(),gameEventList.get(0));
+        refereeService.updateOnGoingGameEvent(main.getId(),gameEventList.get(0));
+        // only one invocation that happened in the previous call.
         verify(gameEventRepository,times(1)).save(any());
 
     }
