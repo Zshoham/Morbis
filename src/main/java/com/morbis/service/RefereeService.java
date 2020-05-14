@@ -14,6 +14,7 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class RefereeService {
     private RefereeRepository refereeRepository;
@@ -22,7 +23,8 @@ public class RefereeService {
     private Logger logger;
 
 
-    private long updatePeriod = 5;
+    private static long UPDATE_PERIOD = 5;
+    private static long GAME_LENGTH = 90;
 
     public RefereeService(RefereeRepository refereeRepository, GameRepository gameRepository, GameEventRepository gameEventRepository) {
         this.refereeRepository = refereeRepository;
@@ -55,8 +57,8 @@ public class RefereeService {
         logger.trace("called function: RefereeService->getGame. with the ID of" + gameID);
         Optional<Game> res = gameRepository.findById(gameID);
         //check if there are any games
-        if (res == null || res.isEmpty()) {
-            logger.info("getGame returned null");
+        if (res.isEmpty()) {
+            logger.info("game does not exist");
             return null;
         }
         logger.info("getGame returned a game");
@@ -80,7 +82,7 @@ public class RefereeService {
         logger.trace("called function: RefereeService->updateGameEvent. referee: " + refID);
         Game game = updated.getGame();
         //check if the update period hasn't passed
-        if (game.getEndDate().plusHours(updatePeriod).isAfter(LocalDateTime.now())) {
+        if (game.getEndDate().plusMinutes(UPDATE_PERIOD).isAfter(LocalDateTime.now())) {
             //check if its the main referee
             if (game.getMainRef().getId() == refID) {
                 gameEventRepository.save(updated);
@@ -114,11 +116,18 @@ public class RefereeService {
         logger.trace("called function: RefereeService->updateOnGoingGameEvent. referee ID: " + refID);
         Game game = updated.getGame();
         //check if the game is on-going
-        if (game.getEndDate().isBefore(LocalDateTime.now())) {
+        if (game.getEndDate().isAfter(LocalDateTime.now()) && game.getStartDate().isBefore(LocalDateTime.now())) {
             //check if the update period hasn't passed
-            if (game.getEndDate().plusHours(updatePeriod).isAfter(LocalDateTime.now())) {
-                //check if its the main referee
-                if (game.getMainRef().getId() == refID) {
+            if (game.getStartDate().plusMinutes(GAME_LENGTH).isAfter(LocalDateTime.now())) {
+
+                boolean isGameRef = game.getMainRef().getId() == refID
+                        || game.getSupportingRefs()
+                            .stream()
+                            .map(Referee::getId)
+                            .collect(Collectors.toList())
+                            .contains(refID);
+
+                if (isGameRef) {
                     gameEventRepository.save(updated);
                     logger.info("updateOnGoingGameEvent returned true. referee ID: " + refID);
                     return true;

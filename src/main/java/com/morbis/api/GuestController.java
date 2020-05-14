@@ -43,6 +43,7 @@ public class GuestController {
                     "Note: the authentication lasts for 15 minutes, after which a new token must be requested."
     )
     @ApiResponse(responseCode = "401", description = "login credentials were invalid")
+    @ApiResponse(responseCode = "200", description = "login was successful")
     public ResponseEntity<String> login(@RequestBody LoginDTO login) {
         Optional<String> token = authService.login(login.username, login.password);
         if (token.isEmpty())
