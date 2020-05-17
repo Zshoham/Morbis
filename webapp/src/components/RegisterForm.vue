@@ -3,72 +3,56 @@
     <div align="center" class="primary mb-10 py-3 white--text">
       <h1 class="primary">Register</h1>
     </div>
-    
-    <div align="center">
-      
-      <v-form ref="form" v-model="valid" :lazy-validation="lazy">
-        <v-text-field class="mx-5" outlined v-model="username" :prepend-icon="'mdi-account'" label="Username" required></v-text-field>
-        <v-text-field class="mx-5" outlined v-model="password" :prepend-icon="'mdi-lock'" :append-icon="passwordVisable ? 'mdi-eye' : 'mdi-eye-off'" @click:append="passwordVisable = !passwordVisable"  :type="passwordVisable ? 'text' : 'password'" label="Password" required></v-text-field>
-        <v-text-field class="mx-5" outlined v-model="name" :prepend-icon="'mdi-account'" :rules="nameRules" label="Name" required></v-text-field>
-        <v-text-field class="mx-5" outlined v-model="email" :prepend-icon="'mdi-email'" :type="'email'" :rules="emailRules" label="E-mail" required></v-text-field>
 
-        <v-select
-          v-model="roleSelected"
-          :items="role"
-          :rules="[v => !!v || 'Item is required']"
-          label="Role"
-          :prepend-icon="'mdi-account-cog'"
+    <div align="center">
+      <v-form ref="form" v-model="valid" :lazy-validation="lazy">
+        <v-text-field
           class="mx-5"
           outlined
+          v-model="username"
+          :prepend-icon="'mdi-account'"
+          label="Username"
           required
-        ></v-select>
-
-        <div v-if="roleSelected == 'Player'">
-          <v-menu
-            ref="menu"
-            v-model="menu"
-            :close-on-content-click="false"
-            transition="scale-transition"
-            offset-y
-            min-width="290px"
-          >
-            <template v-slot:activator="{ on }">
-              <v-text-field v-model="date" :prepend-icon="'mdi-calendar'" outlined label="Birthdate" class="mx-5" readonly v-on="on"></v-text-field>
-            </template>
-              <v-date-picker
-                ref="picker"
-                v-model="date"
-                :max="new Date().toISOString().substr(0, 10)"
-                min="1950-01-01"
-                @change="save"
-              ></v-date-picker>
-          </v-menu>
-
-          <v-select
-            v-model="positionSelected"
-            :items="position"
-            :rules="[v => !!v || 'Item is required']"
-            label="Position"
-            :prepend-icon="'mdi-soccer'"
-            class="mx-5"
-            outlined
-            required
-          ></v-select>
-        </div>
-
-        <div v-if="roleSelected == 'Coach'">
-          <v-textarea outlined :prepend-icon="'mdi-card-text'" class="mx-5" name="qualification" rows="1" counter="512" label="Qualification" auto-grow></v-textarea>
-        </div>
-      
-        <v-btn color="success" block @click="validate">
+        ></v-text-field>
+        <v-text-field
+          class="mx-5"
+          outlined
+          v-model="password"
+          :prepend-icon="'mdi-lock'"
+          :append-icon="passwordVisable ? 'mdi-eye' : 'mdi-eye-off'"
+          @click:append="passwordVisable = !passwordVisable"
+          :type="passwordVisable ? 'text' : 'password'"
+          label="Password"
+          required
+        ></v-text-field>
+        <v-text-field
+          class="mx-5"
+          outlined
+          v-model="name"
+          :prepend-icon="'mdi-account'"
+          :rules="nameRules"
+          label="Name"
+          required
+        ></v-text-field>
+        <v-text-field
+          class="mx-5"
+          outlined
+          v-model="email"
+          :prepend-icon="'mdi-email'"
+          :type="'email'"
+          :rules="emailRules"
+          label="E-mail"
+          required
+        ></v-text-field>
+        <v-btn color="success" block @click="register">
           Register
           <v-icon right>mdi-check-circle</v-icon>
-        </v-btn>  
+        </v-btn>
       </v-form>
+      {{info}}
     </div>
-    <v-spacer ></v-spacer>
+    <v-spacer></v-spacer>
   </v-card>
-  
 </template>
 
 <script>
@@ -84,32 +68,7 @@ export default {
     date: null,
     menu: false,
     passwordVisable: false,
-    roleSelected: {
-      role: "Fan"
-    },
-    postionSelected: {
-      position: "GoalKeeper"
-    },
-    role: ["Fan", "Player", "Coach", "Team Owner"],
-    position: [
-      "Goalkeeper",
-      "Right Fullback",
-      "Left Fullback",
-      "Center Back",
-      "Center Back/Sweeper",
-      "Defending/Holding Midfielder",
-      "Right Midfielder/Winger",
-      "Central/Box-to-Box Midfielder",
-      "Striker",
-      "Attacking Midfielder/Playmaker",
-      "Left Midfielder/Wingers"
-    ]
   }),
-  watch: {
-    menu(val) {
-      val && setTimeout(() => (this.$refs.picker.activePicker = "YEAR"));
-    }
-  },
   methods: {
     emailRules: [
       v =>
@@ -121,7 +80,30 @@ export default {
       this.$refs.menu.save(date);
     },
     register() {
-      
+      /* need to check here the validation of the inputs */
+      fetch('http://dev.morbis.xyz:8080/api/register', {
+        method: 'POST',
+        headers:{
+          'Content-Type': 'application/json',          
+        },
+        body: JSON.stringify({
+          username: this.username,
+          password: this.password,
+          name: this.name,
+          email: this.email
+        })
+      })
+        .then(async response => {
+          alert(response.status);
+          if (response.ok) {
+            response => (this.info = response);
+          } else {
+            alert(
+              "Server returned " + response.status + " : " + response.statusText
+            );
+          }
+        })
+        .catch(err => console.error(err));
     }
   }
 };
