@@ -28,9 +28,7 @@ public class GuestController {
     @Operation(summary = "register a new member to the system")
     @ApiResponse(responseCode = "202", description = "successfully registered")
     public ResponseEntity<?> register(@RequestBody RegisterDTO register)  {
-        if (!authService.register(register.asMember()))
-            throw new IllegalArgumentException("user already registered");
-
+        authService.register(register.asMember());
         return ResponseEntity.accepted().build();
     }
 

@@ -45,7 +45,7 @@ public class AuthServiceTest {
     public void setUp() {
         authService.cleanAuthTable();
         testMember = Fan.newFan()
-                .fromMember("user", "pass", "name", "email")
+                .fromMember("jane", "pAssw0rD", "Jane Doe", "Jane@gmail.com")
                 .withId(1)
                 .build();
 
@@ -53,34 +53,34 @@ public class AuthServiceTest {
 
         Member tempMember = Fan.newFan()
                 .fromMember(testMember)
-                .withId(1)
+                .withId(testMember.getId())
                 .build();
         tempMember.setPassword(
                 passwordEncoder.encode(testMember.getPassword()));
 
-        when(memberRepository.findDistinctByUsername("user")).thenReturn(Optional.of(tempMember));
-        when(memberRepository.findById(1)).thenReturn(Optional.of(testMember));
+        when(memberRepository.findDistinctByUsername("jane")).thenReturn(Optional.of(tempMember));
+        when(memberRepository.findById(testMember.getId())).thenReturn(Optional.of(testMember));
 
         testAdmin = Admin.newAdmin()
-                .fromMember("admin", "pass", "name", "email")
+                .fromMember("admin", "pAssw0rD123", "Jane Doe", "admin@gmail.com")
                 .withId(2)
                 .build();
 
         Admin tempAdmin = Admin.newAdmin()
                 .fromMember(testAdmin)
-                .withId(2)
+                .withId(testAdmin.getId())
                 .build();
         tempAdmin.setPassword(
                 passwordEncoder.encode(testAdmin.getPassword()));
         when(memberRepository.findDistinctByUsername("admin")).thenReturn(Optional.of(tempAdmin));
-        when(memberRepository.findById(2)).thenReturn(Optional.of(testAdmin));
+        when(memberRepository.findById(testAdmin.getId())).thenReturn(Optional.of(testAdmin));
     }
 
     @Test
     public void register() {
         // test duplicate register
         Throwable potentialException = catchThrowable(() -> authService.register(testMember));
-        assertThat(potentialException).doesNotThrowAnyException();
+        assertThat(potentialException).hasMessageContaining("user already registered");
         // verifies that the method call "save(memberTest)" never does not occur.
         verify(memberRepository, never()).save(testMember);
 

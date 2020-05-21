@@ -31,8 +31,6 @@ public class AuthService {
     public AuthService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         auth = new AuthTable();
-//        SodiumJava sodiumJava = new SodiumJava();
-//        lazySodium = new LazySodiumJava(sodiumJava);
         this.logger = LoggerFactory.getLogger(AuthService.class);
         this.passwordEncoder = passwordEncoder;
     }
@@ -43,20 +41,18 @@ public class AuthService {
     }
 
 
-    public boolean register(Member member) {
+    public void register(Member member) {
         logger.trace("called function: AuthService->register.");
         if (memberRepository.findDistinctByUsername(member.getUsername()).isPresent()) {
             logger.info("the userName: " + member.getUsername() + " is already used.");
-            return false;
+            throw new IllegalArgumentException("user already registered");
         }
 
         String hashedPassword = passwordEncoder.encode(member.getPassword());
-//                lazySodium.cryptoPwHashStr(member.getPassword(), OPSLIMIT_INTERACTIVE, MEMLIMIT_INTERACTIVE);
         member.setPassword(hashedPassword);
 
         memberRepository.save(member);
         logger.info("member with the username: " + member.getUsername() + " has been registered.");
-        return true;
     }
 
 
