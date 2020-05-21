@@ -48,17 +48,17 @@ public class TeamOwnerServiceTest {
 
     @Test
     public void getTeamlessAssets() {
-        // initiallize player
+        // initialize player
         LinkedList<Player> teamlessPlayers = new LinkedList<>();
         Player testPlayer = new Player(1, "playerUser", "playerPass", "playerName", "playerEmail",LocalDateTime.now(),"Goal Keeper");
         teamlessPlayers.add(testPlayer);
         when(playerRepository.findAllByTeamIsNull()).thenReturn(teamlessPlayers);
-        // initiallize stadium
+        // initialize stadium
         LinkedList<Stadium> teamlessStadiums = new LinkedList<>();
         Stadium testStadium = new Stadium(2, "Sami Ofer");
         teamlessStadiums.add(testStadium);
         when(stadiumRepository.findAllByTeamIsNull()).thenReturn(teamlessStadiums);
-        // initiallize coach
+        // initialize coach
         LinkedList<Coach> teamlessCoaches = new LinkedList<>();
         Coach testCoach = new Coach(3,"coachUser","coachPass" ,"coachName" ,"coachEmail" ,"Qualifications are for losers" ,"Manager Assistant");
         teamlessCoaches.add(testCoach);
@@ -234,8 +234,18 @@ public class TeamOwnerServiceTest {
     public void removeOwners() {
         setUp();
 
-        TeamOwner teamOwner1 = new TeamOwner(0,"username","password","namee","email",home);
-        TeamOwner teamOwner2 = new TeamOwner(100,"username2","password2","namee2","email2",home);
+        TeamOwner teamOwner1 = TeamOwner.newTeamOwner()
+                .fromMember("username","password","namee","email")
+                .withId(0)
+                .withTeam(home)
+                .build();
+
+        TeamOwner teamOwner2 = TeamOwner.newTeamOwner()
+                .fromMember(teamOwner1)
+                .withId(100)
+                .withTeam(home)
+                .build();
+
         List<TeamOwner> firstAppointedOwners = new LinkedList<>();
         firstAppointedOwners.add(teamOwner1);
         List<TeamOwner> secondAppointedOwners = new LinkedList<>();

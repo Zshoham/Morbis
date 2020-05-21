@@ -159,7 +159,7 @@ public class GuestService {
             return Collections.emptyList();
         }
 
-        return seasonRepository.findAllByYearContaining(Integer.parseInt(query)).stream()
+        return seasonRepository.findAllByYear(Integer.parseInt(query)).stream()
                 .map(season -> new SearchResult(season.getId(), String.valueOf(season.getYear()), SEASON))
                 .collect(Collectors.toList());
     }

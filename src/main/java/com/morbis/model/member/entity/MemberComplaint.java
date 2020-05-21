@@ -61,7 +61,7 @@ public class MemberComplaint {
         return result;
     }
 
-    public static ComplaintBuilder newPost(Member member, Post post, String complaintDescription) {
+    public static ComplaintBuilder newComplaint(Member member, Post post, String complaintDescription) {
         return new ComplaintBuilder(member, post, complaintDescription);
     }
 

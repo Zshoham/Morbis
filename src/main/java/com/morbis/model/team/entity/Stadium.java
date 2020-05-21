@@ -30,7 +30,7 @@ public class Stadium {
     @NotBlank
     private String name;
 
-    @OneToOne(targetEntity = Team.class, cascade = CascadeType.ALL)
+    @OneToOne(targetEntity = Team.class)
     @JsonBackReference
     private Team team;
 

@@ -10,6 +10,4 @@ public interface TeamOwnerRepository extends JpaRepository<TeamOwner,Integer> {
 
     List<TeamOwner> findAllByNameContaining(String query);
 
-    List<Member> findAllByEmailIn(List<String> emails);
-
 }

@@ -24,6 +24,7 @@ import javax.mail.MessagingException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.morbis.TestUtils.listOf;
 import static com.morbis.data.ViewableEntitySource.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -47,7 +48,7 @@ public class AssociationRepServiceTest {
     public void setUp() {
         ViewableEntitySource.initWithID();
 
-        when(leagueRepository.findAllByName(league.getName())).thenReturn(Collections.singletonList(league));
+        when(leagueRepository.findAllByName(league.getName())).thenReturn(listOf(league));
         when(leagueRepository.findById(league.getId())).thenReturn(Optional.of(league));
         when(seasonRepository.findByLeagueAndYear(league, 2020)).thenReturn(Optional.of(season));
         when(seasonRepository.findById(season.getId())).thenReturn(Optional.of(season));
@@ -125,14 +126,12 @@ public class AssociationRepServiceTest {
     @Test
     public void addRefsToSeason() {
         // throws when season does not exist.
-        assertThatThrownBy(() -> associationRepService.addRefsToSeason(999, Collections.singletonList(main.getId())))
+        assertThatThrownBy(() -> associationRepService.addRefsToSeason(999, listOf(main.getId())))
                 .hasMessageContaining("season");
 
         // the season is saved
-        ArrayList<Season> seasons = new ArrayList<>();
-        seasons.add(season);
-        ArrayList<Referee> referees = new ArrayList<>();
-        referees.add(main);
+        List<Season> seasons = listOf(season);
+        List<Referee> referees = listOf(main);
 
         main.setSeasons(seasons);
         season.setReferees(referees);
@@ -142,10 +141,8 @@ public class AssociationRepServiceTest {
 
     @Test
     public void removeRefs() {
-        ArrayList<Season> seasons = new ArrayList<>();
-        seasons.add(season);
-        ArrayList<Referee> referees = new ArrayList<>();
-        referees.add(main);
+        List<Season> seasons = listOf(season);
+        List<Referee> referees =listOf(main);
         main.setSeasons(seasons);
         season.setReferees(referees);
         List<Integer> refIDs = referees.stream().map(Member::getId).collect(Collectors.toList());

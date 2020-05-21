@@ -1,5 +1,6 @@
 package com.morbis.api;
 
+import com.morbis.TestUtils;
 import com.morbis.api.dto.LoginDTO;
 import com.morbis.api.dto.RegisterDTO;
 import com.morbis.model.member.entity.Fan;

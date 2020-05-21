@@ -3,12 +3,12 @@ package com.morbis.model.member.entity;
 import lombok.*;
 
 import javax.persistence.Entity;
+import javax.persistence.PrePersist;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 public class AssociationRep extends Member {
 
     public AssociationRep(int id, String username, String password, String name, String email) {

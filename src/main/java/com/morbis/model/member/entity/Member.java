@@ -71,6 +71,13 @@ public abstract class Member {
     @OneToMany(targetEntity = MemberSearch.class)
     protected List<MemberSearch> searches;
 
+    public Member asBashFan() {
+        return Fan.newFan()
+                .fromMember(this)
+                .withId(getId())
+                .build();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

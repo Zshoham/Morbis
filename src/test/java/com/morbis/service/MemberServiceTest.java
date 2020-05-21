@@ -44,7 +44,7 @@ public class MemberServiceTest {
     @MockBean private MemberComplaintRepository memberComplaintRepository;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         initWithID();
         homePlayer.setSearches(new LinkedList<>());
         homePlayer.setPagesFollowing(new LinkedList<>());
@@ -103,6 +103,7 @@ public class MemberServiceTest {
         when(postRepository.findById(post.getId()))
                 .thenReturn(Optional.ofNullable(post));
     }
+    
     @Test
     public void reportPost() {
         setupReportPostMock();

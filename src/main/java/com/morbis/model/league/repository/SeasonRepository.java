@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface SeasonRepository extends JpaRepository<Season,Integer> {
 
-    List<Season> findAllByYearContaining(int query);
+    List<Season> findAllByYear(int query);
 
     Optional<Season> findByLeagueAndYear(League league, int year);
 }
