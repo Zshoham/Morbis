@@ -39,7 +39,7 @@ public class GuestControllerTest {
     private String token;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp(){
         Member testMember = Fan.newFan()
                 .fromMember("user", "pass", "name", "email")
                 .withId(1)
@@ -48,25 +48,45 @@ public class GuestControllerTest {
         token = "q5we64qwe23q1we";
 
         when(authService.login(testMember.getUsername(), testMember.getPassword())).thenReturn(Optional.of(token));
-        when(authService.register(any(Member.class))).thenReturn(true);
+
     }
 
 
     @Test
-    public void register() throws Exception {
-        RegisterDTO registerData = new RegisterDTO(
-                "user", "pass", "name", "email");
-
+    public void register() {
         // positive test
+        assertThat(registerValidation("jane", "pAssw0rD", "Jane Doe", "Jane@gmail.com")
+                .getResponse().getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
+
+        // negative test- user exist
+        RegisterDTO registerData = new RegisterDTO(
+                "jane", "pAssw0rD", "Jane Doe", "Jane@gmail.com");
+        doThrow(new IllegalArgumentException("user already registered")).when(authService).register(any());
         MvcResult response = TestUtils.makePostRequest(
                 "/api/register", apiMock, MediaType.APPLICATION_JSON, registerData);
-        assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
-
-        // negative test
-        when(authService.register(any())).thenReturn(false);
-        response = TestUtils.makePostRequest(
-                "/api/register", apiMock, MediaType.APPLICATION_JSON, registerData);
         assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        // negative test- invalid user data
+            // invalid username- starts with non alphabetic letter
+        assertThat(registerValidation("55jane", "pAssw0rD", "Jane Doe", "Jane@gmail.com")
+                .getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            // invalid password- too short
+        assertThat(registerValidation("jane", "Zaq1", "Jane Doe", "Jane@gmail.com")
+                .getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            // invalid name- too short
+        assertThat(registerValidation("jane", "pAssw0rD", "Ja", "Jane@gmail.com")
+                .getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            // invalid email- not in correct format
+        assertThat(registerValidation("jane", "pAssw0rD", "Jane Doe", "Janegmailcom")
+                .getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+
+    private MvcResult registerValidation(String username, String password, String name, String email){
+        RegisterDTO registerData = new RegisterDTO(
+                username, password, name, email);
+        return TestUtils.makePostRequest(
+                "/api/register", apiMock, MediaType.APPLICATION_JSON, registerData);
     }
 
     @Test
