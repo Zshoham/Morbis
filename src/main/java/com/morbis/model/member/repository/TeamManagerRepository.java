@@ -10,6 +10,4 @@ public interface TeamManagerRepository extends JpaRepository<TeamManager,Integer
 
     List<TeamManager> findAllByNameContaining(String query);
 
-    List<Member> findAllByEmailIn(List<String> emails);
-
 }

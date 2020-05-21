@@ -31,11 +31,11 @@ public class Referee extends Member {
     @NotNull
     private String qualification;
 
-    @OneToMany(targetEntity = Game.class, cascade = CascadeType.MERGE)
+    @OneToMany(targetEntity = Game.class)
     @JsonBackReference
     private List<Game> mainGames;
 
-    @ManyToMany(targetEntity = Game.class, cascade = CascadeType.MERGE)
+    @ManyToMany(targetEntity = Game.class)
     @JsonBackReference
     private List<Game> supportGames;
 

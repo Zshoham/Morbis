@@ -5,15 +5,7 @@ import com.morbis.model.game.entity.GameEvent;
 import com.morbis.model.game.entity.GameEventType;
 import com.morbis.model.game.repository.GameEventRepository;
 import com.morbis.model.game.repository.GameRepository;
-import com.morbis.model.league.repository.LeagueRepository;
-import com.morbis.model.league.repository.SeasonRepository;
-import com.morbis.model.member.entity.Fan;
-import com.morbis.model.member.repository.*;
-import com.morbis.model.team.repository.StadiumRepository;
-import com.morbis.model.team.repository.TeamRepository;
-import com.morbis.service.viewable.SearchResult;
-import com.morbis.service.viewable.ViewableEntityType;
-import com.morbis.service.viewable.ViewableProperties;
+import com.morbis.model.member.repository.RefereeRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,18 +16,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
 import static com.morbis.data.ViewableEntitySource.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-import static com.morbis.data.ViewableEntitySource.*;
 
 
 @RunWith(SpringRunner.class)
@@ -49,7 +36,7 @@ public class RefereeServiceTest {
     @MockBean private RefereeRepository refereeRepository;
     @MockBean private GameRepository gameRepository;
     @MockBean private GameEventRepository gameEventRepository;
-    private ArrayList<GameEvent> gameEventList = new ArrayList<>();
+    private final List<GameEvent> gameEventList = new ArrayList<>();
 
     @Before
     public void setUp() {
@@ -101,6 +88,5 @@ public class RefereeServiceTest {
         refereeService.updateOnGoingGameEvent(main.getId(),gameEventList.get(0));
         // only one invocation that happened in the previous call.
         verify(gameEventRepository,times(1)).save(any());
-
     }
 }

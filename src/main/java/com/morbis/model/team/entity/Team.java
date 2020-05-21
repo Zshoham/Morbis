@@ -7,6 +7,7 @@ import com.morbis.model.member.entity.TeamManager;
 import com.morbis.model.member.entity.TeamOwner;
 import com.morbis.model.poster.entity.PosterData;
 import lombok.*;
+import org.hibernate.validator.cfg.context.Cascadable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -49,29 +50,29 @@ public class Team {
     private String name;
 
     @NotNull
-    @OneToMany(targetEntity = Player.class, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = Player.class)
     @JsonManagedReference
     private List<Player> players;
 
     @NotNull
-    @OneToMany(targetEntity = TeamOwner.class, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = TeamOwner.class)
     @JsonManagedReference
     private List<TeamOwner> owners;
 
     @NotNull
-    @OneToMany(targetEntity = Coach.class, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = Coach.class)
     @JsonManagedReference
     private List<Coach> coaches;
 
-    @OneToMany(targetEntity = TeamManager.class, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = TeamManager.class)
     @JsonManagedReference
     private List<TeamManager> managers;
 
-    @OneToOne(targetEntity = PosterData.class, cascade = CascadeType.ALL)
+    @OneToOne(targetEntity = PosterData.class)
     private PosterData posterData;
 
     @NotNull
-    @OneToOne(targetEntity = Stadium.class, cascade = CascadeType.ALL)
+    @OneToOne(targetEntity = Stadium.class)
     @JsonManagedReference
     private Stadium stadium;
 

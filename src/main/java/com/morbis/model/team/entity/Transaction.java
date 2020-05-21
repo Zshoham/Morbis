@@ -54,7 +54,7 @@ public class Transaction {
         return result;
     }
 
-    public static TransactionBuilder newPost(int value, String description) {
+    public static TransactionBuilder newTransaction(int value, String description) {
         return new TransactionBuilder(value, description);
     }
 

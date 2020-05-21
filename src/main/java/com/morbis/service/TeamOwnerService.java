@@ -187,7 +187,10 @@ public class TeamOwnerService {
                 teamManagerRepository.deleteById(member.getId());
                 member.getMemberRole().remove(MemberRole.TEAM_MANAGER);
             }
-            TeamOwner newTeamOwner = new TeamOwner(member.getId(),member.getUsername(),member.getPassword(),member.getName(),member.getEmail(),currentOwner.getTeam());
+            TeamOwner newTeamOwner = TeamOwner.newTeamOwner()
+                    .fromMember(member)
+                    .withTeam(currentOwner.getTeam())
+                    .build();
             member.getMemberRole().add(MemberRole.TEAM_OWNER);
             currentOwner.getAppointedOwners().add(newTeamOwner);
             currentOwner.getTeam().getOwners().add(newTeamOwner);

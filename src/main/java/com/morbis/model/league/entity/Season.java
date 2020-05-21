@@ -13,9 +13,9 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode
 @NoArgsConstructor
 public class Season {
+
     @Id
     @GeneratedValue
     private int id;
@@ -45,6 +45,25 @@ public class Season {
     @JsonManagedReference
     private List<Referee> referees;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Season)) return false;
+
+        Season season = (Season) o;
+
+        if (id != season.id) return false;
+        if (year != season.year) return false;
+        return league.equals(season.league);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + year;
+        result = 31 * result + league.hashCode();
+        return result;
+    }
 
     public static SeasonBuilder newSeason(int year, League league) {
         return new SeasonBuilder(year, league);

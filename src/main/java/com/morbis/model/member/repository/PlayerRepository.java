@@ -11,8 +11,6 @@ import java.util.Optional;
 
 public interface PlayerRepository extends JpaRepository<Player,Integer> {
 
-    Optional<Player> findDistinctByUsername(String name);
-
     List<Player> findAllByNameContaining(String query);
 
     List<Player> findAllByTeamIsNull();

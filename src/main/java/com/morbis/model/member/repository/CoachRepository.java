@@ -11,8 +11,6 @@ import java.util.Optional;
 
 public interface CoachRepository extends JpaRepository<Coach,Integer> {
 
-    Optional<Member> findDistinctByUsername(String name);
-
     List<Coach> findAllByNameContaining(String query);
 
     List<Coach> findAllByTeamIsNull();

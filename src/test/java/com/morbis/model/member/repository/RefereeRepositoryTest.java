@@ -1,7 +1,8 @@
-package com.morbis.model.game.repository;
+package com.morbis.model.member.repository;
 
-import com.morbis.model.game.entity.Game;
-import com.morbis.model.member.repository.*;
+import com.morbis.model.game.repository.GameRepository;
+import com.morbis.model.member.entity.Coach;
+import com.morbis.model.member.entity.Referee;
 import com.morbis.model.team.repository.StadiumRepository;
 import com.morbis.model.team.repository.TeamRepository;
 import org.junit.Before;
@@ -16,12 +17,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.morbis.data.ViewableEntitySource.*;
+import static com.morbis.TestUtils.listOf;
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class GameRepositoryTest {
+public class RefereeRepositoryTest {
 
     @Autowired
     private TeamRepository teamRepository;
@@ -57,46 +58,43 @@ public class GameRepositoryTest {
                 teamRepository,
                 refereeRepository,
                 gameRepository);
+
+        main.setMainGames(listOf(game));
+        supporting.setSupportGames(listOf(game));
     }
 
     @Test
     public void save() {
-        // saving the same game twice has no effect.
-        gameRepository.save(game);
-        assertThat(gameRepository.findAll()).containsExactly(game);
+        // saving the same referee twice has no effect.
+        refereeRepository.save(main);
+        assertThat(refereeRepository.findAll()).containsExactly(main, supporting);
 
         // saving a Game with the same id and changed content, will cause an update.
-        game.setEndDate(LocalDateTime.now().plusMinutes(180));
-        gameRepository.save(game);
-        assertThat(gameRepository.findAll()).containsExactly(game);
-    }
-
-    @Test
-    public void findAllContainingQuery() {
-        // works with home team name
-        List<Game> home = gameRepository.findAllContainingQuery(game.getHome().getName());
-        assertThat(home).hasSize(1).containsExactly(game);
-
-        // works with home team name
-        List<Game> away = gameRepository.findAllContainingQuery(game.getAway().getName());
-        assertThat(away).hasSize(1).containsExactly(game);
-
-        // works with home team name
-        List<Game> both = gameRepository.findAllContainingQuery(Game.getDescription(game));
-        assertThat(both).hasSize(1).containsExactly(game);
+        main.setName("new name");
+        refereeRepository.save(main);
+        assertThat(refereeRepository.findAll()).containsExactly(main, supporting);
     }
 
     @Test
     public void findById() {
         // works with correct id
-        Optional<Game> validGame = gameRepository.findById(game.getId());
-        assertThat(validGame).isPresent();
-        assertThat(validGame.get()).isEqualTo(game);
+        Optional<Referee> referee = refereeRepository.findById(main.getId());
+        assertThat(referee).isPresent();
+        assertThat(referee.get()).isEqualTo(main);
 
         // does not work with invalid id
-        Optional<Game> invalidGame = gameRepository.findById(999);
-        assertThat(invalidGame).isEmpty();
+        Optional<Referee> invalidReferee = refereeRepository.findById(999);
+        assertThat(invalidReferee).isEmpty();
     }
 
+    @Test
+    public void findAllByNameContaining() {
+        // works with correct username
+        List<Referee> referees = refereeRepository.findAllByNameContaining(main.getName().substring(1, 5));
+        assertThat(referees).containsExactly(main);
 
+        // does not work with invalid username
+        List<Coach> invalidCoach = coachRepository.findAllByNameContaining("invalid");
+        assertThat(invalidCoach).isEmpty();
+    }
 }

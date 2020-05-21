@@ -5,7 +5,7 @@ import com.morbis.model.poster.entity.PosterData;
 
 import java.util.LinkedList;
 
-public class MemberServiceDataSource extends ViewableEntitySource{
+public class MemberServiceDataSource extends ViewableEntitySource {
 
     public static PosterData posterData;
     public static Post post;

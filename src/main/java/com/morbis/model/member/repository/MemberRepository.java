@@ -13,5 +13,4 @@ public interface MemberRepository extends JpaRepository<Member,Integer> {
 
     List<Member> findAllByMemberRoleNotIn(List<MemberRole> roles);
 
-    boolean existsMemberByUsername(String username);
 }

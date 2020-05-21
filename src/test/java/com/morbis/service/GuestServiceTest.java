@@ -82,7 +82,7 @@ public class GuestServiceTest {
         when(gameRepository.findAllContainingQuery("name"))
                 .thenReturn(Collections.singletonList(game));
 
-        when(seasonRepository.findAllByYearContaining(2020))
+        when(seasonRepository.findAllByYear(2020))
                 .thenReturn(Collections.singletonList(season));
 
         when(leagueRepository.findAllByNameContaining("name"))

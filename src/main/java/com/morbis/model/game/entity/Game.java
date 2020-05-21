@@ -47,10 +47,10 @@ public class Game {
         setSupportingRefs(supportingRefs);
     }
 
-    @ManyToOne(targetEntity = Team.class, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = Team.class)
     private Team home;
 
-    @ManyToOne(targetEntity = Team.class, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = Team.class)
     private Team away;
 
     @ManyToMany(targetEntity = Member.class)
@@ -62,14 +62,14 @@ public class Game {
     @NotNull
     private LocalDateTime endDate;
 
-    @OneToMany(targetEntity = GameEvent.class, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = GameEvent.class)
     private List<GameEvent> events;
 
-    @ManyToOne(targetEntity = Referee.class, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = Referee.class)
     @JsonManagedReference
     private Referee mainRef;
 
-    @ManyToMany(targetEntity = Referee.class, cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = Referee.class)
     @JsonManagedReference
     private List<Referee> supportingRefs;
 
