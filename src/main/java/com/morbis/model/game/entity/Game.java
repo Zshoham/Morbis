@@ -2,6 +2,7 @@ package com.morbis.model.game.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.morbis.model.member.entity.Member;
+import com.morbis.model.member.entity.Player;
 import com.morbis.model.member.entity.Referee;
 import com.morbis.model.team.entity.Team;
 import lombok.*;
@@ -28,6 +29,7 @@ public class Game {
     @GeneratedValue
     private int id;
 
+
     public Game(int id, Team home, Team away, LocalDateTime startDate, Referee mainRef, List<Referee> supportingRefs) {
         setId(id);
         setHome(home);
@@ -36,6 +38,8 @@ public class Game {
         setEndDate(startDate.plusMinutes(90));
         setMainRef(mainRef);
         setSupportingRefs(supportingRefs);
+        setHomePlayers(home.getPlayers());
+        setAwayPlayers(away.getPlayers());
     }
 
     public Game(Team home, Team away, LocalDateTime startDate, Referee mainRef, List<Referee> supportingRefs) {
@@ -45,6 +49,8 @@ public class Game {
         setEndDate(startDate.plusMinutes(90));
         setMainRef(mainRef);
         setSupportingRefs(supportingRefs);
+        setHomePlayers(home.getPlayers());
+        setAwayPlayers(away.getPlayers());
     }
 
     @ManyToOne(targetEntity = Team.class, cascade = CascadeType.ALL)
@@ -55,6 +61,23 @@ public class Game {
 
     @ManyToMany(targetEntity = Member.class)
     private List<Member> followers;
+
+    @OneToMany(targetEntity = Player.class)
+    private List<Player> homePlayers;
+
+    @OneToMany(targetEntity = Player.class)
+    private List<Player> awayPlayers;
+
+    public void setHome(Team home) {
+        this.home = home;
+        setHomePlayers(home.getPlayers());
+    }
+
+    public void setAway(Team away) {
+        this.away = away;
+        setAwayPlayers(away.getPlayers());
+    }
+
 
     @NotNull
     private LocalDateTime startDate;
@@ -129,6 +152,8 @@ public class Game {
         public GameTimeBuilder teams(Team home, Team away) {
             result.setHome(home);
             result.setAway(away);
+            result.setHomePlayers(home.getPlayers());
+            result.setAwayPlayers(away.getPlayers());
             return this;
         }
 
