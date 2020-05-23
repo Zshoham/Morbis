@@ -5,6 +5,7 @@ import com.morbis.model.member.entity.MemberRole;
 import com.morbis.model.member.repository.MemberRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +53,7 @@ public class AuthService {
     }
 
 
-    public Optional<String> login(String username, String password) {
+        public Optional<Pair<Member, String>> login(String username, String password) {
         logger.trace("called function: AuthService->login.");
         Optional<Member> user = memberRepository.findDistinctByUsername(username);
         if (user.isEmpty()) {
@@ -66,7 +67,8 @@ public class AuthService {
         }
 
         logger.info("the member " + username + " has successfully logged in.");
-        return Optional.of(auth.createToken(user.get()));
+
+        return Optional.of(Pair.of(user.get(), auth.createToken(user.get())));
     }
 
     public void logout(String token) {

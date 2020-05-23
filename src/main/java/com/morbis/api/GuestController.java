@@ -1,11 +1,14 @@
 package com.morbis.api;
 
 import com.morbis.api.dto.LoginDTO;
+import com.morbis.api.dto.LoginResponseDTO;
 import com.morbis.api.dto.RegisterDTO;
+import com.morbis.model.member.entity.Member;
 import com.morbis.service.GuestService;
 import com.morbis.service.auth.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,12 +45,14 @@ public class GuestController {
     )
     @ApiResponse(responseCode = "401", description = "login credentials were invalid")
     @ApiResponse(responseCode = "200", description = "login was successful")
-    public ResponseEntity<String> login(@RequestBody LoginDTO login) {
-        Optional<String> token = authService.login(login.username, login.password);
-        if (token.isEmpty())
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO login) {
+        Optional<Pair<Member, String>> loginAnsr = authService.login(login.username, login.password);
+        if (loginAnsr.isEmpty())
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        return ResponseEntity.ok(token.get());
+        return ResponseEntity.ok(new LoginResponseDTO( loginAnsr.get().getSecond(),
+                                                        loginAnsr.get().getFirst().getMemberRole(),
+                                                        loginAnsr.get().getFirst().getId()));
     }
 
     @GetMapping("/logout/{token}")
