@@ -8,6 +8,7 @@ import com.morbis.model.member.entity.Referee;
 import com.morbis.model.member.repository.RefereeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class RefereeService {
     private final RefereeRepository refereeRepository;
     private final GameRepository gameRepository;
@@ -77,9 +79,13 @@ public class RefereeService {
         return res;
     }
 
-    public boolean updateGameEvent(int refID, GameEvent updated) {
+    public boolean updateGameEvent(int refID, GameEvent updated, int gameID) {
         logger.trace("called function: RefereeService->updateGameEvent. referee: " + refID);
-        Game game = updated.getGame();
+
+        Game game = gameRepository.findById(gameID).orElseThrow(() ->
+                new IllegalArgumentException("trying to add event to nonexistent game"));
+        updated.setGame(game);
+
         //check if the update period hasn't passed
         if (game.getEndDate().plusMinutes(UPDATE_PERIOD).isAfter(LocalDateTime.now())) {
             //check if its the main referee
@@ -111,9 +117,13 @@ public class RefereeService {
         return null;
     }
 
-    public boolean updateOnGoingGameEvent(int refID, GameEvent updated) {
+    public boolean updateOnGoingGameEvent(int refID, GameEvent updated, int gameID) {
         logger.trace("called function: RefereeService->updateOnGoingGameEvent. referee ID: " + refID);
-        Game game = updated.getGame();
+
+        Game game = gameRepository.findById(gameID).orElseThrow(() ->
+                new IllegalArgumentException("trying to add event to nonexistent game"));
+        updated.setGame(game);
+
         //check if the game is on-going
         if (game.getEndDate().isAfter(LocalDateTime.now()) && game.getStartDate().isBefore(LocalDateTime.now())) {
             //check if the update period hasn't passed
@@ -133,7 +143,7 @@ public class RefereeService {
                 }
             }
         }
-        logger.info("updateOnGoingGameEvent returned false. referee ID: " + refID);
+        logger.info("updateOnGoingGameEvent failed. referee ID: " + refID + ", gameID: " + gameID);
         return false;
     }
 

@@ -156,6 +156,6 @@ public class AssociationRepService {
         }
 
         referees.forEach(refereeRepository::delete);
-    logger.info("Referees has been removed.");
+        logger.info("Referees has been removed.");
     }
 }
