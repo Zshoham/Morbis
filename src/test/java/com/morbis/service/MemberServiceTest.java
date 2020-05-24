@@ -25,7 +25,6 @@ import java.util.Optional;
 
 import static com.morbis.data.MemberServiceDataSource.*;
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)

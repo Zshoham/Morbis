@@ -81,7 +81,7 @@ public enum ViewableEntityType {
 
     public static class MatchBuilder {
 
-        private HashMap<ViewableEntityType, Runnable> searchers;
+        private final HashMap<ViewableEntityType, Runnable> searchers;
         private final List<ViewableEntityType> filter;
 
         private MatchBuilder(List<ViewableEntityType> filter) {

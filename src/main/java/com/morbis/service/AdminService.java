@@ -8,10 +8,10 @@ import com.morbis.model.team.entity.Team;
 import com.morbis.model.team.entity.TeamStatus;
 import com.morbis.model.team.repository.TeamRepository;
 import com.morbis.service.notification.EmailService;
-import lombok.extern.java.Log;
 
 import java.io.IOException;
-import java.nio.file.*;;
+import java.nio.file.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,11 +21,11 @@ import java.util.List;
 import java.util.Optional;
 
 public class AdminService {
-    private TeamRepository teamRepository;
-    private MemberRepository memberRepository;
-    private MemberComplaintRepository memberComplaintRepository;
-    private EmailService emailService;
-    private Logger logger;
+    private final TeamRepository teamRepository;
+    private final MemberRepository memberRepository;
+    private final MemberComplaintRepository memberComplaintRepository;
+    private final EmailService emailService;
+    private final Logger logger;
 
     @Value("${logging.file")
     private String logFilePath;

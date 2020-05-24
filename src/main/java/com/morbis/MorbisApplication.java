@@ -1,7 +1,9 @@
 package com.morbis;
 
 import com.morbis.model.member.entity.Admin;
+import com.morbis.model.member.entity.AssociationRep;
 import com.morbis.model.member.repository.AdminRepository;
+import com.morbis.model.member.repository.AssociationRepRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -19,8 +21,11 @@ public class MorbisApplication implements ApplicationRunner {
 
     private final AdminRepository adminRepository;
 
-    public MorbisApplication(AdminRepository adminRepository) {
+    private final AssociationRepRepository associationRepRepository;
+
+    public MorbisApplication(AdminRepository adminRepository, AssociationRepRepository associationRepRepository) {
         this.adminRepository = adminRepository;
+        this.associationRepRepository = associationRepRepository;
     }
 
     public static void main(String[] args) {
@@ -29,21 +34,31 @@ public class MorbisApplication implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        if (!args.getOptionNames().contains("admin"))
+        if (!args.getOptionNames().contains("setup"))
             return;
 
         logger.info("Creating new admin from command line arguments");
 
-        String username = args.getOptionValues("username").get(0);
-        String password = args.getOptionValues("password").get(0);
-        String name = args.getOptionValues("name").get(0);
-        String email = args.getOptionValues("email").get(0);
+        String admin_username = args.getOptionValues("Ausername").get(0);
+        String admin_password = args.getOptionValues("Apassword").get(0);
+        String admin_name = args.getOptionValues("Aname").get(0);
+        String admin_email = args.getOptionValues("Aemail").get(0);
+
+        String rep_username = args.getOptionValues("Rusername").get(0);
+        String rep_password = args.getOptionValues("Rpassword").get(0);
+        String rep_name = args.getOptionValues("Rname").get(0);
+        String rep_email = args.getOptionValues("Remail").get(0);
 
         Admin admin = Admin.newAdmin()
-                .fromMember(username, password, name, email)
+                .fromMember(admin_username, admin_password, admin_name, admin_email)
+                .build();
+
+        AssociationRep rep = AssociationRep.newAssociationRep()
+                .fromMember(rep_username, rep_password, rep_name, rep_email)
                 .build();
 
         adminRepository.save(admin);
+        associationRepRepository.save(rep);
     }
 
 

@@ -15,7 +15,6 @@ import com.morbis.model.team.repository.TeamRepository;
 import com.morbis.service.viewable.ViewableProperties;
 import com.morbis.service.viewable.SearchResult;
 import com.morbis.service.viewable.ViewableEntityType;
-import org.slf4j.ILoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
@@ -32,18 +31,18 @@ import static com.morbis.service.viewable.ViewableEntityType.*;
 @Service
 public class GuestService {
 
-    private MemberRepository memberRepository;
-    private GameRepository gameRepository;
-    private LeagueRepository leagueRepository;
-    private SeasonRepository seasonRepository;
-    private CoachRepository coachRepository;
-    private PlayerRepository playerRepository;
-    private RefereeRepository refereeRepository;
-    private TeamOwnerRepository teamOwnerRepository;
-    private TeamManagerRepository teamManagerRepository;
-    private StadiumRepository stadiumRepository;
-    private TeamRepository teamRepository;
-    private Logger logger;
+    private final MemberRepository memberRepository;
+    private final GameRepository gameRepository;
+    private final LeagueRepository leagueRepository;
+    private final SeasonRepository seasonRepository;
+    private final CoachRepository coachRepository;
+    private final PlayerRepository playerRepository;
+    private final RefereeRepository refereeRepository;
+    private final TeamOwnerRepository teamOwnerRepository;
+    private final TeamManagerRepository teamManagerRepository;
+    private final StadiumRepository stadiumRepository;
+    private final TeamRepository teamRepository;
+    private final Logger logger;
 
     @Autowired
     public GuestService(MemberRepository memberRepository,

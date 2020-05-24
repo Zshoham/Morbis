@@ -7,12 +7,10 @@ import com.morbis.model.member.entity.TeamManager;
 import com.morbis.model.member.entity.TeamOwner;
 import com.morbis.model.poster.entity.PosterData;
 import lombok.*;
-import org.hibernate.validator.cfg.context.Cascadable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity

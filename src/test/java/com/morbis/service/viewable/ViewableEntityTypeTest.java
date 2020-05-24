@@ -9,7 +9,6 @@ import com.morbis.model.team.entity.Team;
 import org.junit.Test;
 
 import static com.morbis.service.viewable.ViewableEntityType.*;
-import static com.morbis.service.viewable.ViewableEntityType.TEAM;
 import static org.assertj.core.api.Assertions.assertThat;
 
 

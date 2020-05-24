@@ -2,6 +2,7 @@ package com.morbis.model.member.repository;
 
 import com.morbis.model.member.entity.Fan;
 import com.morbis.model.member.entity.Member;
+import com.morbis.model.member.entity.MemberRole;
 import com.morbis.model.member.entity.MemberSearch;
 import com.morbis.model.poster.entity.PosterData;
 import com.morbis.model.poster.repository.PosterDataRepository;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,5 +88,16 @@ public class MemberRepositoryTest {
         // does not work with invalid username
         Optional<Member> invalidMember = memberRepository.findDistinctByUsername("invalid");
         assertThat(invalidMember).isEmpty();
+    }
+
+    @Test
+    public void findAllByMemberRoleNotIn() {
+        // finds members correctly.
+        List<Member> members = memberRepository.findAllByMemberRoleNotIn(listOf(MemberRole.TEAM_OWNER, MemberRole.TEAM_MANAGER));
+        assertThat(members).containsExactly(testMember);
+
+        // does not find incorrect members.
+        members = memberRepository.findAllByMemberRoleNotIn(listOf(MemberRole.FAN));
+        assertThat(members).isEmpty();
     }
 }

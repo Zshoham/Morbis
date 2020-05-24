@@ -25,7 +25,7 @@ public enum ManagerPermissions {
     SUBMIT_TRANSACTION;
 
 
-    public static List<ManagerPermissions> all = Stream.of(
+    public static final List<ManagerPermissions> all = Stream.of(
             values()
     ).collect(Collectors.toList());
 }

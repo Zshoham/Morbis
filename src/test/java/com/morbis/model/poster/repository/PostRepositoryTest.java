@@ -1,8 +1,6 @@
 package com.morbis.model.poster.repository;
 
-import com.morbis.model.member.entity.Member;
 import com.morbis.model.poster.entity.Post;
-import com.morbis.model.poster.entity.PosterData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +11,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
 
 
 @RunWith(SpringRunner.class)

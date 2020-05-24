@@ -3,7 +3,6 @@ package com.morbis.model.member.entity;
 import lombok.*;
 
 import javax.persistence.Entity;
-import javax.persistence.PrePersist;
 
 @Entity
 @Getter

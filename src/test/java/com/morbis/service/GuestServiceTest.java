@@ -4,7 +4,6 @@ import com.morbis.model.game.entity.Game;
 import com.morbis.model.game.repository.GameRepository;
 import com.morbis.model.league.repository.LeagueRepository;
 import com.morbis.model.league.repository.SeasonRepository;
-import com.morbis.model.member.entity.Fan;
 import com.morbis.model.member.repository.*;
 import com.morbis.model.team.repository.StadiumRepository;
 import com.morbis.model.team.repository.TeamRepository;

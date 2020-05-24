@@ -1,6 +1,5 @@
 package com.morbis.model.member.repository;
 
-import com.morbis.model.member.entity.Member;
 import com.morbis.model.member.entity.TeamManager;
 import org.springframework.data.jpa.repository.JpaRepository;
 
