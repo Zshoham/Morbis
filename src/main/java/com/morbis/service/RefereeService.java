@@ -10,21 +10,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class RefereeService {
-    private RefereeRepository refereeRepository;
-    private GameRepository gameRepository;
-    private GameEventRepository gameEventRepository;
-    private Logger logger;
+    private final RefereeRepository refereeRepository;
+    private final GameRepository gameRepository;
+    private final GameEventRepository gameEventRepository;
+    private final Logger logger;
 
 
-    private static long UPDATE_PERIOD = 5;
-    private static long GAME_LENGTH = 90;
+    private static final long UPDATE_PERIOD = 5;
+    private static final long GAME_LENGTH = 90;
 
     public RefereeService(RefereeRepository refereeRepository, GameRepository gameRepository, GameEventRepository gameEventRepository) {
         this.refereeRepository = refereeRepository;
@@ -39,7 +38,7 @@ public class RefereeService {
         logger.trace("called function: RefereeService->getRefGames. with the ID of" + refID);
         Optional<Referee> referee = refereeRepository.findById(refID);
         if (referee.isEmpty())
-            return new ArrayList<Game>();
+            return new ArrayList<>();
         List<Game> games = referee.get().getMainGames();
         //check if there are games where the referee was a support referee
         if (referee.get().getSupportGames() != null) {

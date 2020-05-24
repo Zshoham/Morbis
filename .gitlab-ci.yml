@@ -3,8 +3,6 @@
 # https://gradle.org/
 # https://github.com/gradle/gradle
 
-include: 'https://gitlab.com/x4v13r/gitlab-ci/raw/master/ssh.yml'
-
 image: gradle:jdk11
 
 
@@ -57,6 +55,20 @@ deploy-dev:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
   script:
-    - ssh -o StrictHostKeyChecking=no morbis@"$DEP_SERVER" "cd dev && ./update.sh" >> /dev/null
+    - ssh -o StrictHostKeyChecking=no morbis@"$DEP_SERVER" "./update-dev.sh" >> /dev/null
   only:
     - dev-backend
+
+deploy-prod:
+  stage: deploy
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$DEP_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  script:
+    - ssh -o StrictHostKeyChecking=no morbis@"$DEP_SERVER" "./update-prod.sh" >> /dev/null
+  only:
+    - master
+

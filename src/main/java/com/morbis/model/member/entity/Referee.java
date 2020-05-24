@@ -3,7 +3,6 @@ package com.morbis.model.member.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.morbis.model.game.entity.Game;
 import com.morbis.model.league.entity.Season;
-import com.morbis.model.team.entity.Team;
 import lombok.*;
 
 import javax.persistence.*;

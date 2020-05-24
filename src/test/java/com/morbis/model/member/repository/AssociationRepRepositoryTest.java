@@ -1,7 +1,6 @@
 package com.morbis.model.member.repository;
 
 import com.morbis.model.member.entity.AssociationRep;
-import com.morbis.model.member.entity.Fan;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

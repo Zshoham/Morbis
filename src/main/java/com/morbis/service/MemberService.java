@@ -28,7 +28,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PosterDataRepository posterDataRepository;
     private final MemberComplaintRepository memberComplaintRepository;
-    private Logger logger;
+    private final Logger logger;
 
     public MemberService(GuestService guestService,
                          PostRepository postRepository,

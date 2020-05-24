@@ -29,7 +29,7 @@ public class AssociationRepService {
     private final RefereeRepository refereeRepository;
 
     private final EmailService emailService;
-    private Logger logger;
+    private final Logger logger;
 
     public AssociationRepService(SeasonRepository seasonRepository,
                                  LeagueRepository leagueRepository,

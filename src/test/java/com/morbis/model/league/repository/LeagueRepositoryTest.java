@@ -1,8 +1,6 @@
 package com.morbis.model.league.repository;
 
 import com.morbis.model.league.entity.League;
-import com.morbis.model.league.entity.Season;
-import com.morbis.model.team.entity.Stadium;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 

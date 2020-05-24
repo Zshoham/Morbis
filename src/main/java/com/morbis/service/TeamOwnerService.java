@@ -26,7 +26,7 @@ public class TeamOwnerService {
     private final TeamRepository teamRepository;
     private final MemberRepository memberRepository;
     private final TransactionRepository transactionRepository;
-    private Logger logger;
+    private final Logger logger;
 
 
     public TeamOwnerService(TeamOwnerRepository teamOwnerRepository, TeamManagerRepository teamManagerRepository, PlayerRepository playerRepository, StadiumRepository stadiumRepository, CoachRepository coachRepository, TeamRepository teamRepository, MemberRepository memberRepository, TransactionRepository transactionRepository) {

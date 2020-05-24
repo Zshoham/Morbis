@@ -5,8 +5,6 @@ import com.morbis.model.member.entity.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 
-import java.util.HashMap;
-
 @Schema(name = "Fan Registration")
 @AllArgsConstructor
 public class RegisterDTO {
@@ -114,32 +112,5 @@ public class RegisterDTO {
                password.matches(passwordLowerLetterRule) &&
                password.matches(passwordDigitsRule) &&
                password.matches(passwordLengthRule);
-    }
-
-
-    public static void main(String[] args) {
-        String password = "asas32aA3";
-        String username = "aHodtw_.it34o";
-        String email = "a1@23sdasdgmail.com.as.aa";
-        String name = "maerio hhg";
-
-        HashMap<String, Boolean> test = new HashMap<String, Boolean>();
-
-        String passwordLengthRule = ".{8,20}";
-        test.put("pass length", password.matches(passwordLengthRule));
-        String passwordDigitsRule = ".*\\d.*";
-        test.put("pass contains digit", password.matches(passwordDigitsRule));
-        String passwordLowerLetterRule = ".*[a-z].*";
-        test.put("pass cotains lower case", password.matches(passwordLowerLetterRule));
-        String passwordCapitalLettersRule = ".*[A-Z].*";
-        test.put("pass contains upper case", password.matches(passwordCapitalLettersRule));
-        String passwordAlphanumericRule = "^.*[^a-zA-Z0-9 ].*$";
-        test.put("passLength not contains non alphanumeric chars", !password.matches(passwordAlphanumericRule));
-
-//        test.put("valid password", validatePassword(password));
-//        test.put("valid email", validateEmail(email));
-//        test.put("valid name", validateName(name));
-//        test.put("valid username", validateUsername(username));
-//        test.put("TOTAL valid registration", validateRegistration(password, username, email, name));
     }
 }

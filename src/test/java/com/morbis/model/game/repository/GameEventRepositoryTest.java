@@ -2,7 +2,6 @@ package com.morbis.model.game.repository;
 
 import com.morbis.model.game.entity.GameEvent;
 import com.morbis.model.game.entity.GameEventType;
-import com.morbis.model.team.entity.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
