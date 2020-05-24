@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
@@ -94,55 +95,55 @@ public class AuthServiceTest {
     @Test
     public void loginTest() {
         // token length
-        Optional<String> firstToken = authService.login(testMember.getUsername(), testMember.getPassword());
-        assertThat(firstToken).isPresent();
-        assertThat(firstToken.get().length()).isEqualTo(128); // token is 64 bytes and 128 characters is hex format
+        Optional<Pair<Member, String>> firstLogin = authService.login(testMember.getUsername(), testMember.getPassword());
+        assertThat(firstLogin).isPresent();
+        assertThat(firstLogin.get().getSecond().length()).isEqualTo(128); // token is 64 bytes and 128 characters is hex format
 
         // duplicate login
         Throwable possibleException = catchThrowable(() -> authService.login(testMember.getUsername(), testMember.getPassword()));
         assertThat(possibleException).hasMessage("user is already logged in");
 
         // invalid username
-        Optional<String> invalidUsername = authService.login("baduser", "doesnotmatter");
+        Optional<Pair<Member, String>> invalidUsername = authService.login("baduser", "doesnotmatter");
         assertThat(invalidUsername).isEmpty();
 
         // invalid password
-        Optional<String> invalidPassword = authService.login("user", "badpass");
+        Optional<Pair<Member, String>> invalidPassword = authService.login("user", "badpass");
         assertThat(invalidPassword).isEmpty();
     }
 
     @Test
     public void logout() {
         // make sure login is successful
-        Optional<String> token = authService.login(testMember.getUsername(), testMember.getPassword());
-        assertThat(token).isPresent();
+        Optional<Pair<Member, String>> loginAns = authService.login(testMember.getUsername(), testMember.getPassword());
+        assertThat(loginAns).isPresent();
 
         // logout makes the token invalid.
-        authService.logout(token.get());
-        assertThat(authService.authorize(token.get(), MemberRole.FAN)).isFalse();
+        authService.logout(loginAns.get().getSecond());
+        assertThat(authService.authorize(loginAns.get().getSecond(), MemberRole.FAN)).isFalse();
 
         // logout twice has no side effects
-        Throwable secondLogout = catchThrowable(() -> authService.logout(token.get()));
+        Throwable secondLogout = catchThrowable(() -> authService.logout(loginAns.get().getSecond()));
         assertThat(secondLogout).doesNotThrowAnyException();
     }
 
     @Test
     public void authorizeTest() {
         // make sure login is successful
-        Optional<String> fanToken = authService.login(testMember.getUsername(), testMember.getPassword());
-        assertThat(fanToken).isPresent();
+        Optional<Pair<Member, String>> fanLogin = authService.login(testMember.getUsername(), testMember.getPassword());
+        assertThat(fanLogin).isPresent();
 
         // make sure login is successful
-        Optional<String> adminToken = authService.login(testAdmin.getUsername(), testAdmin.getPassword());
-        assertThat(adminToken).isPresent();
+        Optional<Pair<Member, String>> adminLogin = authService.login(testAdmin.getUsername(), testAdmin.getPassword());
+        assertThat(adminLogin).isPresent();
 
         // authorize fan
-        assertThat(authService.authorize(fanToken.get(), MemberRole.FAN)).isTrue();
+        assertThat(authService.authorize(fanLogin.get().getSecond(), MemberRole.FAN)).isTrue();
 
         // authorize admin
-        assertThat(authService.authorize(adminToken.get(), MemberRole.ADMIN)).isTrue();
+        assertThat(authService.authorize(adminLogin.get().getSecond(), MemberRole.ADMIN)).isTrue();
 
         // authorize admin as fan
-        assertThat(authService.authorize(adminToken.get(), MemberRole.FAN)).isTrue();
+        assertThat(authService.authorize(adminLogin.get().getSecond(), MemberRole.FAN)).isTrue();
     }
 }

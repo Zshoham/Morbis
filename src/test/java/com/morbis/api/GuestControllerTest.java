@@ -2,6 +2,7 @@ package com.morbis.api;
 
 import com.morbis.TestUtils;
 import com.morbis.api.dto.LoginDTO;
+import com.morbis.api.dto.LoginResponseDTO;
 import com.morbis.api.dto.RegisterDTO;
 import com.morbis.model.member.entity.Fan;
 import com.morbis.model.member.entity.Member;
@@ -12,7 +13,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -37,6 +40,7 @@ public class GuestControllerTest {
     private AuthService authService;
 
     private String token;
+    private LoginResponseDTO loginAns;
 
     @Before
     public void setUp(){
@@ -46,8 +50,10 @@ public class GuestControllerTest {
                 .build();
 
         token = "q5we64qwe23q1we";
+        loginAns = new LoginResponseDTO(token, testMember.getMemberRole(), testMember.getId());
 
-        when(authService.login(testMember.getUsername(), testMember.getPassword())).thenReturn(Optional.of(token));
+        when(authService.login(testMember.getUsername(), testMember.getPassword())).
+                thenReturn(Optional.of(Pair.of(testMember, token)));
 
     }
 
@@ -97,7 +103,8 @@ public class GuestControllerTest {
         MvcResult response = TestUtils.makePostRequest(
                 "/api/login", apiMock, MediaType.APPLICATION_JSON, loginData);
         assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getResponse().getContentAsString()).isEqualTo(token);
+        assertThat(response.getResponse().getContentAsString()).isEqualTo(
+                "{\"token\":\"q5we64qwe23q1we\",\"roles\":[\"FAN\"],\"memberID\":1}");
 
         // negative test
         loginData.username = "not correct";
