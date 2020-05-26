@@ -56,7 +56,7 @@ public class AuthFilter extends OncePerRequestFilter {
         String roleString = "NA";
         
         if (req.length() > startOfRole && req.indexOf("/", startOfRole) != -1 )
-            roleString = req.substring(startOfRole, req.indexOf("/", startOfRole));
+            roleString = req.substring(startOfRole, req.indexOf("/", startOfRole)).toUpperCase();
 
         if (memberRoles.contains(roleString))
             return MemberRole.valueOf(roleString);
