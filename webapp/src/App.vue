@@ -17,25 +17,25 @@
             v-model="item.model"
             :prepend-icon="item.model ? item.icon : item['icon-alt']"
             append-icon
+            :hidden="item.hidden"
+            :aria-pressed="false"
           >
             <template v-slot:activator>
               <v-list-item-content>
                 <v-list-item-title>{{ item.text }}</v-list-item-title>
               </v-list-item-content>
             </template>
-            <v-list-item v-for="(child, i) in item.children" :key="i" link>
+            <v-list-item v-for="(child, i) in item.children" :key="i" link :to="child.to"> 
+              <v-list-item-content>
+                <v-list-item-title :link="child.link">{{ child.text }}</v-list-item-title>
+              </v-list-item-content>
               <v-list-item-action v-if="child.icon">
                 <v-icon>{{ child.icon }}</v-icon>
               </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>{{ child.text }}</v-list-item-title>
-              </v-list-item-content>
             </v-list-item>
           </v-list-group>
-          <v-list-item v-else :key="item.text" link>
-            <v-list-item-action>
+          <v-list-item v-else :key="item.text" :hidden="item.hidden" link :to="item.to">
               <v-icon>{{ item.icon }}</v-icon>
-            </v-list-item-action>
             <v-list-item-content>
               <v-list-item-title>{{ item.text }}</v-list-item-title>
             </v-list-item-content>
@@ -59,11 +59,40 @@
         class="hidden-sm-and-down"
       />
       <v-spacer />
-        <v-btn color="black" class="white--text" style="margin:10px" to="/">Home</v-btn>
-        <v-btn color="black" class="white--text" style="margin:10px" to="/about">About</v-btn>
-        <v-btn color="black" class="white--text" style="margin:10px" to="/RegisterPage">Register</v-btn>
-        <v-btn color="black" class="white--text" style="margin:10px;" to="/LoginPage">Login</v-btn>
-      
+      <v-btn color="black" class="white--text" style="margin:10px" to="/">Home</v-btn>
+      <v-btn
+        color="black"
+        class="white--text"
+        style="margin:10px"
+        to="/about"
+      >About</v-btn>
+      <v-btn color="black" class="white--text" style="margin:10px" to="/RegisterPage">Register</v-btn>
+      <v-btn color="black" class="white--text" style="margin:10px;" to="/LoginPage">Login</v-btn>
+      <v-btn
+        color="black"
+        class="white--text"
+        style="margin:10px;"
+        @click="setMenu()"
+        to="/TeamOwnerPage"
+      >Team Owner</v-btn>
+      <v-btn
+        color="black"
+        class="white--text"
+        style="margin:10px"
+        @click="setMenu(['TEAMOWNER','PLAYER'])"
+      >test1</v-btn>
+      <v-btn
+        color="black"
+        class="white--text"
+        style="margin:10px"
+        @click="setMenu()"
+      >test2</v-btn>
+      <v-btn
+        color="black"
+        class="white--text"
+        style="margin:10px"
+        @click="toggleAuthorisation()"
+      >test3</v-btn>
       <v-spacer />
       <v-btn icon>
         <v-icon>mdi-apps</v-icon>
@@ -85,57 +114,201 @@
 </template>
 
 <script>
+var authorised=true;
+var fanMenu = {
+  icon: "mdi-chevron-up",
+  "icon-alt": "mdi-chevron-down",
+  text: "My Account",
+  model: false,
+  hidden: false,
+  children: [
+    {text: "Players", icon:"mdi-run-fast"},
+    {text: "Teams", icon:"mdi-account-group"},
+    {text: "Games", icon:"mdi-soccer"},
+    {text: "Seasons", icon:"mdi-medal-outline"},
+    {text: "Leages", icon:"mdi-trophy"},
+    {
+      text: "New team",
+      icon: "mdi-account-multiple-plus",
+      to: "/NewTeamPage",
+    }
+  ]
+};
+var coachMenu = {
+  icon: "mdi-chevron-up",
+  "icon-alt": "mdi-chevron-down",
+  text: "Coach",
+  model: false,
+  hidden: true,
+  children: [
+    {
+      text: "New team",
+      to: "/NewTeamPage",
+    }
+  ]
+};
+var refereeMenu = {
+  icon: "mdi-chevron-up",
+  "icon-alt": "mdi-chevron-down",
+  text: "Referee",
+  model: false,
+  hidden: true,
+  children: [
+    {
+      text: "New team",
+      to: "/NewTeamPage",
+    }
+  ]
+};
+var playerMenu = {
+  icon: "mdi-chevron-up",
+  "icon-alt": "mdi-chevron-down",
+  text: "Player",
+  model: false,
+  hidden: true,
+  children: [
+    {
+      text: "New team",
+      to: "/NewTeamPage",
+    }
+  ]
+};
+var assRepMenu = {
+  icon: "mdi-chevron-up",
+  "icon-alt": "mdi-chevron-down",
+  text: "Association Representitive",
+  model: false,
+  hidden: true,
+  children: [
+    {
+      text: "New team",
+      to: "/NewTeamPage",
+    }
+  ]
+};
+var teamManagerMenu = {
+  icon: "mdi-chevron-up",
+  "icon-alt": "mdi-chevron-down",
+  text: "Team Manager",
+  model: false,
+  hidden: true,
+  children: [
+    {
+      text: "New team",
+      to: "/NewTeamPage",
+    }
+  ]
+};
+var teamOwnerMenu = {
+  icon: "mdi-chevron-up",
+  "icon-alt": "mdi-chevron-down",
+  text: "Team Owner",
+  model: false,
+  hidden: true,
+  children: [
+    { text: "Add/remove assets" },
+    { text: "Edit assets" },
+    { text: "Report transaction" },
+    { text: "Appoint new owner" },
+    { text: "Remove owner" },
+    { text: "Appoint new manager" },
+    { text: "Remove manager" },
+    {
+      text: "New team",
+      to: "/NewTeamPage",
+    },
+    { text: "Reopen team" },
+    { text: "Close team" }
+  ]
+};
+var adminMenu = {
+  icon: "mdi-chevron-up",
+  "icon-alt": "mdi-chevron-down",
+  text: "Admin",
+  model: false,
+  hidden: true,
+  children: [
+    { text: "Add/remove users" }
+  ]
+};
+var menus = [];
+  menus['FAN']= fanMenu;
+  menus['PLAYER']= playerMenu;
+  menus['COACH']= coachMenu;
+  menus['REFEREE']= refereeMenu;
+  menus['TEAMMANAGER']= teamManagerMenu;
+  menus['TEAMOWNER']= teamOwnerMenu;
+  menus['ASSOCIATIONREPRESENTITIVE']= assRepMenu;
+  menus['ADMIN']= adminMenu;
+var menu = [
+  { icon: "mdi-home", text: "\t Home", to:"/Home"},
+  // {
+  //   icon: "mdi-chevron-up",
+  //   "icon-alt": "mdi-chevron-down",
+  //   text: "More",
+  //   model: false,
+  //   children: [
+  //     { text: "Import" },
+  //     { text: "Export" },
+  //     { text: "Print" },
+  //     { text: "Undo changes" },
+  //     { text: "Other contacts" }
+  //   ]
+  // },
+  fanMenu,
+  playerMenu,
+  refereeMenu,
+  coachMenu,
+  teamManagerMenu,
+  teamOwnerMenu,
+  assRepMenu,
+  { icon: "mdi-cog", text: "\t Settings", to: "/Settings"},
+  {
+  text: "\t Switch Accounts",
+  icon: "mdi-account-convert",
+  to: "/LoginPage"
+  },{
+  text: "\t Logout",
+  icon: "mdi-logout",
+  to: "/logout"
+  }
+];
 export default {
   props: {
     source: String
   },
   data: () => ({
     drawer: null,
-    items: [
-      { icon: "mdi-contacts", text: "Contacts" },
-      {
-        icon: "mdi-chevron-up",
-        "icon-alt": "mdi-chevron-down",
-        text: "More",
-        model: false,
-        children: [
-          { text: "Import" },
-          { text: "Export" },
-          { text: "Print" },
-          { text: "Undo changes" },
-          { text: "Other contacts" }
-        ]
+    items: menu
+  }),
+  methods: {
+    remove: function(arr) {
+      var what,
+        a = arguments,
+        L = a.length,
+        ax;
+      while (L > 1 && arr.length) {
+        what = a[--L];
+        while ((ax = arr.indexOf(what)) !== -1) {
+          arr.splice(ax, 1);
+        }
       }
-    ]
-  })
+    },
+    toggleAuthorisation: function(){authorised = !authorised; window.alert(authorised)},
+    setMenu: function(roles){
+      if(!authorised) return;
+      //hide every menu
+      menus['PLAYER'].hidden = true;
+      menus['COACH'].hidden = true;
+      menus['REFEREE'].hidden = true;
+      menus['TEAMMANAGER'].hidden = true;
+      menus['TEAMOWNER'].hidden = true;
+      menus['ASSOCIATIONREPRESENTITIVE'].hidden = true;
+      menus['ADMIN'].hidden = true;
+     // while(allRoles!=null){alert(allRoles);menus[allRoles].hidden=true; allRoles.next()}
+      //show only the relevent menus
+      roles.forEach(role => {menus[role].hidden=false});
+    }
+  }
 };
 </script>
-<!--<template>
-  <v-app>
-      <ourToolBar/>
-  
-      <v-spacer></v-spacer>
-
-    <v-content>
-    </v-content>
-  </v-app>
-</template>
-
-<script>
-//import HelloWorld from "./components/HelloWorld";
-import ourToolBar from "./components/Toolbar";
-
-export default {
-  name: "App",
-
-  components: {
-    //HelloWorld,
-    ourToolBar
-  },
-
-  data: () => ({
-    //
-  })
-};
-</script>
--->
