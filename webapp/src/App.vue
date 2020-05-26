@@ -79,7 +79,7 @@
         color="black"
         class="white--text"
         style="margin:10px"
-        @click="setMenu(['TEAMOWNER','PLAYER'])"
+        @click="setMenu(['TEAMOWNER','REFEREE','PLAYER','ASSOCIATIONREPRESENTITIVE'])"
       >test1</v-btn>
       <v-btn
         color="black"
@@ -155,8 +155,8 @@ var refereeMenu = {
   hidden: true,
   children: [
     {
-      text: "New team",
-      to: "/NewTeamPage",
+      text: "Manage Ongoing Game",
+      to: "/GameManagePage",
     }
   ]
 };
@@ -181,8 +181,8 @@ var assRepMenu = {
   hidden: true,
   children: [
     {
-      text: "New team",
-      to: "/NewTeamPage",
+      text: "Leage Options",
+      to: "/LeagueOptionsPage",
     }
   ]
 };
