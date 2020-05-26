@@ -23,7 +23,7 @@
                 <v-list-item-title>{{ item.text }}</v-list-item-title>
               </v-list-item-content>
             </template>
-            <v-list-item v-for="(child, i) in item.children" :key="i" link>
+            <v-list-item v-for="(child, i) in item.children" :key="i" link :to="child.to">
               <v-list-item-action v-if="child.icon">
                 <v-icon>{{ child.icon }}</v-icon>
               </v-list-item-action>
@@ -59,11 +59,11 @@
         class="hidden-sm-and-down"
       />
       <v-spacer />
-        <v-btn color="black" class="white--text" style="margin:10px" to="/">Home</v-btn>
-        <v-btn color="black" class="white--text" style="margin:10px" to="/about">About</v-btn>
-        <v-btn color="black" class="white--text" style="margin:10px" to="/RegisterPage">Register</v-btn>
-        <v-btn color="black" class="white--text" style="margin:10px;" to="/LoginPage">Login</v-btn>
-      
+      <v-btn color="black" class="white--text" style="margin:10px" to="/">Home</v-btn>
+      <v-btn color="black" class="white--text" style="margin:10px" to="/about">About</v-btn>
+      <v-btn color="black" class="white--text" style="margin:10px" to="/RegisterPage">Register</v-btn>
+      <v-btn color="black" class="white--text" style="margin:10px;" to="/LoginPage">Login</v-btn>
+
       <v-spacer />
       <v-btn icon>
         <v-icon>mdi-apps</v-icon>
@@ -96,11 +96,11 @@ export default {
       {
         icon: "mdi-chevron-up",
         "icon-alt": "mdi-chevron-down",
-        text: "More",
+        text: "Referee",
         model: false,
         children: [
-          { text: "Import" },
-          { text: "Export" },
+          { text: "Manage ongoing game", to: "/GameManagePage" },
+          { text: "Change League Options", to: "/LeagueOptionsPage" },
           { text: "Print" },
           { text: "Undo changes" },
           { text: "Other contacts" }
