@@ -1,12 +1,14 @@
 <template>
-  <div class="home">
-  <h1> Welcome to 'Morbis'</h1>
-  </div>
-  
+    <div class="home">       
+      <v-spacer> </v-spacer>  
+        <h1>Team Owner Page</h1>  
+      <v-spacer> </v-spacer> 
+    </div>
 </template>
+
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'TeamOwner',
   
 }
 </script>

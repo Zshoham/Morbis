@@ -3,9 +3,9 @@ import Router from 'vue-router'
 import Home from '../views/Home.vue'
 import RegisterPage from '../views/RegisterPage.vue'
 import LoginPage from '../views/LoginPage.vue'
-import GameManagePage from '../views/GameManagePage.vue'
-import LeagueOptionsPage from '../views/LeagueOptionsPage.vue'
-
+//import Team Owner Page
+import TeamOwnerPage from '../views/TeamOwnerPage.vue'
+import NewTeamPage from '../views/NewTeamPage.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -32,15 +32,15 @@ export default new Router({
       name: 'LoginPage',
       component: LoginPage
     },
-    {
-      path: '/GameManagePage',
-      name: 'GameManagePage',
-      component: GameManagePage
+    {//set path for team owner page
+      path: '/TeamOwnerPage',
+      name: 'TeamOwnerPage',
+      component: TeamOwnerPage
     },
-    {
-      path: '/LeagueOptionsPage',
-      name: 'LeagueOptionsPage',
-      component: LeagueOptionsPage
-    },
+      {//set path for new team page
+        path: '/NewTeamPage',
+        name: 'NewTeamPage',
+        component: NewTeamPage
+      }
   ]
 })

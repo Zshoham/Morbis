@@ -14,6 +14,8 @@
           <v-btn to="/about">About</v-btn>
           <v-btn to="/RegisterPage">Register</v-btn>
           <v-btn to="/LoginPage">Login</v-btn>
+          <v-btn to="/TeamOwnerPage">Tean Owner</v-btn>
+          <v-btn to="/NewTeamPage">New Team</v-btn>
       </div>
       <v-spacer></v-spacer>
     </v-toolbar>
