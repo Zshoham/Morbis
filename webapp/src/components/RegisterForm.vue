@@ -81,7 +81,7 @@ export default {
     },
     register() {
       /* need to check here the validation of the inputs */
-      fetch('http://dev.morbis.xyz:8080/api/register', {
+      fetch('http://dev.morbis.xyz/api/register', {
         method: 'POST',
         headers:{
           'Content-Type': 'application/json',          

@@ -3,6 +3,8 @@ import Router from 'vue-router'
 import Home from '../views/Home.vue'
 import RegisterPage from '../views/RegisterPage.vue'
 import LoginPage from '../views/LoginPage.vue'
+import GameManagePage from '../views/GameManagePage.vue'
+import LeagueOptionsPage from '../views/LeagueOptionsPage.vue'
 
 Vue.use(Router)
 
@@ -29,6 +31,16 @@ export default new Router({
       path: '/LoginPage',
       name: 'LoginPage',
       component: LoginPage
+    },
+    {
+      path: '/GameManagePage',
+      name: 'GameManagePage',
+      component: GameManagePage
+    },
+    {
+      path: '/LeagueOptionsPage',
+      name: 'LeagueOptionsPage',
+      component: LeagueOptionsPage
     },
   ]
 })
