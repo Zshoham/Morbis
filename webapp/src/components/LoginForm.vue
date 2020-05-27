@@ -26,11 +26,11 @@
 export default {
   name: "LoginForm",
   data: () => ({
-    
+    passwordVisable: false,
   }),
   methods: {
     login() {
-      fetch('http://dev.morbis.xyz:8080/api/login', {
+      fetch('http://dev.morbis.xyz/api/login', {
         method: 'POST',
         headers:{
           'Content-Type': 'application/json',          
@@ -40,18 +40,28 @@ export default {
           password: this.password,
         })
       })
-        .then(async response => {
-          alert(response.status);
+        .then(response => {
           if (response.ok) {
-            response => (this.info = response);
+            response.json().then(json => {
+              this.$root.userToken = json.token;
+              this.$root.roles = json.roles;
+              this.$root.memberID = json.memberID
+              this.changeMenu(this.$root.roles);
+              alert("Logged In successfully !")
+              console.log(this.$root.userToken);
+              this.$router.push("/HomePage");
+            })
           } else {
-            alert(
-              "Server returned " + response.status + " : " + response.statusText
-            );
+              response.json().then(json => {
+                alert(response.status + ": " + json.message);
+            });
           }
         })
         .catch(err => console.error(err));
-    }
+    },
+    changeMenu: function(roles){
+     this.$root.$emit('loginChangeMenu',roles) //like this
+  }
   }
 };
 </script>
