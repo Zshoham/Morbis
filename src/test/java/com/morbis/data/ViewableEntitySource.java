@@ -12,6 +12,7 @@ import com.morbis.model.team.entity.Stadium;
 import com.morbis.model.team.entity.Team;
 import com.morbis.model.team.repository.StadiumRepository;
 import com.morbis.model.team.repository.TeamRepository;
+import com.morbis.service.auth.AuthService;
 
 import java.time.LocalDateTime;
 
@@ -36,7 +37,6 @@ public class ViewableEntitySource {
     public static Game game;
     public static Season season;
     public static League league;
-
 
     public static void initWithoutID() {
         baseInit();

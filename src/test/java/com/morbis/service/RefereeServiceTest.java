@@ -22,6 +22,7 @@ import java.util.Optional;
 import static com.morbis.data.ViewableEntitySource.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static com.morbis.TestUtils.listOf;
 
 
 @RunWith(SpringRunner.class)
@@ -44,6 +45,7 @@ public class RefereeServiceTest {
         //mock event
         gameEvent = new GameEvent(2, GameEventType.GOAL, LocalDateTime.now().minusMinutes(10),5,"game");
         gameEvent.setGame(game);
+        game.setEvents(listOf(gameEvent));
         when(refereeRepository.findById(main.getId())).thenReturn(Optional.ofNullable(main));
         when(gameRepository.findById(game.getId())).thenReturn(Optional.ofNullable(game));
     }
@@ -52,13 +54,7 @@ public class RefereeServiceTest {
     public void getRefGamesTest() {
         List<Game> res = refereeService.getRefGames(main.getId());
         assertThat(res.size() == 1);
-        assertThat(res.get(0).equals(game));
-    }
-
-    @Test
-    public void getGameTest() {
-        Game gameRes = refereeService.getGame(game.getId());
-        assertThat(game.equals(gameRes));
+        assertThat(res).containsExactly(game);
     }
 
     @Test
@@ -69,6 +65,7 @@ public class RefereeServiceTest {
 
     @Test
     public void updateGameEventTest() {
+        game.setEndDate(LocalDateTime.now().minusHours(2));
         refereeService.updateGameEvent(main.getId(), gameEvent, game.getId());
         verify(gameEventRepository).save(gameEvent);
         gameEvent.setDate(LocalDateTime.now());
@@ -79,7 +76,7 @@ public class RefereeServiceTest {
 
     @Test
     public void getOnGoingGameEventsTest() {
-        List<GameEvent> events = refereeService.getGameEvents(game.getId());
+        List<GameEvent> events = refereeService.getOnGoingGameEvents(main.getId());
         assertThat(events).isEqualTo(game.getEvents());
         assertThat(game.getEndDate().isBefore(LocalDateTime.now()));
     }

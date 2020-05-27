@@ -25,7 +25,6 @@ public class RefereeService {
 
 
     private static final long UPDATE_PERIOD = 5;
-    private static final long GAME_LENGTH = 90;
 
     public RefereeService(RefereeRepository refereeRepository, GameRepository gameRepository, GameEventRepository gameEventRepository) {
         this.refereeRepository = refereeRepository;
@@ -38,42 +37,31 @@ public class RefereeService {
     //get the games of a referee by ID
     public List<Game> getRefGames(int refID) {
         logger.trace("called function: RefereeService->getRefGames. with the ID of" + refID);
-        Optional<Referee> referee = refereeRepository.findById(refID);
-        if (referee.isEmpty())
-            return new ArrayList<>();
-        List<Game> games = referee.get().getMainGames();
+        Referee referee = refereeRepository.findById(refID)
+                .orElseThrow(() -> new IllegalArgumentException("referee with id: " + refID + ", does not exist"));
+
+        List<Game> games = referee.getMainGames();
         //check if there are games where the referee was a support referee
-        if (referee.get().getSupportGames() != null) {
+        if (referee.getSupportGames() != null) {
             //check if there are games where the referee was a main referee
             if (games == null)
-                games = referee.get().getSupportGames();
+                games = referee.getSupportGames();
             else
-                games.addAll(referee.get().getSupportGames());
+                games.addAll(referee.getSupportGames());
         }
         logger.info("the games of the referee: " + refID + " has returned. number of games: " + games.size());
         return games;
     }
 
-    public Game getGame(int gameID) {
-        logger.trace("called function: RefereeService->getGame. with the ID of" + gameID);
-        Optional<Game> res = gameRepository.findById(gameID);
-        //check if there are any games
-        if (res.isEmpty()) {
-            logger.info("game does not exist");
-            return null;
-        }
-        logger.info("getGame returned a game");
-        return res.get();
-    }
-
     public List<GameEvent> getGameEvents(int gameID) {
         logger.trace("called function: RefereeService->getGameEvents. with the ID of" + gameID);
-        Game resGame = getGame(gameID);
+        Game resGame = gameRepository.findById(gameID)
+                .orElseThrow(() -> new IllegalArgumentException("game with id: " + gameID + ", does not exist"));
         List<GameEvent> res = resGame.getEvents();
         //check if there are any events
         if (res == null || res.isEmpty()) {
             logger.info("getGameEvents returned null");
-            return null;
+            return new ArrayList<>();
         }
         logger.info("getOnGoingGameEvents returned list of events. game ID: " + gameID + " number of events: " + res.size());
         return res;
@@ -86,8 +74,11 @@ public class RefereeService {
                 new IllegalArgumentException("trying to add event to nonexistent game"));
         updated.setGame(game);
 
+        boolean isInUpdatePeriod = game.getEndDate().plusHours(UPDATE_PERIOD).isAfter(LocalDateTime.now())
+                && game.getEndDate().isBefore(LocalDateTime.now());
+
         //check if the update period hasn't passed
-        if (game.getEndDate().plusMinutes(UPDATE_PERIOD).isAfter(LocalDateTime.now())) {
+        if (isInUpdatePeriod) {
             //check if its the main referee
             if (game.getMainRef().getId() == refID) {
                 gameEventRepository.save(updated);
@@ -99,22 +90,21 @@ public class RefereeService {
         return false;
     }
 
-    public List<GameEvent> getOnGoingGameEvents(int gameID) {
-        logger.trace("called function: RefereeService->getOnGoingGameEvents. game ID: " + gameID);
-        Game resGame = getGame(gameID);
-        //check if the game is on-going
-        if (resGame.getEndDate().isBefore(LocalDateTime.now())) {
-            List<GameEvent> res = resGame.getEvents();
-            //check if any events exists
-            if (res == null || res.isEmpty()) {
-                logger.info("getOnGoingGameEvents returned null. game ID: " + gameID);
-                return null;
-            }
-            logger.info("getOnGoingGameEvents returned list of events. game ID: " + gameID + " number of events: " + res.size());
-            return res;
-        }
-        logger.info("getOnGoingGameEvents returned null. game ID: " + gameID);
-        return null;
+    public List<GameEvent> getOnGoingGameEvents(int refID) {
+        logger.trace("called function: RefereeService->getOnGoingGameEvents. ref ID: " + refID);
+        List<Game> refGames = getRefGames(refID).stream()
+                .filter(game ->
+                        game.getStartDate().isBefore(LocalDateTime.now()) &&
+                        game.getEndDate().isAfter(LocalDateTime.now()))
+                .collect(Collectors.toList());
+
+        if (refGames.size() > 1)
+            throw new IllegalStateException("the referee - refID=" + refID + ", seems to be in more than a single game at the moment");
+
+        return refGames.stream().
+                map(Game::getEvents).
+                findFirst().
+                orElse(new ArrayList<>());
     }
 
     public boolean updateOnGoingGameEvent(int refID, GameEvent updated, int gameID) {
@@ -126,21 +116,17 @@ public class RefereeService {
 
         //check if the game is on-going
         if (game.getEndDate().isAfter(LocalDateTime.now()) && game.getStartDate().isBefore(LocalDateTime.now())) {
-            //check if the update period hasn't passed
-            if (game.getStartDate().plusMinutes(GAME_LENGTH).isAfter(LocalDateTime.now())) {
+            boolean isGameRef = game.getMainRef().getId() == refID
+                    || game.getSupportingRefs()
+                        .stream()
+                        .map(Referee::getId)
+                        .collect(Collectors.toList())
+                        .contains(refID);
 
-                boolean isGameRef = game.getMainRef().getId() == refID
-                        || game.getSupportingRefs()
-                            .stream()
-                            .map(Referee::getId)
-                            .collect(Collectors.toList())
-                            .contains(refID);
-
-                if (isGameRef) {
-                    gameEventRepository.save(updated);
-                    logger.info("updateOnGoingGameEvent returned true. referee ID: " + refID);
-                    return true;
-                }
+            if (isGameRef) {
+                gameEventRepository.save(updated);
+                logger.info("updateOnGoingGameEvent returned true. referee ID: " + refID);
+                return true;
             }
         }
         logger.info("updateOnGoingGameEvent failed. referee ID: " + refID + ", gameID: " + gameID);
