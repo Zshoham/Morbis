@@ -92,21 +92,21 @@ public class AssociationRepService {
     public void setScoringMethod(int leagueID, ScoringMethod method) throws IllegalArgumentException {
         logger.trace("called function: AssociationRepService->setScoringMethod. leagueID: " + leagueID);
         League league = leagueRepository.findById(leagueID)
-                .orElseThrow(() -> new IllegalArgumentException("trying to add season to non existent league"));
+                .orElseThrow(() -> new IllegalArgumentException("trying to change scoring method on non existent league"));
         league.setScoringMethod(method);
         leagueRepository.save(league);
-        logger.info("Scroing method has been set to the league with the ID of: " + leagueID);
+        logger.info("Scoring method has been set to the league with the ID of: " + leagueID);
     }
 
-    public List<SchedulingMethod> getSchedulingMethod() {
-        logger.trace("called function: AssociationRepService->getSchedulingMethod");
+    public List<SchedulingMethod> getSchedulingMethods() {
+        logger.trace("called function: AssociationRepService->getSchedulingMethods");
         return Stream.of(SchedulingMethod.values()).collect(Collectors.toList());
     }
 
     public void setSchedulingMethod(int leagueID, SchedulingMethod method) throws IllegalArgumentException {
         logger.trace("called function: AssociationRepService->setSchedulingMethod. to the league with the ID of: " + leagueID);
         League league = leagueRepository.findById(leagueID)
-                .orElseThrow(() -> new IllegalArgumentException("trying to add season to non existent league"));
+                .orElseThrow(() -> new IllegalArgumentException("trying to change scheduling method on non existent league"));
 
         league.setSchedulingMethod(method);
         leagueRepository.save(league);
