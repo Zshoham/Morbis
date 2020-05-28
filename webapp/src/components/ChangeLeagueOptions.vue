@@ -103,7 +103,6 @@ export default {
         method: "GET"
       })
         .then(response => {
-          alert(response.status);
           if (response.ok) {
             response.json().then(json => {
               this.leagues = json;
@@ -121,7 +120,6 @@ export default {
         method: "GET"
       })
         .then(response => {
-          alert(response.status);
           if (response.ok) {
             response.json().then(json => {
               this.scoringMethods = json;
@@ -139,7 +137,6 @@ export default {
         method: "GET"
       })
         .then(response => {
-          alert(response.status);
           if (response.ok) {
             response.json().then(json => {
               this.schedulingMethods = json;

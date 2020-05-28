@@ -7,7 +7,7 @@
         </div>
 
         <div align="center">
-          <v-form ref="form" v-model="valid" :lazy-validation="lazy">
+          <v-form ref="form" v-model="valid">
             <div v-if="connected == false">
               <v-btn class="my-5" color="success" @click="connectToServer">Connect to Server</v-btn>
               <br />Connect to the server in order to add an event
@@ -49,14 +49,15 @@ import ShowGameEvents from "./ShowGameEvents.vue";
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
 
-
 export default {
   components: {
     ShowGameEvents
   },
   name: "GameManage",
   data: () => ({
+    valid: false,
     connected: false,
+    stompClient: null,
     eventTypes: [
       "Goal",
       "Offside",
@@ -69,29 +70,37 @@ export default {
   methods: {
     connectToServer() {
       console.log("connecting to server");
-      const url = "http://dev.morbis.xyz";
+      //const url = "http://dev.morbis.xyz";
+      const url = "http://localhost:8081";
       let socket = new SockJS(url + "/api/websocket");
-      var stompClient = Stomp.over(socket);
-      stompClient.connect({}, function(frame) {
+      this.stompClient = Stomp.over(socket);
+      this.stompClient.connect({}, function(frame) {
         console.log("connected to: " + frame);
       });
       this.connected = true;
     },
-    sendEventToServer(refID, gameID, game) {
-      let data = {
-          game: game,
-          type: this.event,
-          date: "yo",
-          gameTime: this.gameTime,
-          description: this.description
+    sendEventToServer() {
+      let refID = 13;
+      let gameID = 15;
+      if (!this.valid) {
+        alert("Theres a problem with the form");
+        return;
       }
-      this.$refs.showGameEvents.addEvent(data)
-      stompClient.send(
+      let data = {
+        date: null,
+        gameTime: this.gameTime,
+        description: this.description,
+        type: this.event
+      };
+      console.log(data);
+      this.$refs.showGameEvents.addEvent(data);
+      this.stompClient.send(
         "/api/live/game-event/" + refID + "/" + gameID,
         {},
-        JSON.stringify({
-          data
-        })
+          {
+            first: "John",
+            second: 'Hello!'
+          }
       );
     }
   }

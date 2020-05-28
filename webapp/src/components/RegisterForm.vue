@@ -5,7 +5,7 @@
     </div>
 
     <div align="center">
-      <v-form ref="form" v-model="valid" :lazy-validation="lazy">
+      <v-form ref="form" v-model="valid">
         <v-text-field
           class="mx-5"
           outlined
@@ -51,7 +51,6 @@
           <v-icon right>mdi-check-circle</v-icon>
         </v-btn>
       </v-form>
-      {{info}}
     </div>
     <v-spacer></v-spacer>
   </v-card>
@@ -61,6 +60,11 @@
 export default {
   name: "RegisterForm",
   data: () => ({
+    valid: false,
+    username: "",
+    password: "",
+    name: "",
+    email: "",
     usernameRules: [
       v =>
         !v ||
@@ -99,6 +103,10 @@ export default {
     register() {
       if(this.username == null || this.password == null || this.name == null || this.email == null) {
         alert("Please fill every cell before registering");
+        return;
+      }
+      if(!this.valid) {
+        alert("You have errors in the form");
         return;
       }
       fetch("http://dev.morbis.xyz/api/register", {

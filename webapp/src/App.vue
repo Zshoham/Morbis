@@ -203,9 +203,9 @@ menus["FAN"] = fanMenu;
 menus["PLAYER"] = playerMenu;
 menus["COACH"] = coachMenu;
 menus["REFEREE"] = refereeMenu;
-menus["TEAMMANAGER"] = teamManagerMenu;
-menus["TEAMOWNER"] = teamOwnerMenu;
-menus["ASSOCIATIONREPRESENTITIVE"] = assRepMenu;
+menus["TEAM_MANAGER"] = teamManagerMenu;
+menus["TEAM_OWNER"] = teamOwnerMenu;
+menus["ASSOCIATION_REP"] = assRepMenu;
 menus["ADMIN"] = adminMenu;
 var menu = [
   { icon: "mdi-home", text: "\t Home", to: "/HomePage" },
@@ -280,10 +280,7 @@ export default {
       });
     },
     Logout() {
-      let logoutPlease =
-        "http://dev.morbis.xyz/api/logout/" + this.$root.userToken;
-      alert(logoutPlease);
-      fetch(logoutPlease, {
+      fetch("http://dev.morbis.xyz/api/logout/" + this.$root.userToken, {
         method: "GET",
         headers: {
           accept: "*/*"
@@ -298,7 +295,8 @@ export default {
             document.getElementById('loginButton').style.display = 'block';
             document.getElementById('registerButton').style.display = 'block';
             document.getElementById('logoutButton').style.display = 'none';
-            window.location.href = "/WelcomePage";
+            window.location.href = 'WelcomePage'
+            //this.$router.push("/WelcomePage");
           } else {
             alert(
               "There was an error while logging out: " +

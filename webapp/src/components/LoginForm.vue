@@ -6,7 +6,7 @@
     
     <div align="center">
       
-      <v-form ref="form" v-model="valid" :lazy-validation="lazy">
+      <v-form ref="form" v-model="valid">
         <v-text-field class="mx-5" outlined v-model="username" :prepend-icon="'mdi-account'" label="Username" required></v-text-field>
         <v-text-field class="mx-5" outlined v-model="password" :prepend-icon="'mdi-lock'" :append-icon="passwordVisable ? 'mdi-eye' : 'mdi-eye-off'" @click:append="passwordVisable = !passwordVisable"  :type="passwordVisable ? 'text' : 'password'" label="Password" required></v-text-field>
 
@@ -15,7 +15,6 @@
           <v-icon right>mdi-check-circle</v-icon>
         </v-btn>  
       </v-form>
-      {{info}}
     </div>
     <v-spacer ></v-spacer>
   </v-card>
@@ -26,10 +25,17 @@
 export default {
   name: "LoginForm",
   data: () => ({
+    valid: false,
+    username: "",
+    password: "",
     passwordVisable: false,
   }),
   methods: {
     login() {
+      if(!this.valid) {
+        alert("There's a problem");
+        return;
+      }
       fetch('http://dev.morbis.xyz/api/login', {
         method: 'POST',
         headers:{
@@ -52,9 +58,11 @@ export default {
               this.$router.push("/HomePage");
             })
           } else {
-              response.json().then(json => {
-                alert(response.status + ": " + json.message);
-            });
+              if(response.status == 401) {
+                alert("The combination of username and password doesn't exist");
+              }else{
+                response.json().then(json => { alert(response.status + ": " + json.message); });
+              }
           }
         })
         .catch(err => console.error(err));
