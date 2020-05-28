@@ -19,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,7 +51,8 @@ public class TeamOwnerServiceTest {
     public void getTeamlessAssets() {
         // initialize player
         LinkedList<Player> teamlessPlayers = new LinkedList<>();
-        Player testPlayer = new Player(1, "playerUser", "playerPass", "playerName", "playerEmail",LocalDateTime.now(),"Goal Keeper");
+
+        Player testPlayer = new Player(1, "playerUser", "playerPass", "playerName", "playerEmail", LocalDate.now(),"Goal Keeper");
         teamlessPlayers.add(testPlayer);
         when(playerRepository.findAllByTeamIsNull()).thenReturn(teamlessPlayers);
         // initialize stadium
@@ -138,7 +140,7 @@ public class TeamOwnerServiceTest {
         setUp();
 
         Coach testCoach = new Coach(100,"coachUser","coachPass" ,"coachName" ,"coachEmail" ,"Qualifications are for losers" ,"Manager Assistant");
-        Player testPlayer = new Player(101, "playerUser", "playerPass", "playerName", "playerEmail",LocalDateTime.now(),"Goal Keeper");
+        Player testPlayer = new Player(101, "playerUser", "playerPass", "playerName", "playerEmail",LocalDate.now(),"Goal Keeper");
         List<Asset<?>> newAssets = new LinkedList<>();
         Stadium testStadium = new Stadium(102, "Sami Ofer");
         Asset<Coach> assetCoach = new Asset<>(ViewableEntityType.COACH, testCoach.getId());
@@ -188,7 +190,7 @@ public class TeamOwnerServiceTest {
         Asset<Coach> updatedAssetCoach = new Asset<>(ViewableEntityType.COACH, updatedCoach.getId());
         updatedAssetCoach.putRecord(updatedCoach);
         teamOwnerService.updateAsset(updatedAssetCoach);
-        Player updatedPlayer = new Player(3, "playerUser", "playerPass", "playerName", "playerEmail",LocalDateTime.now(),"Goal Keeper");
+        Player updatedPlayer = new Player(3, "playerUser", "playerPass", "playerName", "playerEmail",LocalDate.now(),"Goal Keeper");
         Asset<Player> updatedAssetPlayer = new Asset<>(ViewableEntityType.PLAYER, updatedPlayer.getId());
         updatedAssetPlayer.putRecord(updatedPlayer);
         teamOwnerService.updateAsset(updatedAssetPlayer);

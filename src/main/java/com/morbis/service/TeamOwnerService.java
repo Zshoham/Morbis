@@ -12,11 +12,13 @@ import com.morbis.model.team.repository.TransactionRepository;
 import com.morbis.service.viewable.Asset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 import static com.morbis.service.viewable.ViewableEntityType.*;
 
+@Service
 public class TeamOwnerService {
     private final TeamOwnerRepository teamOwnerRepository;
     private final TeamManagerRepository teamManagerRepository;
