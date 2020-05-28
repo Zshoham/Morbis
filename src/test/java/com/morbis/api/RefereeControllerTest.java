@@ -9,6 +9,7 @@ import com.morbis.model.game.entity.GameEvent;
 import com.morbis.model.game.entity.GameEventType;
 import com.morbis.service.RefereeService;
 import com.morbis.service.auth.AuthService;
+import com.morbis.service.viewable.MatchReport;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,8 +24,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import javax.swing.text.html.Option;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static com.morbis.TestUtils.listOf;
 import static com.morbis.data.ViewableEntitySource.*;
@@ -51,6 +54,8 @@ public class RefereeControllerTest {
 
     private GameEvent testEvent;
 
+    private MatchReport testReport;
+
     @Before
     public void setUp() {
         initWithID();
@@ -64,17 +69,23 @@ public class RefereeControllerTest {
 
         game.setEvents(listOf(testEvent));
 
+        testReport = new MatchReport(game);
+
         when(authService.authorize(any(), any())).thenReturn(true);
 
         when(refereeService.getRefGames(main.getId())).thenReturn(listOf(game));
         when(refereeService.getGameEvents(game.getId())).thenReturn(listOf(testEvent));
         when(refereeService.getOnGoingGameEvents(main.getId())).thenReturn(listOf(testEvent));
         when(refereeService.updateGameEvent(main.getId(), testEvent, game.getId())).thenReturn(true);
+        when(refereeService.getMatchReport(main.getId(), game.getId())).thenReturn(testReport);
+        when(refereeService.getOngoingGame(main.getId())).thenReturn(Optional.of(game));
 
         doThrow(new IllegalArgumentException()).when(refereeService).getRefGames(BAD_ID);
         doThrow(new IllegalArgumentException()).when(refereeService).getGameEvents(BAD_ID);
         doThrow(new IllegalArgumentException()).when(refereeService).getOnGoingGameEvents(BAD_ID);
         when(refereeService.updateGameEvent(BAD_ID, testEvent, BAD_ID)).thenReturn(false);
+        doThrow(new IllegalStateException()).when(refereeService).getMatchReport(supporting.getId(), game.getId());
+        when(refereeService.getOngoingGame(supporting.getId())).thenReturn(Optional.empty());
     }
 
     @Test
@@ -90,6 +101,19 @@ public class RefereeControllerTest {
         assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getResponse().getContentAsString())
                 .contains("IllegalArgumentException");
+    }
+
+    @Test
+    public void getOngoingGame() throws UnsupportedEncodingException {
+        // positive - ref has an ongoing game
+        MvcResult response = TestUtils.makeGetRequest("/api/referee/{refID}/game-ongoing", apiMock, main.getId());
+        assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getResponse().getContentAsString())
+                .contains(listOf(String.valueOf(game.getId()), Game.getDescription(game)));
+
+        // negative - ref has no ongoing games
+        response = TestUtils.makeGetRequest("/api/referee/{refID}/game-ongoing", apiMock, supporting.getId());
+        assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -140,5 +164,24 @@ public class RefereeControllerTest {
                 apiMock, MediaType.APPLICATION_JSON, dto,
                 listOf(Pair.of("gameID", String.valueOf(BAD_ID))), BAD_ID);
         assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    public void getMatchReport() throws UnsupportedEncodingException {
+        // positive - main referee requests the report.
+        MvcResult response = TestUtils.makeGetRequest(
+                "/api/referee/{refID}/match-report", apiMock,
+                listOf(Pair.of("gameID", String.valueOf(game.getId()))), main.getId());
+        assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getResponse().getContentAsString())
+                .contains(listOf(Game.getDescription(game), main.getName(), testEvent.getDescription()));
+
+        // negative - supporting referee requests the report.
+        response = TestUtils.makeGetRequest(
+                "/api/referee/{refID}/match-report", apiMock,
+                listOf(Pair.of("gameID", String.valueOf(game.getId()))), supporting.getId());
+        assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.getResponse().getContentAsString())
+                .contains("IllegalStateException");
     }
 }

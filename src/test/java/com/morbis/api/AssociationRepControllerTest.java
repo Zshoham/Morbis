@@ -118,7 +118,7 @@ public class AssociationRepControllerTest {
         TeamOwnerRegRequest request = new TeamOwnerRegRequest(simpleMember, "new team");
         when(associationRepService.getAllPendingRequests()).thenReturn(listOf(request));
 
-        MvcResult response = makeGetRequest("/api/association-rep/getAllPendingRequests", apiMock);
+        MvcResult response = makeGetRequest("/api/association-rep/pending-team-requests", apiMock);
         assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getResponse().getContentAsString())
                 .contains(listOf(String.valueOf(request.getId()), request.getRequestedTeamName()));
@@ -128,7 +128,7 @@ public class AssociationRepControllerTest {
     public void handleNewTeamOwnerRequest() {
         // positive - request exists
         MvcResult response = makePostRequest(
-                "/api/association-rep/handleNewTeamOwnerRequest", apiMock, MediaType.APPLICATION_JSON,
+                "/api/association-rep/handle-team-request", apiMock, MediaType.APPLICATION_JSON,
                 listOf(Pair.of("memberID", "5"), Pair.of("approved", Boolean.toString(true))));
         assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
 
@@ -138,7 +138,7 @@ public class AssociationRepControllerTest {
                 .handleNewTeamOwnerRequest(5, true);
 
         response = makePostRequest(
-                "/api/association-rep/handleNewTeamOwnerRequest", apiMock, MediaType.APPLICATION_JSON,
+                "/api/association-rep/handle-team-request", apiMock, MediaType.APPLICATION_JSON,
                 listOf(Pair.of("memberID", "5"), Pair.of("approved", Boolean.toString(true))));
         assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 

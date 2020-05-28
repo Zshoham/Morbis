@@ -59,7 +59,7 @@ public class AssociationRepController {
         return ResponseEntity.accepted().build();
     }
 
-    @GetMapping("/getAllPendingRequests")
+    @GetMapping("/pending-team-requests")
     @Operation(summary = "get all members requests for open new teams")
     @ApiResponse(responseCode = "200", description = "list of all the requests")
     public ResponseEntity<List<TeamRequestDTO>> getAllPendingRequests(){
@@ -68,7 +68,7 @@ public class AssociationRepController {
         return ResponseEntity.ok(res);
     }
 
-    @PostMapping("/handleNewTeamOwnerRequest")
+    @PostMapping("/handle-team-request")
     @Operation(summary = "approve or deny members requests to become a team owner")
     public ResponseEntity<?> handleNewTeamOwnerRequest(@RequestParam int memberID, @RequestParam boolean approved) {
         associationRepService.handleNewTeamOwnerRequest(memberID, approved);

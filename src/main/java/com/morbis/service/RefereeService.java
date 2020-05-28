@@ -6,6 +6,7 @@ import com.morbis.model.game.repository.GameEventRepository;
 import com.morbis.model.game.repository.GameRepository;
 import com.morbis.model.member.entity.Referee;
 import com.morbis.model.member.repository.RefereeRepository;
+import com.morbis.service.viewable.MatchReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -51,6 +52,19 @@ public class RefereeService {
         }
         logger.info("the games of the referee: " + refID + " has returned. number of games: " + games.size());
         return games;
+    }
+
+    public Optional<Game> getOngoingGame(int refID) {
+        List<Game> refGames = getRefGames(refID).stream()
+                .filter(game ->
+                        game.getStartDate().isBefore(LocalDateTime.now()) &&
+                                game.getEndDate().isAfter(LocalDateTime.now()))
+                .collect(Collectors.toList());
+
+        if (refGames.size() > 1)
+            throw new IllegalStateException("the referee - refID=" + refID + ", seems to be in more than a single game at the moment");
+
+        return refGames.stream().findAny();
     }
 
     public List<GameEvent> getGameEvents(int gameID) {
@@ -133,4 +147,16 @@ public class RefereeService {
         return false;
     }
 
+    public MatchReport getMatchReport(int refID, int gameID) {
+        Referee ref = refereeRepository.findById(refID)
+                .orElseThrow(() -> new IllegalArgumentException("referee with id " + refID + " does not exist"));
+
+        Game game = gameRepository.findById(gameID)
+                .orElseThrow(() -> new IllegalArgumentException("game with id " + gameID + " does not exist"));
+
+        if (!game.getMainRef().equals(ref))
+            throw new IllegalStateException("referee with id=" + refID + " is not the main referee of the game=" + gameID);
+
+        return new MatchReport(game);
+    }
 }
