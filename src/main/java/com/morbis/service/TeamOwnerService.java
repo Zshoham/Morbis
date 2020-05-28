@@ -9,10 +9,16 @@ import com.morbis.model.team.entity.Transaction;
 import com.morbis.model.team.repository.StadiumRepository;
 import com.morbis.model.team.repository.TeamRepository;
 import com.morbis.model.team.repository.TransactionRepository;
+import com.morbis.service.external.accounting.AccountingService;
+import com.morbis.service.external.accounting.AccountingServiceProvider;
+import com.morbis.service.external.tax.TaxService;
+import com.morbis.service.external.tax.TaxServiceProvider;
 import com.morbis.service.viewable.Asset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.morbis.service.viewable.ViewableEntityType.*;
@@ -29,7 +35,14 @@ public class TeamOwnerService {
     private final Logger logger;
 
 
-    public TeamOwnerService(TeamOwnerRepository teamOwnerRepository, TeamManagerRepository teamManagerRepository, PlayerRepository playerRepository, StadiumRepository stadiumRepository, CoachRepository coachRepository, TeamRepository teamRepository, MemberRepository memberRepository, TransactionRepository transactionRepository) {
+    public TeamOwnerService(TeamOwnerRepository teamOwnerRepository,
+                            TeamManagerRepository teamManagerRepository,
+                            PlayerRepository playerRepository,
+                            StadiumRepository stadiumRepository,
+                            CoachRepository coachRepository,
+                            TeamRepository teamRepository,
+                            MemberRepository memberRepository,
+                            TransactionRepository transactionRepository) {
         this.teamOwnerRepository = teamOwnerRepository;
         this.teamManagerRepository = teamManagerRepository;
         this.playerRepository = playerRepository;
@@ -303,6 +316,7 @@ public class TeamOwnerService {
     }
 
     public void submitTransaction(int teamID, String description, int value) {
+        AccountingService accounting = AccountingServiceProvider.getInstance();
         logger.trace("called function: RefereeService->submitTransaction. team ID: " + teamID);
         Team team = teamRepository.findById(teamID).orElseThrow(
                 () -> new IllegalArgumentException("invalid team id"));
@@ -314,6 +328,8 @@ public class TeamOwnerService {
         team.getTransactions().add(transaction);
         teamRepository.save(team);
         transactionRepository.save(transaction);
+
+        accounting.addPayment(team.getName(), LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), value);
     }
 
 
