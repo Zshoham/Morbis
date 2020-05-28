@@ -6,6 +6,7 @@ import com.morbis.model.game.entity.GameEventType;
 import com.morbis.model.game.repository.GameEventRepository;
 import com.morbis.model.game.repository.GameRepository;
 import com.morbis.model.member.repository.RefereeRepository;
+import com.morbis.service.viewable.MatchReport;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +59,20 @@ public class RefereeServiceTest {
     }
 
     @Test
+    public void getOngoingGame() {
+        // positive - ref has an ongoing game
+        Optional<Game> ongoing = refereeService.getOngoingGame(main.getId());
+        assertThat(ongoing)
+                .isPresent()
+                .contains(game);
+
+        // negative - ref has no ongoing game
+        game.setStartDate(LocalDateTime.now().plusHours(2));
+        ongoing = refereeService.getOngoingGame(main.getId());
+        assertThat(ongoing).isEmpty();
+    }
+
+    @Test
     public void getGameEventsTest() {
         List<GameEvent> events = refereeService.getGameEvents(game.getId());
         assertThat(events).isEqualTo(game.getEvents());
@@ -90,5 +105,14 @@ public class RefereeServiceTest {
         refereeService.updateOnGoingGameEvent(main.getId(), gameEvent, game.getId());
         // only one invocation that happened in the previous call.
         verify(gameEventRepository,times(1)).save(any());
+    }
+
+    @Test
+    public void getMatchReport() {
+        MatchReport report = refereeService.getMatchReport(main.getId(), game.getId());
+        assertThat(report.getTitle()).isEqualTo(Game.getDescription(game));
+        assertThat(report.getReferee()).isEqualTo(main.getName());
+        assertThat(report.getEvents())
+                .allMatch(eventStr -> eventStr.contains(gameEvent.getDescription()));
     }
 }

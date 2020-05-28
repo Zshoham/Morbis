@@ -6,6 +6,8 @@ import com.morbis.api.dto.GameDTO;
 import com.morbis.api.dto.PlayerRegistrationDTO;
 import com.morbis.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +53,7 @@ public class FanController {
     @ApiResponse(responseCode = "200", description = "successfully registered as a Team Owner")
     @ApiResponse(responseCode = "400", description = "member is already a team owner or team with this name already exist")
     public ResponseEntity<?> requestRegisterAsTeamOwner(@PathVariable int memberID,
-                                                        @RequestBody TextNode teamName)  {
+                                                        @Parameter(schema = @Schema(implementation = String.class)) @RequestBody TextNode teamName)  {
         memberService.requestRegisterAsTeamOwner(memberID, teamName.asText());
         return ResponseEntity.ok().build();
     }

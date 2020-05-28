@@ -2,7 +2,9 @@ package com.morbis.api;
 
 import com.morbis.api.dto.GameDTO;
 import com.morbis.api.dto.GameEventDTO;
+import com.morbis.model.game.entity.Game;
 import com.morbis.service.RefereeService;
+import com.morbis.service.viewable.MatchReport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -28,10 +31,13 @@ public class RefereeController {
         this.eventEmitter = eventEmitter;
     }
 
-    @MessageMapping("/game-event/{refID}/{gameID}")
+    @MessageMapping("/{refID}/game-event/")
     public void updateOnGoingGameEvent(@DestinationVariable int refID,
-                                               GameEventDTO event,
-                                               @DestinationVariable int gameID) {
+                                               GameEventDTO event) {
+
+        int gameID = refereeService.getOngoingGame(refID)
+                .orElseThrow(() -> new IllegalArgumentException("referee with id=" + refID + " has no ongoing game"))
+                .getId();
 
         if (refereeService.updateOnGoingGameEvent(refID, event.asGameEvent(), gameID))
             eventEmitter.convertAndSend("/api/events/game-events/" + gameID, event);
@@ -46,6 +52,15 @@ public class RefereeController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/{refID}/game-ongoing")
+    public ResponseEntity<?> getOngoingGame(@PathVariable int refID) {
+        Optional<Game> game = refereeService.getOngoingGame(refID);
+        if (game.isEmpty())
+            return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(GameDTO.fromGame(game.get()));
     }
 
     @GetMapping("/game-events")
@@ -87,5 +102,11 @@ public class RefereeController {
             return ResponseEntity.ok().build();
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @GetMapping("/{refID}/match-report")
+    public ResponseEntity<MatchReport> getMatchReport(@PathVariable int refID, @RequestParam int gameID) {
+        MatchReport report = refereeService.getMatchReport(refID, gameID);
+        return ResponseEntity.ok(report);
     }
 }
