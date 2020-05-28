@@ -7,7 +7,9 @@ import com.morbis.model.league.entity.Season;
 import com.morbis.model.league.repository.LeagueRepository;
 import com.morbis.model.league.repository.SeasonRepository;
 import com.morbis.model.member.entity.Referee;
+import com.morbis.model.member.entity.TeamOwnerRegRequest;
 import com.morbis.model.member.repository.RefereeRepository;
+import com.morbis.model.member.repository.TeamOwnerRegRequestRepository;
 import com.morbis.service.notification.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,18 +29,24 @@ public class AssociationRepService {
     private final SeasonRepository seasonRepository;
     private final LeagueRepository leagueRepository;
     private final RefereeRepository refereeRepository;
+    private final TeamOwnerRegRequestRepository teamOwnerRegRequestRepository;
 
     private final EmailService emailService;
+    private final MemberService memberService;
     private final Logger logger;
 
-    public AssociationRepService(SeasonRepository seasonRepository,
+    public AssociationRepService(EmailService emailService,
+                                 MemberService memberService,
+                                 SeasonRepository seasonRepository,
                                  LeagueRepository leagueRepository,
                                  RefereeRepository refereeRepository,
-                                 EmailService emailService) {
+                                 TeamOwnerRegRequestRepository teamOwnerRegRequestRepository) {
+        this.emailService = emailService;
+        this.memberService = memberService;
         this.seasonRepository = seasonRepository;
         this.leagueRepository = leagueRepository;
         this.refereeRepository = refereeRepository;
-        this.emailService = emailService;
+        this.teamOwnerRegRequestRepository = teamOwnerRegRequestRepository;
         this.logger = LoggerFactory.getLogger(AssociationRepService.class);
     }
 
@@ -157,5 +165,17 @@ public class AssociationRepService {
 
         referees.forEach(refereeRepository::delete);
         logger.info("Referees has been removed.");
+    }
+
+    public List<TeamOwnerRegRequest> getAllPendingRequests(){
+        return teamOwnerRegRequestRepository.findAll();
+    }
+
+    public void handleNewTeamOwnerRequest(int requestingMemberId, boolean approved){
+        TeamOwnerRegRequest request = teamOwnerRegRequestRepository.findById(requestingMemberId)
+                .orElseThrow(()-> new IllegalArgumentException("request not found"));
+        if(approved)
+            memberService.registerAsTeamOwner(requestingMemberId, request.getRequestedTeamName());
+        teamOwnerRegRequestRepository.deleteById(requestingMemberId);
     }
 }

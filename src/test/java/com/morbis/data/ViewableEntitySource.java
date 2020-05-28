@@ -14,6 +14,7 @@ import com.morbis.model.team.repository.StadiumRepository;
 import com.morbis.model.team.repository.TeamRepository;
 import com.morbis.service.auth.AuthService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static com.morbis.TestUtils.listOf;
@@ -56,11 +57,11 @@ public class ViewableEntitySource {
         awayStadium = Stadium.newStadium("away stadium")
                 .build();
 
-        homePlayer = Player.newPlayer(LocalDateTime.now(), "ST")
+        homePlayer = Player.newPlayer(LocalDate.now(), "ST")
                 .fromMember("home player", "pass", "name", "email")
                 .build();
 
-        awayPlayer = Player.newPlayer(LocalDateTime.now(), "ST")
+        awayPlayer = Player.newPlayer(LocalDate.now(), "ST")
                 .fromMember("away player", "pass", "name", "email")
                 .build();
 

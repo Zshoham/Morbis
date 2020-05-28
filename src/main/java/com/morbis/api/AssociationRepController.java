@@ -1,6 +1,7 @@
 package com.morbis.api;
 
 import com.morbis.api.dto.LeagueDTO;
+import com.morbis.api.dto.TeamRequestDTO;
 import com.morbis.model.league.entity.SchedulingMethod;
 import com.morbis.model.league.entity.ScoringMethod;
 import com.morbis.service.AssociationRepService;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("api/rep")
+@RequestMapping("api/association-rep")
 public class AssociationRepController {
 
     private final AssociationRepService associationRepService;
@@ -56,5 +57,21 @@ public class AssociationRepController {
         associationRepService.setSchedulingMethod(updated.leagueID, updated.schedulingMethod);
 
         return ResponseEntity.accepted().build();
+    }
+
+    @GetMapping("/getAllPendingRequests")
+    @Operation(summary = "get all members requests for open new teams")
+    @ApiResponse(responseCode = "200", description = "list of all the requests")
+    public ResponseEntity<List<TeamRequestDTO>> getAllPendingRequests(){
+        List<TeamRequestDTO> res = associationRepService.getAllPendingRequests()
+                .stream().map(TeamRequestDTO::fromRequest).collect(Collectors.toList());
+        return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("/handleNewTeamOwnerRequest")
+    @Operation(summary = "approve or deny members requests to become a team owner")
+    public ResponseEntity<?> handleNewTeamOwnerRequest(@RequestParam int memberID, @RequestParam boolean approved) {
+        associationRepService.handleNewTeamOwnerRequest(memberID, approved);
+        return ResponseEntity.ok().build();
     }
 }

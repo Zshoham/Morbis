@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -141,11 +142,11 @@ public class MorbisApplication implements ApplicationRunner {
         awayStadium = Stadium.newStadium("away stadium")
                 .build();
 
-        homePlayer = Player.newPlayer(LocalDateTime.now(), "ST")
+        homePlayer = Player.newPlayer(LocalDate.now(), "ST")
                 .fromMember("home player", "pass", "name", "email")
                 .build();
 
-        awayPlayer = Player.newPlayer(LocalDateTime.now(), "ST")
+        awayPlayer = Player.newPlayer(LocalDate.now(), "ST")
                 .fromMember("away player", "pass", "name", "email")
                 .build();
 

@@ -1,5 +1,9 @@
 package com.morbis.model.member.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.morbis.model.game.entity.Game;
+import com.morbis.model.game.entity.GameEvent;
 import com.morbis.model.poster.entity.PosterData;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -70,6 +74,10 @@ public abstract class Member {
 
     @OneToMany(targetEntity = MemberSearch.class)
     protected List<MemberSearch> searches;
+
+    @ManyToMany(targetEntity = Game.class)
+    @JsonIgnore
+    protected List<Game> gamesFollowing;
 
     public Member asBashFan() {
         return Fan.newFan()

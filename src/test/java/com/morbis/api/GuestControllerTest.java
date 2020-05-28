@@ -126,7 +126,7 @@ public class GuestControllerTest {
 
         // negative test
         response = TestUtils.makeGetRequest(
-                "/api/logout/{token}=", apiMock, "Invalid Token");
+                "/api/logout/{token}", apiMock, "Invalid Token");
         assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
         verify(authService, times(0)).logout(token);
     }

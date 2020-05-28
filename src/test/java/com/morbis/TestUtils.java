@@ -62,6 +62,20 @@ public abstract class TestUtils {
         return res.response;
     }
 
+    public static MvcResult makePostRequest(String url, MockMvc mvc, MediaType mediaType, List<Pair<String,String>> queryParams, Object... pathVariables) {
+        LinkedMultiValueMap<String,String> queryParamsMap = new LinkedMultiValueMap<>();
+        queryParams.forEach(paramPair -> queryParamsMap.add(paramPair.getFirst(), paramPair.getSecond()));
+        RequestBuilder request = MockMvcRequestBuilders.post(url, pathVariables)
+                .header("Authorization", "testToken")
+                .queryParams(queryParamsMap)
+                .contentType(mediaType);
+        var res = new Object() { MvcResult response; };
+        Throwable possibleException = catchThrowable(() -> res.response = mvc.perform(request).andReturn());
+        assertThat(possibleException).doesNotThrowAnyException();
+
+        return res.response;
+    }
+
     public static MvcResult makeGetRequest(String url, MockMvc mvc, Object... pathVariables) {
         RequestBuilder request = MockMvcRequestBuilders.get(url, pathVariables)
                 .header("Authorization", "testToken");

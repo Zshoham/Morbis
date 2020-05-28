@@ -9,7 +9,9 @@ import com.morbis.model.league.repository.LeagueRepository;
 import com.morbis.model.league.repository.SeasonRepository;
 import com.morbis.model.member.entity.Member;
 import com.morbis.model.member.entity.Referee;
+import com.morbis.model.member.entity.TeamOwnerRegRequest;
 import com.morbis.model.member.repository.RefereeRepository;
+import com.morbis.model.member.repository.TeamOwnerRegRequestRepository;
 import com.morbis.service.notification.EmailService;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,9 +27,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.morbis.TestUtils.listOf;
-import static com.morbis.data.ViewableEntitySource.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static com.morbis.data.MemberServiceDataSource.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
@@ -38,14 +39,16 @@ public class AssociationRepServiceTest {
     @Autowired
     private AssociationRepService associationRepService;
 
+    @MockBean private EmailService emailService;
+    @MockBean private MemberService memberService;
     @MockBean private SeasonRepository seasonRepository;
     @MockBean private LeagueRepository leagueRepository;
     @MockBean private RefereeRepository refereeRepository;
-    @MockBean private EmailService emailService;
+    @MockBean private TeamOwnerRegRequestRepository teamOwnerRegRequestRepository;
 
     @Before
     public void setUp() {
-        ViewableEntitySource.initWithID();
+        initWithID();
 
         when(leagueRepository.findAllByName(league.getName())).thenReturn(listOf(league));
         when(leagueRepository.findById(league.getId())).thenReturn(Optional.of(league));
@@ -154,5 +157,19 @@ public class AssociationRepServiceTest {
 
         // referee is removed.
         verify(refereeRepository, times(1)).delete(main);
+    }
+
+    @Test
+    public void handleNewTeamOwnerRequest(){
+        // positive test - valid request
+        when(teamOwnerRegRequestRepository.findById(simpleMember.getId()))
+                .thenReturn(Optional.of(new TeamOwnerRegRequest(simpleMember, "new team")));
+        Throwable possibleException = catchThrowable(() -> associationRepService.handleNewTeamOwnerRequest(simpleMember.getId(), false));
+        assertThat(possibleException).doesNotThrowAnyException();
+        verify(teamOwnerRegRequestRepository).deleteById(simpleMember.getId());
+
+        // negative test - invalid request
+        assertThatThrownBy(() -> associationRepService.handleNewTeamOwnerRequest(999, true))
+                .hasMessageContaining("request not found");
     }
 }

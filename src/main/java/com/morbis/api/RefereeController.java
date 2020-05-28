@@ -2,17 +2,13 @@ package com.morbis.api;
 
 import com.morbis.api.dto.GameDTO;
 import com.morbis.api.dto.GameEventDTO;
-import com.morbis.model.game.entity.Game;
-import com.morbis.model.game.entity.GameEvent;
 import com.morbis.service.RefereeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
