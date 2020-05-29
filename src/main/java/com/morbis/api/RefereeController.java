@@ -31,7 +31,7 @@ public class RefereeController {
         this.eventEmitter = eventEmitter;
     }
 
-    @MessageMapping("/{refID}/game-event/")
+    @MessageMapping("/{refID}/game-event")
     public void updateOnGoingGameEvent(@DestinationVariable int refID,
                                                GameEventDTO event) {
 

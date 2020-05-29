@@ -11,13 +11,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class RefereeService {
     private final RefereeRepository refereeRepository;
     private final GameRepository gameRepository;
@@ -127,6 +130,12 @@ public class RefereeService {
         Game game = gameRepository.findById(gameID).orElseThrow(() ->
                 new IllegalArgumentException("trying to add event to nonexistent game"));
         updated.setGame(game);
+
+        if (game.getEndDate().isBefore(updated.getDate()))
+            throw new IllegalStateException("referee " + refID +" is trying to add event after the game is over");
+
+        int gameTime = (int) ChronoUnit.MINUTES.between(game.getStartDate(), updated.getDate());
+        updated.setGameTime(gameTime);
 
         //check if the game is on-going
         if (game.getEndDate().isAfter(LocalDateTime.now()) && game.getStartDate().isBefore(LocalDateTime.now())) {
