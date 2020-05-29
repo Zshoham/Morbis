@@ -60,7 +60,6 @@ public class Game {
     private Team away;
 
     @ManyToMany(targetEntity = Member.class)
-//    @JsonManagedReference(value = "followers")
     private List<Member> followers;
 
     @OneToMany(targetEntity = Player.class)
