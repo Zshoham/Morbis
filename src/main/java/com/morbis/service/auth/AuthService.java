@@ -1,5 +1,6 @@
 package com.morbis.service.auth;
 
+import com.morbis.MorbisApplication;
 import com.morbis.model.member.entity.Member;
 import com.morbis.model.member.entity.MemberRole;
 import com.morbis.model.member.repository.MemberRepository;
@@ -73,6 +74,8 @@ public class AuthService {
 
     public void logout(String token) {
         logger.trace("called function: AuthService->logout.");
+        if (MorbisApplication.DEV_MODE && token.equals("42"))
+            auth = new AuthTable();
         auth.removeToken(token);
     }
 

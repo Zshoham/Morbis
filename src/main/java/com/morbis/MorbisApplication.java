@@ -36,6 +36,8 @@ import java.util.stream.Stream;
 @SpringBootApplication
 public class MorbisApplication implements ApplicationRunner {
 
+    public static boolean DEV_MODE = false;
+
     private final Logger logger = LoggerFactory.getLogger(MorbisApplication.class);
 
     private final AuthService authService;
@@ -80,8 +82,10 @@ public class MorbisApplication implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        if (args.getOptionNames().contains("dev"))
+        if (args.getOptionNames().contains("dev")) {
+            DEV_MODE = true;
             populateDevData();
+        }
 
         if (!args.getOptionNames().contains("setup"))
             return;
@@ -118,6 +122,12 @@ public class MorbisApplication implements ApplicationRunner {
     }
 
     private void populateDevData() {
+
+        AssociationRep rep = AssociationRep.newAssociationRep()
+                .fromMember("rep", "pass", "rep", "rep")
+                .build();
+        authService.register(rep);
+
         Stadium homeStadium;
         Stadium awayStadium;
         Player homePlayer;
