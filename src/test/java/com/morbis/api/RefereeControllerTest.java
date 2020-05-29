@@ -1,5 +1,6 @@
 package com.morbis.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.morbis.TestUtils;
@@ -33,6 +34,7 @@ import static com.morbis.TestUtils.listOf;
 import static com.morbis.data.ViewableEntitySource.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -76,7 +78,7 @@ public class RefereeControllerTest {
         when(refereeService.getRefGames(main.getId())).thenReturn(listOf(game));
         when(refereeService.getGameEvents(game.getId())).thenReturn(listOf(testEvent));
         when(refereeService.getOnGoingGameEvents(main.getId())).thenReturn(listOf(testEvent));
-        when(refereeService.updateGameEvent(main.getId(), testEvent, game.getId())).thenReturn(true);
+        when(refereeService.updateGameEvent(eq(main.getId()), any(), eq(game.getId()))).thenReturn(true);
         when(refereeService.getMatchReport(main.getId(), game.getId())).thenReturn(testReport);
         when(refereeService.getOngoingGame(main.getId())).thenReturn(Optional.of(game));
 

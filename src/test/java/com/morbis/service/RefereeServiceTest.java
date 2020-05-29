@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import static com.morbis.data.ViewableEntitySource.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Mockito.*;
 import static com.morbis.TestUtils.listOf;
 
@@ -100,9 +101,12 @@ public class RefereeServiceTest {
     public void updateOnGoingGameEventTest() {
         refereeService.updateOnGoingGameEvent(main.getId(), gameEvent, game.getId());
         verify(gameEventRepository).save(gameEvent);
+
         gameEvent.setDate(LocalDateTime.now());
         gameEvent.getGame().setEndDate(LocalDateTime.now().minusDays(1));
-        refereeService.updateOnGoingGameEvent(main.getId(), gameEvent, game.getId());
+        Throwable expectedException = catchThrowable(
+                () -> refereeService.updateOnGoingGameEvent(main.getId(), gameEvent, game.getId()));
+        assertThat(expectedException).hasMessageContaining("trying to add event after the game is over");
         // only one invocation that happened in the previous call.
         verify(gameEventRepository,times(1)).save(any());
     }
