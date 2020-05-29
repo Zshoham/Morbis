@@ -176,6 +176,7 @@ public class ViewableEntitySource {
             CoachRepository coaches,
             TeamManagerRepository managers,
             TeamOwnerRepository owners,
+            PlayerRepository players,
             RefereeRepository referees,
             LeagueRepository leagues,
             SeasonRepository seasons) {
@@ -184,6 +185,7 @@ public class ViewableEntitySource {
         coaches.saveAll(listOf(homeCoach, awayCoach));
         managers.saveAll(listOf(homeManager, awayManager));
         owners.saveAll(listOf(homeOwner, awayOwner));
+        players.saveAll(listOf(homePlayer, awayPlayer));
         referees.saveAll(listOf(main, supporting));
         leagues.save(league);
         seasons.save(season);
@@ -241,6 +243,6 @@ public class ViewableEntitySource {
         seasons.save(season);
 
         createALlLinks();
-        saveLinks(stadiums, coaches, managers, owners, referees, leagues, seasons);
+        saveLinks(stadiums, coaches, managers, owners, players, referees, leagues, seasons);
     }
 }

@@ -16,10 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.*;
 
 @Service
+@Transactional
 public class MemberService {
     private final GuestService guestService;
 
@@ -46,6 +48,7 @@ public class MemberService {
                          PosterDataRepository posterDataRepository,
                          MemberComplaintRepository memberComplaintRepository,
                          TeamOwnerRegRequestRepository teamOwnerRegRequestRepository) {
+
         this.guestService = guestService;
         this.teamRepository = teamRepository;
         this.postRepository = postRepository;
@@ -100,7 +103,6 @@ public class MemberService {
         member.get().getGamesFollowing().add(game.get());
         memberRepository.save(member.get());
         logger.info(memberID + " followed the game with the ID: " + gameID);
-
     }
 
     public List<Game> getGamesFollowing(int memberID) {
