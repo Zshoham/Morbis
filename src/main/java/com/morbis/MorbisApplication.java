@@ -124,7 +124,7 @@ public class MorbisApplication implements ApplicationRunner {
     private void populateDevData() {
 
         AssociationRep rep = AssociationRep.newAssociationRep()
-                .fromMember("rep", "pass", "rep", "rep")
+                .fromMember("representative", "Password123", "representative", "rep@morbis.xyz")
                 .build();
         authService.register(rep);
 
@@ -153,35 +153,35 @@ public class MorbisApplication implements ApplicationRunner {
                 .build();
 
         homePlayer = Player.newPlayer(LocalDate.now(), "ST")
-                .fromMember("home player", "pass", "name", "email")
+                .fromMember("home player", "Password123", "name", "email@morbis.xyz")
                 .build();
 
         awayPlayer = Player.newPlayer(LocalDate.now(), "ST")
-                .fromMember("away player", "pass", "name", "email")
+                .fromMember("away player", "Password123", "name", "email@morbis.xyz")
                 .build();
 
         homeOwner = TeamOwner.newTeamOwner()
-                .fromMember("home owner", "pass", "home name", "email")
+                .fromMember("home owner", "Password123", "home name", "email@morbis.xyz")
                 .build();
 
         awayOwner = TeamOwner.newTeamOwner()
-                .fromMember("away owner", "pass", "away name", "email")
+                .fromMember("away owner", "Password123", "away name", "email@morbis.xyz")
                 .build();
 
         homeManager = TeamManager.newTeamManager(ManagerPermissions.all)
-                .fromMember("home manager", "pass", "name", "email")
+                .fromMember("home manager", "Password123", "name", "email@morbis.xyz")
                 .build();
 
         awayManager = TeamManager.newTeamManager(ManagerPermissions.all)
-                .fromMember("away manager", "pass", "name", "email")
+                .fromMember("away manager", "Password123", "name", "email@morbis.xyz")
                 .build();
 
         homeCoach = Coach.newCoach("school", "attack")
-                .fromMember("home coach", "pass", "home name", "email")
+                .fromMember("home coach", "Password123", "home name", "email@morbis.xyz")
                 .build();
 
         awayCoach = Coach.newCoach("school", "attack")
-                .fromMember("away coach", "pass", "away name", "email")
+                .fromMember("away coach", "Password123", "away name", "email@morbis.xyz")
                 .build();
 
         home = Team.newTeam()
