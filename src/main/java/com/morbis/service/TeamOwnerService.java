@@ -117,7 +117,6 @@ public class TeamOwnerService {
                     playerRepository.save(player);
                     break;
                 case STADIUM:
-                    //TODO: need to add the option that team can have many stadiums and not only 1
                     Stadium stadium = (Stadium) asset.getAsset();
                     stadium.setTeam(team.get());
                     team.get().setStadium(stadium);
@@ -148,7 +147,6 @@ public class TeamOwnerService {
                     playerRepository.save(player);
                     break;
                 case STADIUM:
-                    //TODO: need to add the option that team can have many stadiums and not only 1
                     Stadium stadium = (Stadium) asset.getAsset();
                     stadium.setTeam(null);
                     team.setStadium(null);
@@ -171,7 +169,6 @@ public class TeamOwnerService {
                 playerRepository.save(player);
                 break;
             case STADIUM:
-                //TODO: need to add the option that team can have many stadiums and not only 1
                 Stadium stadium = (Stadium) asset.getAsset();
                 stadiumRepository.save(stadium);
                 break;
@@ -320,12 +317,17 @@ public class TeamOwnerService {
     }
 
     public void submitTransaction(int teamID, String description, int value) {
-        AccountingService accounting = AccountingServiceProvider.getInstance();
         logger.trace("called function: RefereeService->submitTransaction. team ID: " + teamID);
+
+        TaxService tax = TaxServiceProvider.getInstance();
+        AccountingService accounting = AccountingServiceProvider.getInstance();
+
+        value = (int) (tax.getTaxRate(value)) + value;
+
         Team team = teamRepository.findById(teamID).orElseThrow(
                 () -> new IllegalArgumentException("invalid team id"));
 
-        Transaction transaction = new Transaction(value,description);
+        Transaction transaction = new Transaction(value, description);
         if(team.getTransactions() == null) {
            team.setTransactions(new LinkedList<>());
         }

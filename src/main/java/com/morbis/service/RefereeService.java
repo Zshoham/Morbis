@@ -44,14 +44,11 @@ public class RefereeService {
         Referee referee = refereeRepository.findById(refID)
                 .orElseThrow(() -> new IllegalArgumentException("referee with id: " + refID + ", does not exist"));
 
-        List<Game> games = referee.getMainGames();
+        List<Game> games = new ArrayList<>(referee.getMainGames());
         //check if there are games where the referee was a support referee
         if (referee.getSupportGames() != null) {
             //check if there are games where the referee was a main referee
-            if (games == null)
-                games = referee.getSupportGames();
-            else
-                games.addAll(referee.getSupportGames());
+            games.addAll(referee.getSupportGames());
         }
         logger.info("the games of the referee: " + refID + " has returned. number of games: " + games.size());
         return games;

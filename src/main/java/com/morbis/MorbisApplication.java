@@ -122,12 +122,6 @@ public class MorbisApplication implements ApplicationRunner {
     }
 
     private void populateDevData() {
-
-        AssociationRep rep = AssociationRep.newAssociationRep()
-                .fromMember("representative", "Password123", "representative", "rep@morbis.xyz")
-                .build();
-        authService.register(rep);
-
         Stadium homeStadium;
         Stadium awayStadium;
         Player homePlayer;
@@ -203,11 +197,11 @@ public class MorbisApplication implements ApplicationRunner {
                 .build();
 
         main = Referee.newReferee("school")
-                .fromMember("main", "pass", "main name", "email")
+                .fromMember("main", "Password123", "main name", "email")
                 .build();
 
         supporting = Referee.newReferee("school")
-                .fromMember("supporting", "pass", "supporting name", "email")
+                .fromMember("supporting", "Password123", "supporting name", "email")
                 .build();
 
         league = League.newLeague("name")
@@ -260,9 +254,14 @@ public class MorbisApplication implements ApplicationRunner {
 
         homePlayer.setTeam(home);
         awayPlayer.setTeam(away);
+        homePlayer.setGamesFollowing(listOf(game));
+        awayPlayer.setGamesFollowing(listOf(game));
+
 
         main.setMainGames(listOf(game));
         supporting.setSupportGames(listOf(game));
+        main.setGamesFollowing(listOf(game));
+        supporting.setGamesFollowing(listOf(game));
 
         league.setSeasons(listOf(season));
         season.setGames(listOf(game));
@@ -276,6 +275,11 @@ public class MorbisApplication implements ApplicationRunner {
         leagues.save(league);
         seasons.save(season);
 
+        AssociationRep rep = AssociationRep.newAssociationRep()
+                .fromMember("representative", "Password123", "representative", "rep@morbis.xyz")
+                .build();
+        rep.setGamesFollowing(listOf(game));
+        authService.register(rep);
     }
 
     @Bean
