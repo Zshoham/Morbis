@@ -5,6 +5,7 @@ import com.morbis.model.game.entity.GameEvent;
 import com.morbis.model.game.repository.GameEventRepository;
 import com.morbis.model.game.repository.GameRepository;
 import com.morbis.model.member.entity.Referee;
+import com.morbis.model.member.repository.MemberRepository;
 import com.morbis.model.member.repository.RefereeRepository;
 import com.morbis.service.viewable.MatchReport;
 import org.slf4j.Logger;
@@ -22,18 +23,21 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class RefereeService {
+
     private final RefereeRepository refereeRepository;
     private final GameRepository gameRepository;
     private final GameEventRepository gameEventRepository;
+    private final MemberRepository memberRepository;
     private final Logger logger;
 
 
     private static final long UPDATE_PERIOD = 5;
 
-    public RefereeService(RefereeRepository refereeRepository, GameRepository gameRepository, GameEventRepository gameEventRepository) {
+    public RefereeService(RefereeRepository refereeRepository, GameRepository gameRepository, GameEventRepository gameEventRepository, MemberRepository memberRepository) {
         this.refereeRepository = refereeRepository;
         this.gameRepository = gameRepository;
         this.gameEventRepository = gameEventRepository;
+        this.memberRepository = memberRepository;
         this.logger = LoggerFactory.getLogger(RefereeService.class);
 
     }
@@ -126,7 +130,7 @@ public class RefereeService {
 
         Game game = gameRepository.findById(gameID).orElseThrow(() ->
                 new IllegalArgumentException("trying to add event to nonexistent game"));
-        updated.setGame(game);
+
 
         if (game.getEndDate().isBefore(updated.getDate()))
             throw new IllegalStateException("referee " + refID +" is trying to add event after the game is over");
@@ -144,7 +148,13 @@ public class RefereeService {
                         .contains(refID);
 
             if (isGameRef) {
+                updated.setGame(game);
+                game.getEvents().add(updated);
+                game.getFollowers().forEach(member -> member.getEventBackLog().add(updated));
                 gameEventRepository.save(updated);
+                gameRepository.save(game);
+                memberRepository.saveAll(game.getFollowers());
+
                 logger.info("updateOnGoingGameEvent returned true. referee ID: " + refID);
                 return true;
             }

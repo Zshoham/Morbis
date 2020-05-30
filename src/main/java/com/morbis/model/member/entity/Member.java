@@ -79,6 +79,10 @@ public abstract class Member {
     @JsonIgnore
     protected List<Game> gamesFollowing;
 
+    @ManyToMany(targetEntity = GameEvent.class)
+    @JsonIgnore
+    protected List<GameEvent> eventBackLog;
+
     public Member asBashFan() {
         return Fan.newFan()
                 .fromMember(this)

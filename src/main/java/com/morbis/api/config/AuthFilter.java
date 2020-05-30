@@ -41,15 +41,6 @@ public class AuthFilter extends OncePerRequestFilter {
 
         final String authorizationHeader = request.getHeader("authorization");
 
-        Enumeration<String> headerNames = request.getHeaderNames();
-
-        if (headerNames != null) {
-            while (headerNames.hasMoreElements()) {
-                String name = headerNames.nextElement();
-                System.out.println("Header: " + name + " value:" + request.getHeader(name));
-            }
-        }
-
         MemberRole requiredRole = getRequiredRole(request);
 
         if (requiredRole == null) {

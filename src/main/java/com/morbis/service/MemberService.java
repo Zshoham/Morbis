@@ -1,6 +1,7 @@
 package com.morbis.service;
 
 import com.morbis.model.game.entity.Game;
+import com.morbis.model.game.entity.GameEvent;
 import com.morbis.model.game.repository.GameRepository;
 import com.morbis.model.member.entity.*;
 import com.morbis.model.member.repository.*;
@@ -281,5 +282,24 @@ public class MemberService {
         memberRepository.save(member);
 
         logger.info(memberID + "[memberID] is no longer a " + role.toString());
+    }
+
+    public List<GameEvent> getEventsBackLog(int memberID) {
+        Member member = memberRepository.findById(memberID)
+                .orElseThrow(() -> new IllegalArgumentException("member with id " + memberID + " not found"));
+
+        List<GameEvent> events = new ArrayList<>(member.getEventBackLog());
+
+        member.setEventBackLog(new LinkedList<>());
+        memberRepository.save(member);
+
+        return events;
+    }
+
+    public int getEventBacklogSize(int memberID) {
+        Member member = memberRepository.findById(memberID)
+                .orElseThrow(() -> new IllegalArgumentException("member with id " + memberID + " not found"));
+
+        return member.getEventBackLog().size();
     }
 }

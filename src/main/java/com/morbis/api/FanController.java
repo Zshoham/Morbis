@@ -3,6 +3,7 @@ package com.morbis.api;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.morbis.api.dto.CoachRegistrationDTO;
 import com.morbis.api.dto.GameDTO;
+import com.morbis.api.dto.GameEventDTO;
 import com.morbis.api.dto.PlayerRegistrationDTO;
 import com.morbis.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -80,6 +81,22 @@ public class FanController {
             return ResponseEntity.notFound().build();
 
         return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/{memberID}/events")
+    @Operation(summary = "retrieve the unseen notifications of the user")
+    public ResponseEntity<List<GameEventDTO>> getEventsBackLog(@PathVariable int memberID) {
+        List<GameEventDTO> events = memberService.getEventsBackLog(memberID).stream()
+                .map(GameEventDTO::fromGameEvent)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/{memberID}/events-count")
+    @Operation(summary = "retrieve the unseen notifications of the user")
+    public ResponseEntity<Integer> getEventBacklogSize(@PathVariable int memberID) {
+        return ResponseEntity.ok(memberService.getEventBacklogSize(memberID));
     }
 
 }
