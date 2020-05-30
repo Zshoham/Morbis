@@ -1,23 +1,30 @@
 package com.morbis.api;
 
 import com.morbis.api.dto.LeagueDTO;
+import com.morbis.api.dto.SeasonDTO;
 import com.morbis.api.dto.TeamRequestDTO;
 import com.morbis.model.league.entity.SchedulingMethod;
 import com.morbis.model.league.entity.ScoringMethod;
+import com.morbis.model.league.entity.Season;
+import com.morbis.model.member.entity.Referee;
 import com.morbis.service.AssociationRepService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/association-rep")
 public class AssociationRepController {
 
+
     private final AssociationRepService associationRepService;
+
 
     public AssociationRepController(AssociationRepService associationRepService) {
         this.associationRepService = associationRepService;
@@ -31,6 +38,37 @@ public class AssociationRepController {
                 .map(LeagueDTO::fromLeague)
                 .collect(Collectors.toList());
 
+        return ResponseEntity.ok(res);
+    }
+
+
+    @PostMapping("/leagues")
+    @Operation(summary = "add a league to the system")
+    @ApiResponse(responseCode = "200", description = "successfully added a league.")
+    @ApiResponse(responseCode = "400", description = "A league with that name is already exist.")
+    public ResponseEntity<?> addLeague(@RequestParam String leagueName) {
+        if (associationRepService.addLeague(leagueName)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    @PostMapping("/leagues/{leagueID}/seasons")
+    @Operation(summary = "add a season to the system")
+    @ApiResponse(responseCode = "200", description = "successfully added a Season.")
+    public ResponseEntity<?> addSeason(@PathVariable int leagueID,
+                                       @RequestParam int year) {
+        associationRepService.addSeason(leagueID, year);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/leagues/{leagueID}/seasons")
+    @Operation(summary = "retrieve all the seasons of a specific league")
+    @ApiResponse(responseCode = "200", description = "successfully added a Season.")
+    public ResponseEntity<List<SeasonDTO>> getSeasons(@PathVariable int leagueID) {
+        List<SeasonDTO> res = associationRepService.getSeasons(leagueID).stream()
+                .map(SeasonDTO::fromSeason)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(res);
     }
 
@@ -62,7 +100,7 @@ public class AssociationRepController {
     @GetMapping("/pending-team-requests")
     @Operation(summary = "get all members requests for open new teams")
     @ApiResponse(responseCode = "200", description = "list of all the requests")
-    public ResponseEntity<List<TeamRequestDTO>> getAllPendingRequests(){
+    public ResponseEntity<List<TeamRequestDTO>> getAllPendingRequests() {
         List<TeamRequestDTO> res = associationRepService.getAllPendingRequests()
                 .stream().map(TeamRequestDTO::fromRequest).collect(Collectors.toList());
         return ResponseEntity.ok(res);
@@ -74,4 +112,6 @@ public class AssociationRepController {
         associationRepService.handleNewTeamOwnerRequest(memberID, approved);
         return ResponseEntity.ok().build();
     }
+
+
 }

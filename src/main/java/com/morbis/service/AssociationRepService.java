@@ -53,13 +53,19 @@ public class AssociationRepService {
     }
 
 
+    public List<League> getLeagues() {
+        logger.trace("called function: AssociationRepService->getLeagues.");
+        return leagueRepository.findAll();
+    }
+
     public boolean addLeague(String leagueName) {
         logger.trace("Called function: AssociationRepService->addLeague. with the name of: " + leagueName + ".");
         if (leagueRepository.findAllByName(leagueName).isEmpty()) {
             leagueRepository.save(new League(leagueName));
+            logger.info("League " + leagueName + " has been created.");
             return true;
         }
-        logger.info("League " + leagueName + " has been created.");
+        logger.warn("League " + leagueName + " is already exist.");
         return false;
     }
 
@@ -80,11 +86,6 @@ public class AssociationRepService {
         logger.info("season added to league: " + leagueID + " at the year: " + year + ".");
     }
 
-    public List<League> getLeagues() {
-        logger.trace("called function: AssociationRepService->getLeagues.");
-        return leagueRepository.findAll();
-    }
-
     public List<Season> getSeasons(int leagueID) {
         logger.trace("called function: AssociationRepService->getSeason.");
         List<Season> result = new ArrayList<>();
@@ -99,6 +100,11 @@ public class AssociationRepService {
         return Stream.of(ScoringMethod.values()).collect(Collectors.toList());
     }
 
+    public List<SchedulingMethod> getSchedulingMethods() {
+        logger.trace("called function: AssociationRepService->getSchedulingMethods");
+        return Stream.of(SchedulingMethod.values()).collect(Collectors.toList());
+    }
+
     public void setScoringMethod(int leagueID, ScoringMethod method) throws IllegalArgumentException {
         logger.trace("called function: AssociationRepService->setScoringMethod. leagueID: " + leagueID);
         League league = leagueRepository.findById(leagueID)
@@ -106,11 +112,6 @@ public class AssociationRepService {
         league.setScoringMethod(method);
         leagueRepository.save(league);
         logger.info("Scoring method has been set to the league with the ID of: " + leagueID);
-    }
-
-    public List<SchedulingMethod> getSchedulingMethods() {
-        logger.trace("called function: AssociationRepService->getSchedulingMethods");
-        return Stream.of(SchedulingMethod.values()).collect(Collectors.toList());
     }
 
     public void setSchedulingMethod(int leagueID, SchedulingMethod method) throws IllegalArgumentException {
@@ -169,14 +170,14 @@ public class AssociationRepService {
         logger.info("Referees has been removed.");
     }
 
-    public List<TeamOwnerRegRequest> getAllPendingRequests(){
+    public List<TeamOwnerRegRequest> getAllPendingRequests() {
         return teamOwnerRegRequestRepository.findAll();
     }
 
-    public void handleNewTeamOwnerRequest(int requestingMemberId, boolean approved){
+    public void handleNewTeamOwnerRequest(int requestingMemberId, boolean approved) {
         TeamOwnerRegRequest request = teamOwnerRegRequestRepository.findById(requestingMemberId)
-                .orElseThrow(()-> new IllegalArgumentException("request not found"));
-        if(approved)
+                .orElseThrow(() -> new IllegalArgumentException("request not found"));
+        if (approved)
             memberService.registerAsTeamOwner(requestingMemberId, request.getRequestedTeamName());
         teamOwnerRegRequestRepository.deleteById(requestingMemberId);
     }
