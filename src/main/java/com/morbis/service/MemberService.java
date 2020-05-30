@@ -194,10 +194,13 @@ public class MemberService {
         }
 
         member.get().getMemberRole().add(MemberRole.COACH);
-        Coach coach = Coach.newCoach(qualification, role).fromMember(member.get()).build();
+        Coach coach = Coach.newCoach(qualification, role)
+                .fromMember(member.get())
+                .withId(memberID)
+                .build();
 
-        memberRepository.save(member.get());
         coachRepository.save(coach);
+        memberRepository.save(member.get());
         logger.info(memberID + "[memberID] was registered as a coach");
     }
 
@@ -214,10 +217,13 @@ public class MemberService {
         }
 
         member.get().getMemberRole().add(MemberRole.PLAYER);
-        Player player = Player.newPlayer(birthday, position).fromMember(member.get()).build();
+        Player player = Player.newPlayer(birthday, position)
+                .fromMember(member.get())
+                .withId(memberID)
+                .build();
 
-        memberRepository.save(member.get());
         playerRepository.save(player);
+        memberRepository.save(member.get());
         logger.info(memberID + "[memberID] was registered as a player");
     }
 
@@ -253,9 +259,13 @@ public class MemberService {
         logger.trace("called function: MemberService->requestRegisterAsTeamOwner.");
         Member member = validateRegisterAsTeamOwner(memberID, teamName);
         member.getMemberRole().add(MemberRole.TEAM_OWNER);
-        TeamOwner owner = TeamOwner.newTeamOwner().fromMember(member).build();
-        memberRepository.save(member);
+        TeamOwner owner = TeamOwner.newTeamOwner()
+                .fromMember(member)
+                .withId(memberID)
+                .build();
+
         teamOwnerRepository.save(owner);
+        memberRepository.save(member);
         Team newTeam = Team.newTeam()
                 .name(teamName)
                 .players(new LinkedList<>())
