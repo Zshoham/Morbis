@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.UnsupportedEncodingException;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ import java.util.stream.Stream;
 import static com.morbis.TestUtils.*;
 import static com.morbis.data.MemberServiceDataSource.initWithID;
 import static com.morbis.data.MemberServiceDataSource.simpleMember;
-import static com.morbis.data.ViewableEntitySource.homePlayer;
+import static com.morbis.data.ViewableEntitySource.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -37,6 +38,8 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class AssociationRepControllerTest {
+
+    private static final int BAD_ID = 999;
 
     @Autowired
     private MockMvc apiMock;
@@ -64,6 +67,10 @@ public class AssociationRepControllerTest {
                 .thenReturn(Stream.of(ScoringMethod.values()).collect(Collectors.toList()));
         when(associationRepService.getSchedulingMethods())
                 .thenReturn(Stream.of(SchedulingMethod.values()).collect(Collectors.toList()));
+        when(associationRepService.addLeague("La liga2")).thenReturn(true);
+        when(associationRepService.addLeague(testLeague.getName())).thenReturn(false);
+        when(associationRepService.getSeasons(league.getId())).thenReturn(league.getSeasons());
+        doThrow(new IllegalArgumentException()).when(associationRepService).addSeason(BAD_ID, 2020);
     }
 
     @Test
@@ -79,8 +86,64 @@ public class AssociationRepControllerTest {
     }
 
     @Test
+    public void addLeague() {
+        String leagueName = "La liga2";
+        MvcResult response = makePostRequest("/api/association-rep/leagues", apiMock, MediaType.APPLICATION_JSON,
+                listOf(Pair.of("leagueName", "La liga2")));
+
+        //positive test:
+        assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
+        verify(associationRepService, times(1))
+                .addLeague(leagueName);
+
+        //negative test:
+        response = makePostRequest("/api/association-rep/leagues", apiMock, MediaType.APPLICATION_JSON, listOf(Pair.of("leagueName", testLeague.getName())));
+        assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        verify(associationRepService, times(1))
+                .addLeague(testLeague.getName());
+    }
+
+    @Test
+    public void addSeason() {
+        int year = 2020;
+        MvcResult response = makePostRequest("/api/association-rep/leagues/{leagueID}/seasons", apiMock, MediaType.APPLICATION_JSON,
+                listOf(Pair.of("year", String.valueOf(year))), testLeague.getId());
+
+        //positive test:
+        assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
+        verify(associationRepService, times(1))
+                .addSeason(testLeague.getId(), year);
+
+        //negative test: league already contains a season at the same year
+        doThrow(new IllegalArgumentException()).when(associationRepService).
+                addSeason(testLeague.getId(), year);
+        response = makePostRequest("/api/association-rep/leagues/{leagueID}/seasons", apiMock, MediaType.APPLICATION_JSON,
+                listOf(Pair.of("year", String.valueOf(year))), testLeague.getId());
+        assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        verify(associationRepService, times(2))
+                .addSeason(testLeague.getId(), year);
+
+        //negative test: league not exist
+        response = makePostRequest("/api/association-rep/leagues/{leagueID}/seasons", apiMock, MediaType.APPLICATION_JSON,
+                listOf(Pair.of("year", String.valueOf(year))), BAD_ID);
+        assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        verify(associationRepService, times(1))
+                .addSeason(BAD_ID, year);
+    }
+
+    @Test
+    public void getSeasons() throws UnsupportedEncodingException {
+        MvcResult response = makeGetRequest("/api/association-rep/leagues/{leagueID}/seasons", apiMock, league.getId());
+        assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getResponse().getContentAsString())
+                .contains(listOf(
+                        String.valueOf(season.getId()),
+                        String.valueOf(season.getYear())));
+    }
+
+    @Test
     public void getScoringMethods() throws UnsupportedEncodingException {
-        MvcResult response = makeGetRequest("/api//association-rep/scoring-methods", apiMock);
+        MvcResult response = makeGetRequest("/api/association-rep/scoring-methods", apiMock);
         assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getResponse().getContentAsString())
                 .contains(
@@ -91,7 +154,7 @@ public class AssociationRepControllerTest {
 
     @Test
     public void getSchedulingMethods() throws UnsupportedEncodingException {
-        MvcResult response = makeGetRequest("/api//association-rep/scheduling-methods", apiMock);
+        MvcResult response = makeGetRequest("/api/association-rep/scheduling-methods", apiMock);
         assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getResponse().getContentAsString())
                 .contains(
@@ -105,7 +168,7 @@ public class AssociationRepControllerTest {
         LeagueDTO dto = LeagueDTO.fromLeague(testLeague);
         dto.schedulingMethod = SchedulingMethod.SINGLE_FIXTURE;
 
-        MvcResult response = makePostRequest("/api//association-rep/update-policy", apiMock,
+        MvcResult response = makePostRequest("/api/association-rep/update-policy", apiMock,
                 MediaType.APPLICATION_JSON, dto);
 
         assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
