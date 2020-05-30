@@ -14,7 +14,6 @@
             </div>
             <div v-else>
               <v-select v-model="event" :items="eventTypes" label="Event" class="mx-5" outlined></v-select>
-              <v-text-field class="mx-5" outlined v-model="gameTime" label="Time" required></v-text-field>
               <v-textarea
                 class="mx-5"
                 outlined
@@ -54,23 +53,29 @@ export default {
     ShowGameEvents
   },
   name: "GameManage",
+  mounted() {
+    this.getOngoingGameEvents();
+    this.getOngoingGame();
+  },
   data: () => ({
     valid: true,
     connected: true,
     stompClient: null,
+    game: null,
+    gameEvents: null,
     eventTypes: [
       "GOAL",
       "OFFSIDE",
       "FOUL",
-      "RED CARD",
-      "YELLOW CARD",
-      "SUBTITUTION",
+      "RED_CARD",
+      "YELLOW_CARD",
+      "SUBSTITUTION"
     ]
   }),
   methods: {
     connectToServer() {
       console.log("connecting to server");
-      // const url = "http://dev.morbis.xyz";
+      // const url = "http://" + this.$root.baseURL + "";
       // //const url = "http://localhost:8081";
       // let socket = new SockJS(url + "/api/websocket");
       // this.stompClient = Stomp.over(socket);
@@ -80,9 +85,6 @@ export default {
       this.connected = true;
     },
     sendEventToServer() {
-     // let refID = this.$root.userID;
-      let refID = 14;
-      let gameID = 15;
       if (!this.valid) {
         alert("Theres a problem with the form");
         return;
@@ -91,13 +93,81 @@ export default {
         type: this.event,
         description: this.description
       };
-      console.log(data);
-      this.$refs.showGameEvents.addEvent(data);
       this.$root.client.send(
-        "/api/live/" + refID + "/game-event",
-          JSON.stringify(data)
+        "/api/live/" + this.$root.memberID + "/game-event",
+        JSON.stringify(data)
       );
-
+      setTimeout(() => {
+        this.$refs.showGameEvents.clearEvents();
+        this.getOngoingGameEvents();
+      }, 500);
+    },
+    getOngoingGameEvents() {
+      fetch(
+        "http://" + this.$root.baseURL + "/api/referee/" +
+          this.$root.memberID +
+          "/game-events-ongoing",
+        {
+          //mode: 'no-cors',
+          method: "GET",
+          headers: {
+            // accept: "*/*",
+            authorization: this.$root.userToken
+          }
+        }
+      )
+        .then(response => {
+          if (response.ok) {
+            response.json().then(json => {
+              this.gameEvents = json;
+              for (let i = 0; i < this.gameEvents.length; i++) {
+                this.$refs.showGameEvents.addEvent(this.gameEvents[i]);
+              }
+            });
+          } else {
+            if (response.status == 404) {
+              alert(
+                "You're not in any game currently. You're being redirected to home page"
+              );
+              this.$router.push("/HomePage");
+            } else {
+              alert(
+                "Server returned " +
+                  response.status +
+                  " : " +
+                  response.statusText
+              );
+            }
+          }
+        })
+        .catch(err => console.error(err));
+    },
+    getOngoingGame() {
+      fetch(
+        "http://" + this.$root.baseURL + "/api/referee/" +
+          this.$root.memberID +
+          "/game-ongoing",
+        {
+          //mode: 'no-cors',
+          method: "GET",
+          headers: {
+            // accept: "*/*",
+            authorization: this.$root.userToken
+          }
+        }
+      )
+        .then(response => {
+          if (response.ok) {
+            response.json().then(json => {
+              this.game = json;
+            });
+          } else {
+            alert(
+              "Server returned " + response.status + " : " + response.statusText
+            );
+          }
+        })
+        .catch(err => console.error(err));
     }
   }
 };

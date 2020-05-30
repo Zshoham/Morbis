@@ -109,7 +109,7 @@ export default {
         alert("You have errors in the form");
         return;
       }
-      fetch("http://dev.morbis.xyz/api/register", {
+      fetch("http://" + this.$root.baseURL + "/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

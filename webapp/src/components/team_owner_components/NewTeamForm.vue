@@ -74,21 +74,18 @@
       }),
       methods:{ 
         createTeam() { 
-          fetch('http://dev.morbis.xyz/{memberID}/requestRegisterAsTeamOwner', {
+          fetch('http://" + this.$root.baseURL + "/api/fan/' + this.$root.memberID + '/requestRegisterAsTeamOwner', {
           method: 'POST',
           headers:{
             'Content-Type': 'application/json', 
-            'Authorization': this.$root.userToken        
+            'authorization': this.$root.userToken        
           },
-          body: JSON.stringify({
-            memberID: this.$root.memberID,
-            teamName: document.getElementById("teamNameText").value
-          })
+          body: JSON.stringify(document.getElementById("teamNameText").value)
         })
           .then(async response => {
             alert(response.status);
             if (response.ok) {
-              alert("request sended succesfully");
+              alert("request sent succesfully");
             } else {
               alert(
                 "Server returned " + response.status + " : " + response.statusText+"\n please try again later"

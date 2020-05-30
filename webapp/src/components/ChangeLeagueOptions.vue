@@ -59,7 +59,7 @@ export default {
       let selectedLeague = this.leagues.find(league => league.leagueName == this.selectedLeague);
       selectedLeague.schedulingMethod = this.selectedSchedulingMethod;
       selectedLeague.scoringMethod = this.selectedScoringMethod;
-      fetch("http://dev.morbis.xyz/api/association-rep/update-policy", {
+      fetch("http://" + this.$root.baseURL + "/api/association-rep/update-policy", {
         // mode: 'no-cors',
         method: "POST",
         headers: {
@@ -101,7 +101,7 @@ export default {
       ).scoringMethod;
     },
     getLeaguesFromServer() {
-      fetch("http://dev.morbis.xyz/api/association-rep/leagues", {
+      fetch("http://" + this.$root.baseURL + "/api/association-rep/leagues", {
         // mode: 'no-cors',
         method: "GET",
         headers: {
@@ -123,7 +123,7 @@ export default {
         .catch(err => console.error(err));
     },
     getScoringMethodsFromServer() {
-      fetch("http://dev.morbis.xyz/api/association-rep/scoring-methods", {
+      fetch("http://" + this.$root.baseURL + "/api/association-rep/scoring-methods", {
         // mode: 'no-cors',
         method: "GET",
         headers: {
@@ -146,7 +146,7 @@ export default {
         .catch(err => console.error(err));
     },
     getSchedulingMethodsFromServer() {
-      fetch("http://dev.morbis.xyz/api/association-rep/scheduling-methods", {
+      fetch("http://" + this.$root.baseURL + "/api/association-rep/scheduling-methods", {
         //mode: 'no-cors',
         method: "GET",
         headers: {

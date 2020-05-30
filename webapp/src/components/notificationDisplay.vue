@@ -16,32 +16,32 @@
               </v-list-tile-content>
             </v-flex>
             <v-flex class="text-right mx-5">
-                <img v-if="event.type == 'Red Card'"
+                <img v-if="event.type == 'RED_CARD'"
                   height="20px"
                   width="20px"
                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Red_card.svg/1200px-Red_card.svg.png"
                 />
-                <img v-if="event.type == 'Yellow Card'"
+                <img v-if="event.type == 'YELLOW_CARD'"
                   height="20px"
                   width="20px"
                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Yellow_card.svg/1200px-Yellow_card.svg.png"
                 />
-                <img v-if="event.type == 'Goal'"
+                <img v-if="event.type == 'GOAL'"
                   height="20px"
                   width="20px"
                   src="https://p7.hiclipart.com/preview/925/957/198/beach-ball-sport-american-football-ball.jpg"
                 />
-                <img v-if="event.type == 'Offside'"
+                <img v-if="event.type == 'OFFSIDE'"
                   height="20px"
                   width="20px"
                   src="https://image.flaticon.com/icons/svg/1540/1540536.svg"
                 />
-                <img v-if="event.type == 'Foul'"
+                <img v-if="event.type == 'FOUL'"
                   height="20px"
                   width="20px"
                   src="https://image.flaticon.com/icons/png/512/26/26846.png"
                 />
-                <img v-if="event.type == 'Substitution'"
+                <img v-if="event.type == 'SUBSTITUTION'"
                   height="20px"
                   width="20px"
                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Substitution.svg/1280px-Substitution.svg.png"
@@ -63,28 +63,58 @@ export default {
     props: {
     parentData: Object,
   },
-  name: "notificationPage",
+  name: "notificationDisplay",
+  mounted() {
+    this.getNotificationsFromServer();
+    this.$root.$emit('SetNotification',0);
+  },
   data: () => ({
-    list: [
-      {
-        type: "Goal",
-        gameTime: "10",
-        description: "Messi scored"
-      }
-    ],
-    eventTypes: [
-      "Goal",
-      "Offside",
-      "Foul",
-      "Red Card",
-      "Yellow Card",
-      "Substitution"
-    ]
+    list: [],
   }),
   methods: {
       addEvent(event) {
           this.list.push(event);
-      }
+      },
+      getNotificationsFromServer() {
+      fetch(
+        "http://" + this.$root.baseURL + "/api/fan/" +
+          this.$root.memberID +
+          "/events",
+        {
+          //mode: 'no-cors',
+          method: "GET",
+          headers: {
+            // accept: "*/*",
+            authorization: this.$root.userToken
+          }
+        }
+      )
+        .then(response => {
+          if (response.ok) {
+            response.json().then(json => {
+              let notifications = json;
+              for (let i = 0; i < notifications.length; i++) {
+                this.addEvent(notifications[i]);
+              }
+            });
+          } else {
+            if (response.status == 404) {
+              alert(
+                "You don't have any notifications"
+              );
+              this.$router.push("/HomePage");
+            } else {
+              alert(
+                "Server returned " +
+                  response.status +
+                  " : " +
+                  response.statusText
+              );
+            }
+          }
+        })
+        .catch(err => console.error(err));
+    },
   }
 };
 </script>

@@ -145,8 +145,7 @@ var playerMenu = {
   hidden: true,
   children: [
     {
-      text: "New team",
-      to: "/NewTeamPage"
+      text: "Profile",
     }
   ]
 };
@@ -160,6 +159,10 @@ var assRepMenu = {
     {
       text: "Leagues' Options",
       to: "/LeagueOptionsPage"
+    },
+    {
+      text: "Team Owners' requests",
+      to: "/TeamOwnerRequestsPage"
     }
   ]
 };
@@ -245,6 +248,10 @@ export default {
     this.$root.$on("loginChangeMenu", (roles) => {
       this.loginChangeMenu(roles);
     });
+    this.$root.$on("SetNotification", (numberOfNotifications) => {
+      this.notificationCount = numberOfNotifications;
+    })
+    this.$root.baseURL = 'localhost:9000';
     document.getElementById('logoutButton').style.display = 'none';
   },
   props: {
@@ -294,7 +301,7 @@ export default {
       });
     },
     Logout() {
-      fetch("http://dev.morbis.xyz/api/logout/" + this.$root.userToken, {
+      fetch("http://" + this.$root.baseURL + "/api/logout/" + this.$root.userToken, {
         method: "GET",
         headers: {
           accept: "*/*"
@@ -323,7 +330,7 @@ export default {
         .catch(err => console.error(err));
     },
     ForceLogout() {
-      fetch("http://dev.morbis.xyz/api/logout/42", {
+      fetch("http://" + this.$root.baseURL + "/api/logout/42", {
         method: "GET",
         headers: {
           accept: "*/*"

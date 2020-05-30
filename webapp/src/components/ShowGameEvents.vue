@@ -16,32 +16,32 @@
               </v-list-tile-content>
             </v-flex>
             <v-flex class="text-right mx-5">
-                <img v-if="event.type == 'Red Card'"
+                <img v-if="event.type == 'RED_CARD'"
                   height="20px"
                   width="20px"
                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Red_card.svg/1200px-Red_card.svg.png"
                 />
-                <img v-if="event.type == 'Yellow Card'"
+                <img v-if="event.type == 'YELLOW_CARD'"
                   height="20px"
                   width="20px"
                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Yellow_card.svg/1200px-Yellow_card.svg.png"
                 />
-                <img v-if="event.type == 'Goal'"
+                <img v-if="event.type == 'GOAL'"
                   height="20px"
                   width="20px"
                   src="https://p7.hiclipart.com/preview/925/957/198/beach-ball-sport-american-football-ball.jpg"
                 />
-                <img v-if="event.type == 'Offside'"
+                <img v-if="event.type == 'OFFSIDE'"
                   height="20px"
                   width="20px"
                   src="https://image.flaticon.com/icons/svg/1540/1540536.svg"
                 />
-                <img v-if="event.type == 'Foul'"
+                <img v-if="event.type == 'FOUL'"
                   height="20px"
                   width="20px"
                   src="https://image.flaticon.com/icons/png/512/26/26846.png"
                 />
-                <img v-if="event.type == 'Substitution'"
+                <img v-if="event.type == 'SUBSTITUTION'"
                   height="20px"
                   width="20px"
                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Substitution.svg/1280px-Substitution.svg.png"
@@ -65,48 +65,7 @@ export default {
   },
   name: "ShowGameEvents",
   data: () => ({
-    list: [
-      {
-        type: "Goal",
-        gameTime: "10",
-        description: "Messi scored"
-      },
-      {
-        type: "Red Card",
-        gameTime: "20",
-        description: "Pepe mehabel"
-      },
-      {
-        type: "Yellow Card",
-        gameTime: "30",
-        description: "suarez nashah"
-      },
-      {
-        type: "Offside",
-        gameTime: "40",
-        description: "Ronaldo mair miday"
-      },
-      {
-        type: "Foul",
-        gameTime: "50",
-        description: "pepe hozer linkom"
-      },
-      {
-        type: "Substitution",
-        gameTime: "60",
-        description: "meifim et pepe vesamim misheoo mi daesh"
-      },
-      {
-        type: "Goal",
-        gameTime: "70",
-        description: "uvuvwevwevwe onyetenyevwe ugwemuhwem osas scored a goal while the other team tried to say his name"
-      },
-      {
-        type: "Offside",
-        gameTime: "80",
-        description: "the player niv dal is always in offside"
-      }
-    ],
+    list: [],
     eventTypes: [
       "Goal",
       "Offside",
@@ -119,6 +78,9 @@ export default {
   methods: {
       addEvent(event) {
           this.list.push(event);
+      },
+      clearEvents() {
+        this.list = [];
       }
   }
 };
