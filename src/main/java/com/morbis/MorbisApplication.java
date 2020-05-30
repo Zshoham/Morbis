@@ -215,6 +215,7 @@ public class MorbisApplication implements ApplicationRunner {
                 .time(LocalDateTime.now())
                 .refs(main, listOf(supporting))
                 .build();
+        game.setFollowers(listOf(homePlayer, awayPlayer, main, supporting));
 
 
         // save teams
