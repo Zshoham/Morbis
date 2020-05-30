@@ -59,10 +59,12 @@ export default {
       let selectedLeague = this.leagues.find(league => league.leagueName == this.selectedLeague);
       selectedLeague.schedulingMethod = this.selectedSchedulingMethod;
       selectedLeague.scoringMethod = this.selectedScoringMethod;
-      fetch("http://dev.morbis.xyz/api/rep/update-policy", {
+      fetch("http://dev.morbis.xyz/api/association-rep/update-policy", {
+        // mode: 'no-cors',
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+           "Content-Type": "application/json",
+            'authorization': this.$root.userToken
         },
         body: JSON.stringify({
           leagueID: selectedLeague.leagueID,
@@ -99,8 +101,13 @@ export default {
       ).scoringMethod;
     },
     getLeaguesFromServer() {
-      fetch("http://dev.morbis.xyz/api/rep/leagues", {
-        method: "GET"
+      fetch("http://dev.morbis.xyz/api/association-rep/leagues", {
+        // mode: 'no-cors',
+        method: "GET",
+        headers: {
+          // accept: "*/*",
+          'authorization': this.$root.userToken
+        }
       })
         .then(response => {
           if (response.ok) {
@@ -116,8 +123,14 @@ export default {
         .catch(err => console.error(err));
     },
     getScoringMethodsFromServer() {
-      fetch("http://dev.morbis.xyz/api/rep/scoring-methods", {
-        method: "GET"
+      fetch("http://dev.morbis.xyz/api/association-rep/scoring-methods", {
+        // mode: 'no-cors',
+        method: "GET",
+        headers: {
+          // accept: "*/*",
+          // "Authorization":this.$root.userToken
+        'authorization': this.$root.userToken
+        }
       })
         .then(response => {
           if (response.ok) {
@@ -133,8 +146,13 @@ export default {
         .catch(err => console.error(err));
     },
     getSchedulingMethodsFromServer() {
-      fetch("http://dev.morbis.xyz/api/rep/scheduling-methods", {
-        method: "GET"
+      fetch("http://dev.morbis.xyz/api/association-rep/scheduling-methods", {
+        //mode: 'no-cors',
+        method: "GET",
+        headers: {
+          // accept: "*/*",
+          'authorization': this.$root.userToken
+        }
       })
         .then(response => {
           if (response.ok) {

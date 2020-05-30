@@ -8,7 +8,7 @@ import NewTeamPage from '../views/NewTeamPage.vue'
 import GameManagePage from '../views/GameManagePage.vue'
 import LeagueOptionsPage from '../views/LeagueOptionsPage.vue'
 import WelcomePage from '../views/WelcomePage.vue'
-
+import notificationPage from '../views/notificationPage.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -58,6 +58,11 @@ export default new Router({
       path: '/WelcomePage',
       name: 'WelcomePage',
       component: WelcomePage
+    },
+    {//set path for new team page
+      path: '/notificationPage',
+      name: 'notificationPage',
+      component: notificationPage
     }
   ]
 })

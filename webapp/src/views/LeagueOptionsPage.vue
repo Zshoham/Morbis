@@ -14,7 +14,7 @@ export default {
     if (this.$root.userToken == "" || this.$root.userToken == null) {
       //he's not logged in
       this.$router.push("/WelcomePage");
-    } else if (!this.$root.roles.includes("Association_Rep")) {
+    } else if (!this.$root.roles.includes("ASSOCIATION_REP")) {
       //he doesn't have permissions
       this.$router.push("/HomePage");
     }

@@ -8,7 +8,7 @@
 
         <div align="center">
           <v-form ref="form" v-model="valid">
-            <div v-if="connected == false">
+            <div v-if="false">
               <v-btn class="my-5" color="success" @click="connectToServer">Connect to Server</v-btn>
               <br />Connect to the server in order to add an event
             </div>
@@ -42,8 +42,8 @@
   </v-layout>
 </template>
 
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.js"></script> -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.js"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>-->
 <script>
 import ShowGameEvents from "./ShowGameEvents.vue";
 import SockJS from "sockjs-client";
@@ -55,53 +55,49 @@ export default {
   },
   name: "GameManage",
   data: () => ({
-    valid: false,
-    connected: false,
+    valid: true,
+    connected: true,
     stompClient: null,
     eventTypes: [
-      "Goal",
-      "Offside",
-      "Foul",
-      "Red Card",
-      "Yellow Card",
-      "Substitution"
+      "GOAL",
+      "OFFSIDE",
+      "FOUL",
+      "RED CARD",
+      "YELLOW CARD",
+      "SUBTITUTION",
     ]
   }),
   methods: {
     connectToServer() {
       console.log("connecting to server");
-      //const url = "http://dev.morbis.xyz";
-      const url = "http://localhost:8081";
-      let socket = new SockJS(url + "/api/websocket");
-      this.stompClient = Stomp.over(socket);
-      this.stompClient.connect({}, function(frame) {
-        console.log("connected to: " + frame);
-      });
+      // const url = "http://dev.morbis.xyz";
+      // //const url = "http://localhost:8081";
+      // let socket = new SockJS(url + "/api/websocket");
+      // this.stompClient = Stomp.over(socket);
+      // this.stompClient.connect({}, function(frame) {
+      //   console.log("connected to: " + frame);
+      // });
       this.connected = true;
     },
     sendEventToServer() {
-      let refID = 13;
+     // let refID = this.$root.userID;
+      let refID = 14;
       let gameID = 15;
       if (!this.valid) {
         alert("Theres a problem with the form");
         return;
       }
       let data = {
-        date: null,
-        gameTime: this.gameTime,
-        description: this.description,
-        type: this.event
+        type: this.event,
+        description: this.description
       };
       console.log(data);
       this.$refs.showGameEvents.addEvent(data);
-      this.stompClient.send(
-        "/api/live/game-event/" + refID + "/" + gameID,
-        {},
-          {
-            first: "John",
-            second: 'Hello!'
-          }
+      this.$root.client.send(
+        "/api/live/" + refID + "/game-event",
+          JSON.stringify(data)
       );
+
     }
   }
 };

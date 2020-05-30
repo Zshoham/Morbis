@@ -63,12 +63,20 @@
       <v-btn color="black" id="registerButton" class="white--text" style="margin:10px" to="/RegisterPage">Register</v-btn>
       <v-btn color="black" id="loginButton" class="white--text" style="margin:10px;" to="/LoginPage">Login</v-btn>
       <v-btn color="black" id="logoutButton" class="white--text" style="margin:10px;" @click="Logout">Logout</v-btn>
+      <v-btn color="black" id="all_user_logoutButton" class="white--text" style="margin:10px;" @click="ForceLogout">All-User Logout</v-btn>
       <v-spacer />
       <v-btn icon>
         <v-icon>mdi-apps</v-icon>
       </v-btn>
-      <v-btn icon>
+      <v-btn to="/notificationPage" icon>
+      <v-badge
+        :content="notificationCount"
+        :value="notificationCount"
+        color="red"
+        overlap
+      >
         <v-icon>mdi-bell</v-icon>
+      </v-badge>
       </v-btn>
       <v-btn icon large>
         <v-avatar size="32px" item>
@@ -232,6 +240,7 @@ var menu = [
   { icon: "mdi-cog", text: "\t Settings", to: "/Settings" }
 ];
 export default {
+
   mounted() {
     this.$root.$on("loginChangeMenu", (roles) => {
       this.loginChangeMenu(roles);
@@ -246,7 +255,8 @@ export default {
     drawer: null,
     registerButton: null,
     logoutButton: null,
-    items: menu
+    items: menu,
+    notificationCount:0,
   }),
   methods: {
     remove: function(arr) {
@@ -260,6 +270,10 @@ export default {
           arr.splice(ax, 1);
         }
       }
+    },
+    count()
+    {
+      return this.$root.notificationCount.value
     },
     loginChangeMenu: function(roles) {
       document.getElementById('loginButton').style.display = 'none';
@@ -300,6 +314,35 @@ export default {
           } else {
             alert(
               "There was an error while logging out: " +
+                response.status +
+                " : " +
+                response.statusText
+            );
+          }
+        })
+        .catch(err => console.error(err));
+    },
+    ForceLogout() {
+      fetch("http://dev.morbis.xyz/api/logout/42", {
+        method: "GET",
+        headers: {
+          accept: "*/*"
+        }
+      })
+        .then(response => {
+          if (response.ok) {
+            this.$root.userToken = "";
+            this.$root.roles = [];
+            this.$root.memberID = -1;
+            alert("forcing all-user logged out");
+            document.getElementById('loginButton').style.display = 'block';
+            document.getElementById('registerButton').style.display = 'block';
+            document.getElementById('logoutButton').style.display = 'none';
+            window.location.href = 'WelcomePage'
+            //this.$router.push("/WelcomePage");
+          } else {
+            alert(
+              "There was an error while all-user logging out: " +
                 response.status +
                 " : " +
                 response.statusText

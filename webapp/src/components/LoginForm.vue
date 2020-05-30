@@ -20,8 +20,10 @@
   </v-card>
   
 </template>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.js"></script>
 <script>
+import SockJS from "sockjs-client";
+import Stomp from "webstomp-client";
 export default {
   name: "LoginForm",
   data: () => ({
@@ -29,8 +31,34 @@ export default {
     username: "",
     password: "",
     passwordVisable: false,
-  }),
+    appData: this.$root.App
+  }),    addNotification(){
+      this.$root.notificationCount.value++;
+    },
+    clearNotifications(){
+      this.$root.notificationCount.value=0;
+    },
   methods: {
+    connectToServer() {
+      console.log("connecting to server");
+      const url = "http://dev.morbis.xyz";
+      let socket = new SockJS(url + "/api/websocket");
+      this.stompClient = Stomp.over(socket);
+      var tempClient = this.stompClient;
+      this.$root.client=this.stompClient;
+      let noteObj = this.$root.notificationCount;
+      this.$root.client.connect({}, function(frame) {
+        console.log("connected to: " + frame);
+        //TODO: get subscribed Games
+        tempClient.subscribe('/api/events/game-events/' + 15,(response) => {
+          let data = JSON.parse(response.body);
+          console.log('new nofitication:' + data.type);//TODO :replace with actual notification
+          //noteObj.value++;
+          AppData.notificationCount++;
+        })
+      })       
+      this.connected = true;
+    },
     login() {
       if(!this.valid) {
         alert("There's a problem");
@@ -56,6 +84,7 @@ export default {
               alert("Logged In successfully !")
               console.log(this.$root.userToken);
               this.$router.push("/HomePage");
+              this.connectToServer();
             })
           } else {
               if(response.status == 401) {
@@ -69,7 +98,7 @@ export default {
     },
     changeMenu: function(roles){
      this.$root.$emit('loginChangeMenu',roles) //like this
-  }
+    }
   }
 };
 </script>

@@ -74,7 +74,6 @@
       }),
       methods:{ 
         createTeam() { 
-          alert("sending new team request.."+this.$root.memberID+" "+document.getElementById("teamNameText").value);
           fetch('http://dev.morbis.xyz/{memberID}/requestRegisterAsTeamOwner', {
           method: 'POST',
           headers:{
