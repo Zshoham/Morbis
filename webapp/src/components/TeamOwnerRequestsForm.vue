@@ -40,7 +40,6 @@ export default {
         let url = new URL("http://localhost:8081/api/association-rep/handle-team-request");
         url.search = new URLSearchParams(params).toString();
         fetch(url, {
-        // mode: 'no-cors',
         method: "POST",
         headers: {
            "Content-Type": "application/json",
@@ -67,7 +66,6 @@ export default {
         let url = new URL("http://localhost:8081/api/association-rep/handle-team-request");
         url.search = new URLSearchParams(params).toString();
         fetch(url, {
-        // mode: 'no-cors',
         method: "POST",
         headers: {
            "Content-Type": "application/json",
@@ -88,10 +86,8 @@ export default {
     },
     getRequestsFromServer() {
       fetch("http://localhost:8081/api/association-rep/pending-team-requests", {
-        // mode: 'no-cors',
         method: "GET",
         headers: {
-          // accept: "*/*",
           'authorization': this.$root.userToken
         }
       })

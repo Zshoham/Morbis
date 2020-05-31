@@ -7,52 +7,6 @@
     <div align="center">
       Before creating a team, you must ask for a permission to be a Team Owner<br><br>
       <v-form ref="form" width=80%>
-<!-- 
-        <v-select
-          v-model="e7"
-          :items="players"
-          label="Players"
-          multiple
-          chips
-          hint="only the best players for your team!"
-          persistent-hint
-        ></v-select>
-                <v-select
-          v-model="e7"
-          :items="owners"
-          label="Owners"
-          multiple
-          chips
-          hint="only the best owners for your team!"
-          persistent-hint
-        ></v-select>
-                <v-select
-          v-model="e7"
-          :items="coaches"
-          label="Coaches"
-          multiple
-          chips
-          hint="only the best coaches for your team!"
-          persistent-hint
-        ></v-select>
-          <v-select
-          v-model="e7"
-          :items="managers"
-          label="Managers"
-          multiple
-          chips
-          hint="only the best managers for your team!"
-          persistent-hint
-        ></v-select>
-                  <v-select
-          v-model="e7"
-          :items="stadiums"
-          label="Stadium"
-          chips
-          hint="only the best stadium for your team!"
-          persistent-hint
-        ></v-select>
-         -->
         <v-btn color="success" @click="createTeam" block>
           Send Request
         </v-btn>

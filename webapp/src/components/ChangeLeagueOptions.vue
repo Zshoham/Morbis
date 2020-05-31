@@ -60,7 +60,6 @@ export default {
       selectedLeague.schedulingMethod = this.selectedSchedulingMethod;
       selectedLeague.scoringMethod = this.selectedScoringMethod;
       fetch("http://localhost:8081/api/association-rep/update-policy", {
-        // mode: 'no-cors',
         method: "POST",
         headers: {
            "Content-Type": "application/json",
@@ -102,10 +101,8 @@ export default {
     },
     getLeaguesFromServer() {
       fetch("http://localhost:8081/api/association-rep/leagues", {
-        // mode: 'no-cors',
         method: "GET",
         headers: {
-          // accept: "*/*",
           'authorization': this.$root.userToken
         }
       })
@@ -124,11 +121,8 @@ export default {
     },
     getScoringMethodsFromServer() {
       fetch("http://localhost:8081/api/association-rep/scoring-methods", {
-        // mode: 'no-cors',
         method: "GET",
         headers: {
-          // accept: "*/*",
-          // "Authorization":this.$root.userToken
         'authorization': this.$root.userToken
         }
       })
@@ -147,10 +141,8 @@ export default {
     },
     getSchedulingMethodsFromServer() {
       fetch("http://localhost:8081/api/association-rep/scheduling-methods", {
-        //mode: 'no-cors',
         method: "GET",
         headers: {
-          // accept: "*/*",
           'authorization': this.$root.userToken
         }
       })

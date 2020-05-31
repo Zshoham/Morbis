@@ -59,20 +59,8 @@ export default {
       let self = this;
       this.$root.client.connect({}, function(frame) {
         console.log("connected to: " + frame);
-        //TODO: get subscribed Games
         self.subscribeToFollowingGames(tempClient);
         self.updateNumberOfNotifications();
-        /*tempClient.subscribe("/api/events/game-events/" + 15, response => {
-          let data = JSON.parse(response.body);
-          console.log("new nofitication:" + data.type); //TODO :replace with actual notification
-          alert(
-            "There was " +
-              data.type +
-              ": " +
-              data.description +
-              " in a followed game"
-          );
-        });*/
       });
       this.connected = true;
     },
@@ -101,7 +89,6 @@ export default {
               alert("Logged In successfully !");
               console.log(this.$root.userToken);
               this.$router.push("/HomePage");
-              //this.$root.$emit('SetNotification',5)
               this.connectToServer();
             });
           } else {
@@ -136,7 +123,7 @@ export default {
                   "/api/events/game-events/" + json[i].id,
                   response => {
                     let data = JSON.parse(response.body);
-                    console.log("new nofitication:" + data.type); //TODO :replace with actual notification
+                    console.log("new nofitication:" + data.type);
                     alert(
                       "There was " +
                         data.type +
@@ -182,7 +169,7 @@ export default {
         .catch(err => console.error(err));
     },
     changeMenu: function(roles) {
-      this.$root.$emit("loginChangeMenu", roles); //like this
+      this.$root.$emit("loginChangeMenu", roles);
     }
   }
 };

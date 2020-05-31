@@ -42,7 +42,6 @@
 </template>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.js"></script>
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>-->
 <script>
 import ShowGameEvents from "./ShowGameEvents.vue";
 import SockJS from "sockjs-client";
@@ -75,13 +74,6 @@ export default {
   methods: {
     connectToServer() {
       console.log("connecting to server");
-      // const url = "http://localhost:8081";
-      // //const url = "http://localhost:8081:8081";
-      // let socket = new SockJS(url + "/api/websocket");
-      // this.stompClient = Stomp.over(socket);
-      // this.stompClient.connect({}, function(frame) {
-      //   console.log("connected to: " + frame);
-      // });
       this.connected = true;
     },
     sendEventToServer() {
@@ -108,10 +100,8 @@ export default {
           this.$root.memberID +
           "/game-events-ongoing",
         {
-          //mode: 'no-cors',
           method: "GET",
           headers: {
-            // accept: "*/*",
             authorization: this.$root.userToken
           }
         }
@@ -148,10 +138,8 @@ export default {
           this.$root.memberID +
           "/game-ongoing",
         {
-          //mode: 'no-cors',
           method: "GET",
           headers: {
-            // accept: "*/*",
             authorization: this.$root.userToken
           }
         }
