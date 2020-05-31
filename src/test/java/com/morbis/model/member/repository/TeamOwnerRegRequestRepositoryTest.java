@@ -30,7 +30,7 @@ public class TeamOwnerRegRequestRepositoryTest {
     public void setUp(){
         initWithoutID();
         memberRepository.save(simpleMember);
-        testRequest = new TeamOwnerRegRequest(simpleMember, "new team");
+        testRequest = new TeamOwnerRegRequest(simpleMember);
         teamOwnerRegRequestRepository.save(testRequest);
     }
 

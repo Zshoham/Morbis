@@ -338,5 +338,22 @@ public class TeamOwnerService {
         accounting.addPayment(team.getName(), LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), value);
     }
 
+    public void createTeam(int ownerID, String teamName) {
+        TeamOwner owner = teamOwnerRepository.findById(ownerID)
+                .orElseThrow(() -> new IllegalArgumentException("team owner with id"));
 
+        LinkedList<TeamOwner> owners = new LinkedList<>();
+        owners.add(owner);
+
+        Team team = Team.newTeam()
+                .name(teamName)
+                .players(null)
+                .owners(owners)
+                .coaches(null)
+                .stadium(null)
+                .build();
+
+        teamRepository.save(team);
+        owner.setTeam(team);
+    }
 }

@@ -14,6 +14,6 @@ public class TeamRequestDTO {
     public String requestedTeamName;
 
     public static TeamRequestDTO fromRequest(TeamOwnerRegRequest request){
-        return new TeamRequestDTO(request.getId(), request.getRequestedTeamName());
+        return new TeamRequestDTO(request.getId(), request.getRequestingMember().getName());
     }
 }

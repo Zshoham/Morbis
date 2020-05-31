@@ -163,7 +163,7 @@ public class AssociationRepServiceTest {
     public void handleNewTeamOwnerRequest(){
         // positive test - valid request
         when(teamOwnerRegRequestRepository.findById(simpleMember.getId()))
-                .thenReturn(Optional.of(new TeamOwnerRegRequest(simpleMember, "new team")));
+                .thenReturn(Optional.of(new TeamOwnerRegRequest(simpleMember)));
         Throwable possibleException = catchThrowable(() -> associationRepService.handleNewTeamOwnerRequest(simpleMember.getId(), false));
         assertThat(possibleException).doesNotThrowAnyException();
         verify(teamOwnerRegRequestRepository).deleteById(simpleMember.getId());

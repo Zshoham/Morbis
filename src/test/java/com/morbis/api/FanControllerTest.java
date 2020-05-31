@@ -114,7 +114,7 @@ class FanControllerTest {
 
         // negative test
         doThrow(new IllegalArgumentException()).when(memberService).
-                requestRegisterAsTeamOwner(testMember.getId(), newTeamName);
+                requestRegisterAsTeamOwner(testMember.getId());
         response = TestUtils.makePostRequest(
                 "/api/fan/{memberID}/requestRegisterAsTeamOwner", apiMock, MediaType.APPLICATION_JSON, newTeamName, testMember.getId());
         assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());

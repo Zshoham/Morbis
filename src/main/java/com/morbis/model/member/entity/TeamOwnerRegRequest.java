@@ -16,12 +16,9 @@ public class TeamOwnerRegRequest {
     @OneToOne(targetEntity = Member.class)
     private Member requestingMember;
 
-    private String requestedTeamName;
-
-    public TeamOwnerRegRequest(Member requestingMember, String requestedTeamName){
+    public TeamOwnerRegRequest(Member requestingMember){
         this.id = requestingMember.getId();
         this.requestingMember = requestingMember;
-        this.requestedTeamName = requestedTeamName;
     }
 
     @Override
@@ -30,7 +27,6 @@ public class TeamOwnerRegRequest {
         if (o == null || getClass() != o.getClass()) return false;
         TeamOwnerRegRequest that = (TeamOwnerRegRequest) o;
         return id == that.id &&
-                Objects.equals(requestingMember, that.requestingMember) &&
-                Objects.equals(requestedTeamName, that.requestedTeamName);
+                Objects.equals(requestingMember, that.requestingMember);
     }
 }

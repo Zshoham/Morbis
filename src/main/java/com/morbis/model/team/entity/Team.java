@@ -47,17 +47,14 @@ public class Team {
     @NotBlank
     private String name;
 
-    @NotNull
     @OneToMany(targetEntity = Player.class)
     @JsonManagedReference
     private List<Player> players;
 
-    @NotNull
     @OneToMany(targetEntity = TeamOwner.class)
     @JsonManagedReference
     private List<TeamOwner> owners;
 
-    @NotNull
     @OneToMany(targetEntity = Coach.class)
     @JsonManagedReference
     private List<Coach> coaches;
@@ -69,7 +66,6 @@ public class Team {
     @OneToOne(targetEntity = PosterData.class)
     private PosterData posterData;
 
-    @NotNull
     @OneToOne(targetEntity = Stadium.class)
     @JsonManagedReference
     private Stadium stadium;

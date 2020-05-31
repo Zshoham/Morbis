@@ -53,9 +53,8 @@ public class FanController {
     @Operation(summary = "register member as a Team Owner")
     @ApiResponse(responseCode = "200", description = "successfully registered as a Team Owner")
     @ApiResponse(responseCode = "400", description = "member is already a team owner or team with this name already exist")
-    public ResponseEntity<?> requestRegisterAsTeamOwner(@PathVariable int memberID,
-                                                        @Parameter(schema = @Schema(implementation = String.class)) @RequestBody TextNode teamName)  {
-        memberService.requestRegisterAsTeamOwner(memberID, teamName.asText());
+    public ResponseEntity<?> requestRegisterAsTeamOwner(@PathVariable int memberID)  {
+        memberService.requestRegisterAsTeamOwner(memberID);
         return ResponseEntity.ok().build();
     }
 

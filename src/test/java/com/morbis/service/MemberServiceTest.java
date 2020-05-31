@@ -268,17 +268,15 @@ public class MemberServiceTest {
         // negative tests
             // request pending
         when(teamOwnerRegRequestRepository.findById(simpleMember.getId()))
-                .thenReturn(Optional.of(new TeamOwnerRegRequest(simpleMember, "new team")));
-        assertThatThrownBy(() -> memberService.requestRegisterAsTeamOwner(simpleMember.getId(), "new team"))
+                .thenReturn(Optional.of(new TeamOwnerRegRequest(simpleMember)));
+        assertThatThrownBy(() -> memberService.requestRegisterAsTeamOwner(simpleMember.getId()))
                 .hasMessageContaining("member already requested to assign as team owner- request pending");
     }
 
-
     @Test
     public void registerAsTeamOwner() {
-        memberService.registerAsTeamOwner(simpleMember.getId(), "new Team");
+        memberService.registerAsTeamOwner(simpleMember.getId());
         verify(memberRepository).save(simpleMember);
-        verify(teamOwnerRepository, times(2)).save(any(TeamOwner.class));
-        verify(teamRepository).save(any(Team.class));
+        verify(teamOwnerRepository, times(1)).save(any(TeamOwner.class));
     }
 }

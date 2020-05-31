@@ -178,13 +178,13 @@ public class AssociationRepControllerTest {
 
     @Test
     public void getAllPendingRequests() throws UnsupportedEncodingException {
-        TeamOwnerRegRequest request = new TeamOwnerRegRequest(simpleMember, "new team");
+        TeamOwnerRegRequest request = new TeamOwnerRegRequest(simpleMember);
         when(associationRepService.getAllPendingRequests()).thenReturn(listOf(request));
 
         MvcResult response = makeGetRequest("/api/association-rep/pending-team-requests", apiMock);
         assertThat(response.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getResponse().getContentAsString())
-                .contains(listOf(String.valueOf(request.getId()), request.getRequestedTeamName()));
+                .contains(listOf(String.valueOf(request.getId()), request.getRequestingMember().getName()));
     }
 
     @Test

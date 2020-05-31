@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
-@Transactional
+//@Transactional
 public class AssociationRepService {
 
     private final SeasonRepository seasonRepository;
@@ -177,8 +177,9 @@ public class AssociationRepService {
     public void handleNewTeamOwnerRequest(int requestingMemberId, boolean approved) {
         TeamOwnerRegRequest request = teamOwnerRegRequestRepository.findById(requestingMemberId)
                 .orElseThrow(() -> new IllegalArgumentException("request not found"));
-        if (approved)
-            memberService.registerAsTeamOwner(requestingMemberId, request.getRequestedTeamName());
         teamOwnerRegRequestRepository.deleteById(requestingMemberId);
+        if (approved)
+            memberService.registerAsTeamOwner(requestingMemberId);
+
     }
 }

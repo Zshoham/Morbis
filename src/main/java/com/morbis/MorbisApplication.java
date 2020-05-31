@@ -281,6 +281,11 @@ public class MorbisApplication implements ApplicationRunner {
                 .build();
         rep.setGamesFollowing(listOf(game));
         authService.register(rep);
+
+        Fan bob = Fan.newFan()
+                .fromMember("bob", "Password123", "burgers", "bob@morbis.syz")
+                .build();
+        authService.register(bob);
     }
 
     @Bean

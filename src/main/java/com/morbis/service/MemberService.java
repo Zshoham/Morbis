@@ -22,7 +22,6 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Service
-@Transactional
 public class MemberService {
     private final GuestService guestService;
 
@@ -65,6 +64,7 @@ public class MemberService {
 
     }
 
+    @Transactional
     public void followPage(int memberID, int followableID) {
         logger.trace("called function: MemberService->followPage.");
         Optional<PosterData> posterPage = posterDataRepository.findById(followableID);
@@ -86,6 +86,7 @@ public class MemberService {
         logger.info(memberID + " followed the page with the ID: " + followableID);
     }
 
+    @Transactional
     public void followGame(int memberID, int gameID) {
         logger.trace("called function: MemberService->followGame.");
         Optional<Game> game = gameRepository.findById(gameID);
@@ -106,6 +107,7 @@ public class MemberService {
         logger.info(memberID + " followed the game with the ID: " + gameID);
     }
 
+    @Transactional
     public List<Game> getGamesFollowing(int memberID) {
         logger.trace("called function: MemberService->getGamesFollowing.");
         Member member = memberRepository.findById(memberID)
@@ -114,7 +116,7 @@ public class MemberService {
         return Objects.requireNonNullElse(member.getGamesFollowing(), new LinkedList<>());
     }
 
-
+    @Transactional
     public void reportPost(int memberID, int postID, String complaintDescription) {
         logger.trace("called function: MemberService->reportPost.");
 
@@ -134,6 +136,7 @@ public class MemberService {
 
     }
 
+    @Transactional
     public List<MemberSearch> getSearchHistory(int memberID) {
         logger.trace("called function: MemberService->getSearchHistory.");
 
@@ -146,6 +149,7 @@ public class MemberService {
         return member.get().getSearches();
     }
 
+    @Transactional
     public Member getMemberInfo(int memberID) {
         logger.trace("called function: MemberService->getMemberInfo.");
         Optional<Member> member = memberRepository.findById(memberID);
@@ -157,6 +161,7 @@ public class MemberService {
         return member.get();
     }
 
+    @Transactional
     public void updateMemberInfo(Member updatedMember) {
         logger.trace("called function: MemberService->updateMemberInfo.");
         Optional<Member> member = memberRepository.findById(updatedMember.getId());
@@ -168,6 +173,7 @@ public class MemberService {
         logger.info("the info of member: " + updatedMember.getId() + " has been updated.");
     }
 
+    @Transactional
     public Collection<SearchResult> searchData(List<ViewableEntityType> filter, String query, int memberID) {
         logger.trace("called function: MemberService->searchData.");
         Optional<Member> member = memberRepository.findById(memberID);
@@ -181,6 +187,7 @@ public class MemberService {
         return guestService.searchData(filter, query);
     }
 
+    @Transactional
     public void registerAsCoach(int memberID, String qualification, String role) {
         logger.trace("called function: MemberService->registerAsCoach.");
         Optional<Member> member = memberRepository.findById(memberID);
@@ -204,6 +211,7 @@ public class MemberService {
         logger.info(memberID + "[memberID] was registered as a coach");
     }
 
+    @Transactional
     public void registerAsPlayer(int memberID, LocalDate birthday, String position) {
         logger.trace("called function: MemberService->registerAsPlayer.");
         Optional<Member> member = memberRepository.findById(memberID);
@@ -244,42 +252,39 @@ public class MemberService {
         return member.get();
     }
 
-    public void requestRegisterAsTeamOwner(int memberID, String teamName) {
+    @Transactional
+    public void requestRegisterAsTeamOwner(int memberID) {
         logger.trace("called function: MemberService->requestRegisterAsTeamOwner.");
-        Member requestingMember = validateRegisterAsTeamOwner(memberID, teamName);
+        Member requestingMember = memberRepository.findById(memberID)
+                .orElseThrow(() -> new IllegalArgumentException("member with id " + memberID + " not found"));
+
         boolean memberRequested = teamOwnerRegRequestRepository.findById(memberID).isPresent();
         if(memberRequested)
             throw new IllegalArgumentException("member already requested to assign as team owner- request pending");
-        TeamOwnerRegRequest request = new TeamOwnerRegRequest(requestingMember, teamName);
+        TeamOwnerRegRequest request = new TeamOwnerRegRequest(requestingMember);
         teamOwnerRegRequestRepository.save(request);
         logger.info(memberID + "[memberID] requested to register as a team owner");
     }
 
-    public void registerAsTeamOwner(int memberID, String teamName){
+    public void registerAsTeamOwner(int memberID){
         logger.trace("called function: MemberService->requestRegisterAsTeamOwner.");
-        Member member = validateRegisterAsTeamOwner(memberID, teamName);
-        member.getMemberRole().add(MemberRole.TEAM_OWNER);
+        Member member = memberRepository.findById(memberID)
+                .orElseThrow(() -> new IllegalArgumentException("member with id " + memberID + " not found"));
+        List<MemberRole> roles = member.getMemberRole();
+        roles.add(MemberRole.TEAM_OWNER);
         TeamOwner owner = TeamOwner.newTeamOwner()
                 .fromMember(member)
                 .withId(memberID)
                 .build();
+        owner.setMemberRole(roles);
 
+        memberRepository.delete(member);
         teamOwnerRepository.save(owner);
-        memberRepository.save(member);
-        Team newTeam = Team.newTeam()
-                .name(teamName)
-                .players(new LinkedList<>())
-                .owners(List.of(owner))
-                .coaches(new LinkedList<>())
-                .stadium(null)
-                .build();
 
-        teamRepository.save(newTeam);
-        owner.setTeam(newTeam);
-        teamOwnerRepository.save(owner);
         logger.info(memberID + "[memberID] requested to register as a team owner");
     }
 
+    @Transactional
     public void removeRoleFromMember(int memberID, MemberRole role) {
         logger.trace("called function: MemberService->removeRoleFromMember.");
         Member member = memberRepository.findById(memberID)
@@ -294,6 +299,7 @@ public class MemberService {
         logger.info(memberID + "[memberID] is no longer a " + role.toString());
     }
 
+    @Transactional
     public List<GameEvent> getEventsBackLog(int memberID) {
         Member member = memberRepository.findById(memberID)
                 .orElseThrow(() -> new IllegalArgumentException("member with id " + memberID + " not found"));
@@ -306,6 +312,7 @@ public class MemberService {
         return events;
     }
 
+    @Transactional
     public int getEventBacklogSize(int memberID) {
         Member member = memberRepository.findById(memberID)
                 .orElseThrow(() -> new IllegalArgumentException("member with id " + memberID + " not found"));
