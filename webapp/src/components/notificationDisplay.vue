@@ -1,7 +1,7 @@
 <template>
   <v-card raised class="mx-auto my-auto" max-width="500">
     <div align="center" dark class="primary py-3 white--text">
-      <h1>Game Events</h1>
+      <h1>New Events</h1>
     </div>
 
     <div align="center">
@@ -63,25 +63,58 @@ export default {
     props: {
     parentData: Object,
   },
-  name: "ShowGameEvents",
+  name: "notificationDisplay",
+  mounted() {
+    this.getNotificationsFromServer();
+    this.$root.$emit('SetNotification',0);
+  },
   data: () => ({
     list: [],
-    eventTypes: [
-      "Goal",
-      "Offside",
-      "Foul",
-      "Red Card",
-      "Yellow Card",
-      "Substitution"
-    ]
   }),
   methods: {
       addEvent(event) {
           this.list.push(event);
       },
-      clearEvents() {
-        this.list = [];
-      }
+      getNotificationsFromServer() {
+      fetch(
+        "http://localhost:8081/api/fan/" +
+          this.$root.memberID +
+          "/events",
+        {
+          //mode: 'no-cors',
+          method: "GET",
+          headers: {
+            // accept: "*/*",
+            authorization: this.$root.userToken
+          }
+        }
+      )
+        .then(response => {
+          if (response.ok) {
+            response.json().then(json => {
+              let notifications = json;
+              for (let i = 0; i < notifications.length; i++) {
+                this.addEvent(notifications[i]);
+              }
+            });
+          } else {
+            if (response.status == 404) {
+              alert(
+                "You don't have any notifications"
+              );
+              this.$router.push("/HomePage");
+            } else {
+              alert(
+                "Server returned " +
+                  response.status +
+                  " : " +
+                  response.statusText
+              );
+            }
+          }
+        })
+        .catch(err => console.error(err));
+    },
   }
 };
 </script>

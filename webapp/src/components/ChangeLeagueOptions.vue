@@ -3,72 +3,114 @@
     <div align="center" dark class="primary mb-10 py-3 white--text">
       <h1>League's Options</h1>
     </div>
-    
-    <div align="center">
-        <v-select v-model="selectedLeague" :items="leagues" item-text="leagueName" label="League Name" class="mx-5" outlined @change="updateMethods"></v-select>
-        <v-select v-model="selectedSchedulingMethod" :items="schedulingMethods" label="Scheduling Method" class="mx-5" outlined></v-select>
-        <v-select v-model="selectedScoringMethod" :items="scoringMethods" label="Scoring Method" class="mx-5" outlined></v-select>
-        <v-btn color="success" block @click="changeLeagueMethods">
-          Apply Options
-          <v-icon right>mdi-check-circle</v-icon>
-        </v-btn>  
 
+    <div align="center">
+      <v-select
+        v-model="selectedLeague"
+        :items="leagues"
+        item-text="leagueName"
+        label="League Name"
+        class="mx-5"
+        outlined
+        @change="updateMethods"
+      ></v-select>
+      <v-select
+        v-model="selectedSchedulingMethod"
+        :items="schedulingMethods"
+        label="Scheduling Method"
+        class="mx-5"
+        outlined
+      ></v-select>
+      <v-select
+        v-model="selectedScoringMethod"
+        :items="scoringMethods"
+        label="Scoring Method"
+        class="mx-5"
+        outlined
+      ></v-select>
+      <v-btn color="success" block @click="changeLeagueMethods">
+        Apply Options
+        <v-icon right>mdi-check-circle</v-icon>
+      </v-btn>
     </div>
-    <v-spacer ></v-spacer>
+    <v-spacer></v-spacer>
   </v-card>
-  
 </template>
 
 <script>
 export default {
   name: "ChangeLeagueOptions",
+  mounted() {
+    this.getLeaguesFromServer();
+    this.getSchedulingMethodsFromServer();
+    this.getScoringMethodsFromServer();
+  },
   data: () => ({
     selectedLeague: "",
     selectedSchedulingMethod: "",
     selectedScoringMethod: "",
-    test: ["A","B","C","D"],
-    leagues: [
-        {
-            leagueName: "La Liga",
-            schedulingMethod: "La Liga scheduling",
-            scoringMethod: "La Liga scoring"
-        },
-        {
-            leagueName: "Serie A",
-            schedulingMethod: "Serie A scheduling",
-            scoringMethod: "Serie A scoring"
-        },
-        {
-            leagueName: "Ligat Haal",
-            schedulingMethod: "Ligat Haal scheduling",
-            scoringMethod: "Ligat Haal scoring"
-        },
-        {
-            leagueName: "Premier League",
-            schedulingMethod: "Premier scheduling",
-            scoringMethod: "Premier scoring"
-        }
-        ],
-        schedulingMethods: ["La Liga scheduling","Serie A scheduling","Ligat Haal scheduling","Premier scheduling" ],
-        scoringMethods:["La Liga scoring","Serie A scoring","Ligat Haal scoring","Premier scoring"]
+    test: ["A", "B", "C", "D"],
+    leagues: [],
+    schedulingMethods: [],
+    scoringMethods: []
   }),
   methods: {
     changeLeagueMethods() {
-      fetch('http://dev.morbis.xyz:8080/api/...', {
-        method: 'POST',
-        headers:{
-          'Content-Type': 'application/json',          
+      let selectedLeague = this.leagues.find(league => league.leagueName == this.selectedLeague);
+      selectedLeague.schedulingMethod = this.selectedSchedulingMethod;
+      selectedLeague.scoringMethod = this.selectedScoringMethod;
+      fetch("http://localhost:8081/api/association-rep/update-policy", {
+        method: "POST",
+        headers: {
+           "Content-Type": "application/json",
+            'authorization': this.$root.userToken
         },
         body: JSON.stringify({
-          league: this.league,
-          schedulingMethod: this.selectedSchedulingMethod,
-          scoringMethod: this.selectedScoringMethod,
+          leagueID: selectedLeague.leagueID,
+          leagueName: selectedLeague.leagueName,
+          schedulingMethod: selectedLeague.schedulingMethod,
+          scoringMethod: selectedLeague.scoringMethod
         })
       })
-        .then(async response => {
-          alert(response.status);
+        .then(response => {
           if (response.ok) {
-            response => (this.info = response);
+          alert(response.status);            
+          } else {
+            response.json().then(json => {
+                alert(response.status + ": " + json.message);
+            });
+          }
+        })
+        .catch(err => console.error(err));
+    },
+    updateMethods() {
+      console.log(this.leagues);
+      console.log("selected league: " + this.selectedLeague);
+      console.log(
+        "finding league: " +
+          this.leagues.find(league => league.leagueName == this.selectedLeague)
+            .scoringMethod
+      );
+      console.log("scoring method is:" + this.leagues[0].scoringMethod);
+      this.selectedSchedulingMethod = this.leagues.find(
+        league => league.leagueName == this.selectedLeague
+      ).schedulingMethod;
+      this.selectedScoringMethod = this.leagues.find(
+        league => league.leagueName == this.selectedLeague
+      ).scoringMethod;
+    },
+    getLeaguesFromServer() {
+      fetch("http://localhost:8081/api/association-rep/leagues", {
+        method: "GET",
+        headers: {
+          'authorization': this.$root.userToken
+        }
+      })
+        .then(response => {
+          if (response.ok) {
+            response.json().then(json => {
+              this.leagues = json;
+            });
           } else {
             alert(
               "Server returned " + response.status + " : " + response.statusText
@@ -77,10 +119,46 @@ export default {
         })
         .catch(err => console.error(err));
     },
-    updateMethods() {
-      this.selectedSchedulingMethod = this.leagues.find(league => league.leagueName === this.selectedLeague).schedulingMethod
-      this.selectedScoringMethod = this.leagues.find(league => league.leagueName === this.selectedLeague).scoringMethod
-    }
+    getScoringMethodsFromServer() {
+      fetch("http://localhost:8081/api/association-rep/scoring-methods", {
+        method: "GET",
+        headers: {
+        'authorization': this.$root.userToken
+        }
+      })
+        .then(response => {
+          if (response.ok) {
+            response.json().then(json => {
+              this.scoringMethods = json;
+            });
+          } else {
+            alert(
+              "Server returned " + response.status + " : " + response.statusText
+            );
+          }
+        })
+        .catch(err => console.error(err));
+    },
+    getSchedulingMethodsFromServer() {
+      fetch("http://localhost:8081/api/association-rep/scheduling-methods", {
+        method: "GET",
+        headers: {
+          'authorization': this.$root.userToken
+        }
+      })
+        .then(response => {
+          if (response.ok) {
+            response.json().then(json => {
+              this.schedulingMethods = json;
+            });
+          } else {
+            alert(
+              "Server returned " + response.status + " : " + response.statusText
+            );
+          }
+        })
+        .catch(err => console.error(err));
+    },
   }
 };
 </script>

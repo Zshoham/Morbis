@@ -5,10 +5,11 @@
     </div>
 
     <div align="center">
-      Before creating a team, you must ask for a permission to be a Team Owner<br><br>
+      To create a team, enter a team name<br><br>
       <v-form ref="form" width=80%>
+        <v-text-field class="mx-5" outlined v-model="teamName" label="Team Name" required></v-text-field>
         <v-btn color="success" @click="createTeam" block>
-          Send Request
+          Send Team Name
         </v-btn>
       </v-form>
     </div>
@@ -18,23 +19,23 @@
 
 <script>
     export default {
-      name: 'NewTeamRequest', 
+      name: 'SubmitTeamForm', 
       data: () => ({
-
+            teamName: ""
       }),
       methods:{ 
         createTeam() { 
-          fetch('http://localhost:8081/api/fan/' + this.$root.memberID + '/requestRegisterAsTeamOwner', {
+          fetch('http://localhost:8081/api/team-owner/' + this.$root.memberID + '/create-team', {
           method: 'POST',
           headers:{
             'Content-Type': 'application/json', 
             'authorization': this.$root.userToken        
           },
+          body: JSON.stringify(this.teamName)
         })
           .then(async response => {
-            alert(response.status);
             if (response.ok) {
-              alert("request sent succesfully");
+              alert("Your team has been created !");
             } else {
               alert(
                 "Server returned " + response.status + " : " + response.statusText+"\n please try again later"
