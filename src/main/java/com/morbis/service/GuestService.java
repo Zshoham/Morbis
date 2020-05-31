@@ -17,7 +17,10 @@ import com.morbis.service.viewable.SearchResult;
 import com.morbis.service.viewable.ViewableEntityType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -27,20 +30,21 @@ import java.util.stream.Collectors;
 import static com.morbis.service.viewable.ViewableEntityType.*;
 
 @Service
+@Transactional
 public class GuestService {
 
-    private MemberRepository memberRepository;
-    private GameRepository gameRepository;
-    private LeagueRepository leagueRepository;
-    private SeasonRepository seasonRepository;
-    private CoachRepository coachRepository;
-    private PlayerRepository playerRepository;
-    private RefereeRepository refereeRepository;
-    private TeamOwnerRepository teamOwnerRepository;
-    private TeamManagerRepository teamManagerRepository;
-    private StadiumRepository stadiumRepository;
-    private TeamRepository teamRepository;
-
+    private final MemberRepository memberRepository;
+    private final GameRepository gameRepository;
+    private final LeagueRepository leagueRepository;
+    private final SeasonRepository seasonRepository;
+    private final CoachRepository coachRepository;
+    private final PlayerRepository playerRepository;
+    private final RefereeRepository refereeRepository;
+    private final TeamOwnerRepository teamOwnerRepository;
+    private final TeamManagerRepository teamManagerRepository;
+    private final StadiumRepository stadiumRepository;
+    private final TeamRepository teamRepository;
+    private final Logger logger;
 
     @Autowired
     public GuestService(MemberRepository memberRepository,
@@ -66,18 +70,11 @@ public class GuestService {
         this.teamManagerRepository = teamManagerRepository;
         this.stadiumRepository = stadiumRepository;
         this.teamRepository = teamRepository;
-    }
-
-
-    public boolean register(Member member)  {
-        if (memberRepository.findDistinctByUsername(member.getUsername()).isPresent())
-            return false;
-
-        memberRepository.save(member);
-        return true;
+        this.logger = LoggerFactory.getLogger(GuestService.class);
     }
 
     public Collection<SearchResult> searchData(List<ViewableEntityType> filter, String query) {
+        logger.trace("called function: GuestService->searchData.");
         Collection<SearchResult> results = new ConcurrentLinkedDeque<>();
 
         ViewableEntityType.match(filter)
@@ -97,8 +94,10 @@ public class GuestService {
     }
 
     public ViewableProperties<?> getData(SearchResult result) {
-
-        var res = new Object() { ViewableProperties<?> data; };
+        logger.trace("called function: GuestService->getData.");
+        var res = new Object() {
+            ViewableProperties<?> data;
+        };
 
         ViewableEntityType.match(result.getType())
                 .inCase(GAME, () -> res.data = ViewableProperties.from(
@@ -137,6 +136,7 @@ public class GuestService {
     }
 
     private Collection<SearchResult> findGames(String query) {
+        logger.trace("called function: GuestService->findGames. with the query: " + query);
         return gameRepository.findAllContainingQuery(query).stream()
                 .map(game -> new SearchResult(
                         game.getId(),
@@ -146,60 +146,69 @@ public class GuestService {
     }
 
     private Collection<SearchResult> findLeagues(String query) {
+        logger.trace("called function: GuestService->findLeagues. with the query: " + query);
         return leagueRepository.findAllByNameContaining(query).stream()
                 .map(league -> new SearchResult(league.getId(), league.getName(), LEAGUE))
                 .collect(Collectors.toList());
     }
 
     private Collection<SearchResult> findSeasons(String query) {
-
-        try { Integer.parseInt(query); }
-        catch (NumberFormatException e) {
+        logger.trace("called function: GuestService->findSeasons. with the query: " + query);
+        try {
+            Integer.parseInt(query);
+        } catch (NumberFormatException e) {
             return Collections.emptyList();
         }
 
-        return seasonRepository.findAllByYearContaining(Integer.parseInt(query)).stream()
+        return seasonRepository.findAllByYear(Integer.parseInt(query)).stream()
                 .map(season -> new SearchResult(season.getId(), String.valueOf(season.getYear()), SEASON))
                 .collect(Collectors.toList());
     }
 
     private Collection<SearchResult> findCoaches(String query) {
+        logger.trace("called function: GuestService->findCoaches. with the query: " + query);
         return coachRepository.findAllByNameContaining(query).stream()
                 .map(coach -> new SearchResult(coach.getId(), coach.getName(), COACH))
                 .collect(Collectors.toList());
     }
 
     private Collection<SearchResult> findPlayers(String query) {
+        logger.trace("called function: GuestService->findPlayers. with the query: " + query);
         return playerRepository.findAllByNameContaining(query).stream()
                 .map(player -> new SearchResult(player.getId(), player.getName(), PLAYER))
                 .collect(Collectors.toList());
     }
 
     private Collection<SearchResult> findReferees(String query) {
+        logger.trace("called function: GuestService->findReferees. with the query: " + query);
         return refereeRepository.findAllByNameContaining(query).stream()
                 .map(referee -> new SearchResult(referee.getId(), referee.getName(), REFEREE))
                 .collect(Collectors.toList());
     }
 
     private Collection<SearchResult> findTeamOwners(String query) {
+        logger.trace("called function: GuestService->findTeamOwners. with the query: " + query);
         return teamOwnerRepository.findAllByNameContaining(query).stream()
                 .map(teamOwner -> new SearchResult(teamOwner.getId(), teamOwner.getName(), TEAM_OWNER))
                 .collect(Collectors.toList());
     }
 
     private Collection<SearchResult> findTeamManagers(String query) {
+        logger.trace("called function: GuestService->findTeamManagers. with the query: " + query);
         return teamManagerRepository.findAllByNameContaining(query).stream()
                 .map(teamManager -> new SearchResult(teamManager.getId(), teamManager.getName(), TEAM_MANAGER))
                 .collect(Collectors.toList());
     }
 
     private Collection<SearchResult> findStadiums(String query) {
+        logger.trace("called function: GuestService->findStadiums. with the query: " + query);
         return stadiumRepository.findAllByNameContaining(query).stream()
                 .map(stadium -> new SearchResult(stadium.getId(), stadium.getName(), STADIUM))
                 .collect(Collectors.toList());
     }
 
     private Collection<SearchResult> findTeams(String query) {
+        logger.trace("called function: GuestService->findTeams. with the query: " + query);
         return teamRepository.findAllByNameContaining(query).stream()
                 .map(team -> new SearchResult(team.getId(), team.getName(), TEAM))
                 .collect(Collectors.toList());

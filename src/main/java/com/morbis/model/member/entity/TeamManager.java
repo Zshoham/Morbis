@@ -5,12 +5,8 @@ import com.morbis.model.team.entity.Team;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -46,15 +42,13 @@ public class TeamManager extends Member {
 
         TeamManager that = (TeamManager) o;
 
-        if (!permissions.equals(that.permissions)) return false;
-        return team.equals(that.team);
+        return permissions.equals(that.permissions);
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
         result = 31 * result + permissions.hashCode();
-        result = 31 * result + team.hashCode();
         return result;
     }
 

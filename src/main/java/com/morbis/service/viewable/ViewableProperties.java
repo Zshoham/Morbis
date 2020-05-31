@@ -1,11 +1,9 @@
 package com.morbis.service.viewable;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +27,6 @@ public class ViewableProperties<T> {
 
     public static ViewableProperties<?> EMPTY = new ViewableProperties<>(Void.TYPE);
 
-
     @SuppressWarnings("unchecked")
     public static <TYPE> ViewableProperties<TYPE> from(TYPE record) {
         if (!VIEWABLE_VALIDATOR.validate(record.getClass()))
@@ -38,7 +35,7 @@ public class ViewableProperties<T> {
         ViewableProperties<TYPE> res = new ViewableProperties<>((Class<TYPE>) record.getClass());
         res.mapper = new ObjectMapper();
         res.mapper.registerModule(new JavaTimeModule());
-        res.properties =  res.mapper.convertValue(record, Map.class);
+        res.properties = res.mapper.convertValue(record, Map.class);
         return res;
     }
 

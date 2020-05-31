@@ -26,27 +26,41 @@ def setup():
     print(TITLE)
     print(WELCOME)
 
-    username = input("admin username: ")
-    password = getpass.getpass("admin password: ")
-    name = input("admin name: ")
-    email = input("admin email: ")
+    admin_username = input("admin username: ")
+    admin_password = getpass.getpass("admin password: ")
+    admin_name = input("admin name: ")
+    admin_email = input("admin email: ")
 
     print("")
 
-    print("Next lets Connect to the database\n")
-    db_string = input("database connection string: ")
-    db_user = input("database username: ")
-    db_pass = getpass.getpass("database password: ")
+    rep_username = input("association representitive username: ")
+    rep_password = getpass.getpass("association representitive password: ")
+    rep_name = input("association representitive name: ")
+    rep_email = input("association representitive email: ")
 
     print("")
-    
+
     print("Next well set up server email\n")
     email_adress = input("server email adress: ")
     email_user = input("server email username: ")
     email_pass = getpass.getpass("server email password: ")
 
+    print("")
+
+    print("Next would you like to connect to a custom database ?\n")
+    use_db = input("[yes/no]: ") == "yes"
+    db_string = "NA"
+    db_user = "NA"
+    db_pass=  "NA"
+    if use_db:
+        db_string = input("database connection string: ")
+        db_user = input("database username: ")
+        db_pass = getpass.getpass("database password: ")
+
+    print("")
+
     print("Finally would you like to setup https ?")
-    use_ssl = input("[yes/no]: ")
+    use_ssl = input("[yes/no]: ") == "yes"
     ssl_enabled = "false"
     ssl_store = "NA"
     ssl_pass = "NA"
@@ -62,20 +76,26 @@ def setup():
 
     with open("application.properties", "w") as props:
         props.write("\n\n")
-        props.write("spring.datasource.url=jdbc:" + db_string + "\n")
-        props.write("spring.datasource.username=" + db_user + "\n")
-        props.write("spring.datasource.password=" + db_pass + "\n")
         props.write("spring.mail.address=" + email_adress + "\n")
         props.write("spring.mail.username=" + email_user + "\n")
         props.write("spring.mail.password=" + email_pass + "\n")
-        props.write("server.ssl.key-store-type=" + ssl_type + "\n")
-        props.write("server.ssl.key-store=" + ssl_type + "\n")
-        props.write("server.ssl.key-store-password=" + ssl_pass + "\n")
-        props.write("server.ssl.key-alias=" + ssl_alias + "\n")
+        if use_db:
+            props.write("spring.datasource.url=jdbc:" + db_string + "\n")
+            props.write("spring.datasource.username=" + db_user + "\n")
+            props.write("spring.datasource.password=" + db_pass + "\n")
+        if use_ssl:
+            props.write("server.ssl.key-store-type=" + ssl_type + "\n")
+            props.write("server.ssl.key-store=" + ssl_type + "\n")
+            props.write("server.ssl.key-store-password=" + ssl_pass + "\n")
+            props.write("server.ssl.key-alias=" + ssl_alias + "\n")
         props.close()
 
-    
-    os.system("java -jar morbis.jar --admin --username=" + username + " --password=" + password + " --name=" + name + " --email=" + email)
+    setup_command = "java -jar morbis.jar --setup"
+    setup_admin = " --Ausername=" + admin_username + " --Apassword=" + admin_password + " --Aname=" + admin_name + " --Aemail=" + admin_email
+    setup_rep = " --Rusername=" + rep_username + " --Rpassword=" + rep_password + " --Rname=" + rep_name + " --Remail=" + rep_email
+
+
+    os.system(setup_command + setup_admin + setup_rep)
 
 
 if __name__ == '__main__':

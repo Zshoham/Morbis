@@ -1,23 +1,16 @@
 package com.morbis.model.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.morbis.model.game.entity.Game;
 import com.morbis.model.poster.entity.PosterData;
 import com.morbis.model.team.entity.Team;
 import lombok.*;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -25,20 +18,20 @@ import java.util.List;
 @NoArgsConstructor
 public class Player extends Member {
 
-    public Player(String username, String password, String name, String email, LocalDateTime birthDate, String position) {
+    public Player(String username, String password, String name, String email, LocalDate birthDate, String position) {
         super(MemberRole.PLAYER, username, password, name, email);
         setBirthDate(birthDate);
         setPosition(position);
     }
 
-    public Player(int id, String username, String password, String name, String email, LocalDateTime birthDate, String position) {
+    public Player(int id, String username, String password, String name, String email, LocalDate birthDate, String position) {
         super(id, MemberRole.PLAYER, username, password, name, email);
         setBirthDate(birthDate);
         setPosition(position);
     }
 
     @NotNull
-    private LocalDateTime birthDate;
+    private LocalDate birthDate;
 
     @NotNull
     @NotBlank
@@ -72,7 +65,7 @@ public class Player extends Member {
         return result;
     }
 
-    public static AbstractMemberBuilder<PlayerBuilder> newPlayer(LocalDateTime birthDate, String position) {
+    public static AbstractMemberBuilder<PlayerBuilder> newPlayer(LocalDate birthDate, String position) {
         return new AbstractMemberBuilder<>(MemberRole.PLAYER, new PlayerBuilder(birthDate, position));
     }
 
@@ -80,7 +73,7 @@ public class Player extends Member {
 
         private final Player result;
 
-        public PlayerBuilder(LocalDateTime birthDate, String position) {
+        public PlayerBuilder(LocalDate birthDate, String position) {
             result = new Player();
             result.setBirthDate(birthDate);
             result.setPosition(position);

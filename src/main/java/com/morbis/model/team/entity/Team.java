@@ -11,7 +11,6 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,7 +22,7 @@ public class Team {
     @GeneratedValue
     private int id;
 
-    private Team(int id, String name, List<Player> players, List<TeamOwner> owners, List<TeamManager> managers, List<Coach> coaches, Stadium stadium) {
+    private Team(int id, String name, List<Player> players, List<TeamOwner> owners, List<Coach> coaches, Stadium stadium) {
         setId(id);
         setName(name);
         setPlayers(players);
@@ -34,7 +33,7 @@ public class Team {
         setTeamStatus(TeamStatus.OPENED);
     }
 
-    public Team(String name, List<Player> players, List<TeamOwner> owners, List<TeamManager> managers, List<Coach> coaches, Stadium stadium) {
+    public Team(String name, List<Player> players, List<TeamOwner> owners, List<Coach> coaches, Stadium stadium) {
         setName(name);
         setPlayers(players);
         setOwners(owners);
@@ -48,30 +47,26 @@ public class Team {
     @NotBlank
     private String name;
 
-    @NotNull
-    @OneToMany(targetEntity = Player.class, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = Player.class)
     @JsonManagedReference
     private List<Player> players;
 
-    @NotNull
-    @OneToMany(targetEntity = TeamOwner.class, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = TeamOwner.class)
     @JsonManagedReference
     private List<TeamOwner> owners;
 
-    @NotNull
-    @OneToMany(targetEntity = Coach.class, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = Coach.class)
     @JsonManagedReference
     private List<Coach> coaches;
 
-    @OneToMany(targetEntity = TeamManager.class, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = TeamManager.class)
     @JsonManagedReference
     private List<TeamManager> managers;
 
-    @OneToOne(targetEntity = PosterData.class, cascade = CascadeType.ALL)
+    @OneToOne(targetEntity = PosterData.class)
     private PosterData posterData;
 
-    @NotNull
-    @OneToOne(targetEntity = Stadium.class, cascade = CascadeType.ALL)
+    @OneToOne(targetEntity = Stadium.class)
     @JsonManagedReference
     private Stadium stadium;
 
