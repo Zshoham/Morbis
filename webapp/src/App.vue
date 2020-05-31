@@ -251,7 +251,7 @@ export default {
     this.$root.$on("SetNotification", (numberOfNotifications) => {
       this.notificationCount = numberOfNotifications;
     })
-    this.$root.baseURL = 'localhost:8081:9000';
+    this.$root.baseURL = location.origin;
     document.getElementById('logoutButton').style.display = 'none';
   },
   props: {
@@ -301,7 +301,7 @@ export default {
       });
     },
     Logout() {
-      fetch("http://localhost:8081/api/logout/" + this.$root.userToken, {
+      fetch(this.$root.baseURL + "/api/logout/" + this.$root.userToken, {
         method: "GET",
         headers: {
           accept: "*/*"
@@ -316,7 +316,7 @@ export default {
             document.getElementById('loginButton').style.display = 'block';
             document.getElementById('registerButton').style.display = 'block';
             document.getElementById('logoutButton').style.display = 'none';
-            window.location.href = 'WelcomePage'
+            window.location.href = location.origin
             //this.$router.push("/WelcomePage");
           } else {
             alert(
@@ -330,7 +330,7 @@ export default {
         .catch(err => console.error(err));
     },
     ForceLogout() {
-      fetch("http://localhost:8081/api/logout/42", {
+      fetch(this.$root.baseURL + "/api/logout/42", {
         method: "GET",
         headers: {
           accept: "*/*"

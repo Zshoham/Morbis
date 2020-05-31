@@ -25,7 +25,7 @@
       }),
       methods:{ 
         createTeam() { 
-          fetch('http://localhost:8081/api/team-owner/' + this.$root.memberID + '/create-team', {
+          fetch(this.$root.baseURL + '/api/team-owner/' + this.$root.memberID + '/create-team', {
           method: 'POST',
           headers:{
             'Content-Type': 'application/json', 

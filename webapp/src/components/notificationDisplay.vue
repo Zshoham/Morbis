@@ -77,7 +77,7 @@ export default {
       },
       getNotificationsFromServer() {
       fetch(
-        "http://localhost:8081/api/fan/" +
+        this.$root.baseURL + "/api/fan/" +
           this.$root.memberID +
           "/events",
         {

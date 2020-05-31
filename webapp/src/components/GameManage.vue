@@ -96,7 +96,7 @@ export default {
     },
     getOngoingGameEvents() {
       fetch(
-        "http://localhost:8081/api/referee/" +
+        this.$root.baseURL + "/api/referee/" +
           this.$root.memberID +
           "/game-events-ongoing",
         {
@@ -134,7 +134,7 @@ export default {
     },
     getOngoingGame() {
       fetch(
-        "http://localhost:8081/api/referee/" +
+        this.$root.baseURL + "/api/referee/" +
           this.$root.memberID +
           "/game-ongoing",
         {

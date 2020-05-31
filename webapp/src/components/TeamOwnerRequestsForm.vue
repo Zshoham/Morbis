@@ -37,7 +37,7 @@ export default {
           memberID: this.requests.find(request => request.requestedTeamName == this.selectedRequest).requestingMemberID,
           approved: true
         }
-        let url = new URL("http://localhost:8081/api/association-rep/handle-team-request");
+        let url = new URL(this.$root.baseURL + "/api/association-rep/handle-team-request");
         url.search = new URLSearchParams(params).toString();
         fetch(url, {
         method: "POST",
@@ -63,7 +63,7 @@ export default {
           memberID: this.requests.find(request => request.requestedTeamName == this.selectedRequest).requestingMemberID,
           approved: false  
         }
-        let url = new URL("http://localhost:8081/api/association-rep/handle-team-request");
+        let url = new URL(this.$root.baseURL + "/api/association-rep/handle-team-request");
         url.search = new URLSearchParams(params).toString();
         fetch(url, {
         method: "POST",
@@ -85,7 +85,7 @@ export default {
         .catch(err => console.error(err));
     },
     getRequestsFromServer() {
-      fetch("http://localhost:8081/api/association-rep/pending-team-requests", {
+      fetch(this.$root.baseURL + "/api/association-rep/pending-team-requests", {
         method: "GET",
         headers: {
           'authorization': this.$root.userToken

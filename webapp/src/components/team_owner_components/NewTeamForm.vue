@@ -24,7 +24,7 @@
       }),
       methods:{ 
         createTeam() { 
-          fetch('http://localhost:8081/api/fan/' + this.$root.memberID + '/requestRegisterAsTeamOwner', {
+          fetch(this.$root.baseURL + '/api/fan/' + this.$root.memberID + '/requestRegisterAsTeamOwner', {
           method: 'POST',
           headers:{
             'Content-Type': 'application/json', 

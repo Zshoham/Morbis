@@ -50,7 +50,7 @@ export default {
   methods: {
     connectToServer() {
       console.log("connecting to server");
-      const url = "http://localhost:8081";
+      const url = this.$root.baseURL + "";
       let socket = new SockJS(url + "/api/websocket");
       this.stompClient = Stomp.over(socket);
       var tempClient = this.stompClient;
@@ -69,7 +69,7 @@ export default {
         alert("There's a problem");
         return;
       }
-      fetch("http://localhost:8081/api/login", {
+      fetch(this.$root.baseURL + "/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -105,7 +105,7 @@ export default {
     },
     subscribeToFollowingGames(tempClient) {
       fetch(
-        "http://localhost:8081/api/fan/" +
+        this.$root.baseURL + "/api/fan/" +
           this.$root.memberID +
           "/gamesFollowing",
         {
@@ -145,7 +145,7 @@ export default {
     },
     updateNumberOfNotifications() {
       fetch(
-        "http://localhost:8081/api/fan/" +
+        this.$root.baseURL + "/api/fan/" +
           this.$root.memberID +
           "/events-count",
         {

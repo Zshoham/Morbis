@@ -59,7 +59,7 @@ export default {
       let selectedLeague = this.leagues.find(league => league.leagueName == this.selectedLeague);
       selectedLeague.schedulingMethod = this.selectedSchedulingMethod;
       selectedLeague.scoringMethod = this.selectedScoringMethod;
-      fetch("http://localhost:8081/api/association-rep/update-policy", {
+      fetch(this.$root.baseURL + "/api/association-rep/update-policy", {
         method: "POST",
         headers: {
            "Content-Type": "application/json",
@@ -100,7 +100,7 @@ export default {
       ).scoringMethod;
     },
     getLeaguesFromServer() {
-      fetch("http://localhost:8081/api/association-rep/leagues", {
+      fetch(this.$root.baseURL + "/api/association-rep/leagues", {
         method: "GET",
         headers: {
           'authorization': this.$root.userToken
@@ -120,7 +120,7 @@ export default {
         .catch(err => console.error(err));
     },
     getScoringMethodsFromServer() {
-      fetch("http://localhost:8081/api/association-rep/scoring-methods", {
+      fetch(this.$root.baseURL + "/api/association-rep/scoring-methods", {
         method: "GET",
         headers: {
         'authorization': this.$root.userToken
@@ -140,7 +140,7 @@ export default {
         .catch(err => console.error(err));
     },
     getSchedulingMethodsFromServer() {
-      fetch("http://localhost:8081/api/association-rep/scheduling-methods", {
+      fetch(this.$root.baseURL + "/api/association-rep/scheduling-methods", {
         method: "GET",
         headers: {
           'authorization': this.$root.userToken
