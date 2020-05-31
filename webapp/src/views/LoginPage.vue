@@ -10,8 +10,12 @@ import LoginForm from '@/components/LoginForm.vue'
 
 export default {
   name: 'LoginPage',
+  mounted(){
+    if(!(this.$root.userToken == "" || this.$root.userToken == null)){//logged in so send him to home page
+this.$router.push("/HomePage");    }
+ },
   components: {
     LoginForm
-  }
+  },
 }
 </script>

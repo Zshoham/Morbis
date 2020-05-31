@@ -25,7 +25,7 @@
                 <v-list-item-title>{{ item.text }}</v-list-item-title>
               </v-list-item-content>
             </template>
-            <v-list-item v-for="(child, i) in item.children" :key="i" link :to="child.to"> 
+            <v-list-item v-for="(child, i) in item.children" :key="i" link :to="child.to">
               <v-list-item-content>
                 <v-list-item-title :link="child.link">{{ child.text }}</v-list-item-title>
               </v-list-item-content>
@@ -35,7 +35,7 @@
             </v-list-item>
           </v-list-group>
           <v-list-item v-else :key="item.text" :hidden="item.hidden" link :to="item.to">
-              <v-icon>{{ item.icon }}</v-icon>
+            <v-icon>{{ item.icon }}</v-icon>
             <v-list-item-content>
               <v-list-item-title>{{ item.text }}</v-list-item-title>
             </v-list-item-content>
@@ -59,46 +59,24 @@
         class="hidden-sm-and-down"
       />
       <v-spacer />
-      <v-btn color="black" class="white--text" style="margin:10px" to="/">Home</v-btn>
-      <v-btn
-        color="black"
-        class="white--text"
-        style="margin:10px"
-        to="/about"
-      >About</v-btn>
-      <v-btn color="black" class="white--text" style="margin:10px" to="/RegisterPage">Register</v-btn>
-      <v-btn color="black" class="white--text" style="margin:10px;" to="/LoginPage">Login</v-btn>
-      <v-btn
-        color="black"
-        class="white--text"
-        style="margin:10px;"
-        @click="setMenu()"
-        to="/TeamOwnerPage"
-      >Team Owner</v-btn>
-      <v-btn
-        color="black"
-        class="white--text"
-        style="margin:10px"
-        @click="setMenu(['TEAMOWNER','REFEREE','PLAYER','ASSOCIATIONREPRESENTITIVE'])"
-      >test1</v-btn>
-      <v-btn
-        color="black"
-        class="white--text"
-        style="margin:10px"
-        @click="setMenu()"
-      >test2</v-btn>
-      <v-btn
-        color="black"
-        class="white--text"
-        style="margin:10px"
-        @click="toggleAuthorisation()"
-      >test3</v-btn>
+      <v-btn color="black" class="white--text" style="margin:10px" to="/about">About</v-btn>
+      <v-btn color="black" id="registerButton" class="white--text" style="margin:10px" to="/RegisterPage">Register</v-btn>
+      <v-btn color="black" id="loginButton" class="white--text" style="margin:10px;" to="/LoginPage">Login</v-btn>
+      <v-btn color="black" id="logoutButton" class="white--text" style="margin:10px;" @click="Logout">Logout</v-btn>
+      <v-btn color="black" id="all_user_logoutButton" class="white--text" style="margin:10px;" @click="ForceLogout">All-User Logout</v-btn>
       <v-spacer />
       <v-btn icon>
         <v-icon>mdi-apps</v-icon>
       </v-btn>
-      <v-btn icon>
+      <v-btn to="/notificationPage" icon>
+      <v-badge
+        :content="notificationCount"
+        :value="notificationCount"
+        color="red"
+        overlap
+      >
         <v-icon>mdi-bell</v-icon>
+      </v-badge>
       </v-btn>
       <v-btn icon large>
         <v-avatar size="32px" item>
@@ -114,7 +92,6 @@
 </template>
 
 <script>
-var authorised=true;
 var fanMenu = {
   icon: "mdi-chevron-up",
   "icon-alt": "mdi-chevron-down",
@@ -122,15 +99,15 @@ var fanMenu = {
   model: false,
   hidden: false,
   children: [
-    {text: "Players", icon:"mdi-run-fast"},
-    {text: "Teams", icon:"mdi-account-group"},
-    {text: "Games", icon:"mdi-soccer"},
-    {text: "Seasons", icon:"mdi-medal-outline"},
-    {text: "Leages", icon:"mdi-trophy"},
+    { text: "Players", icon: "mdi-run-fast" },
+    { text: "Teams", icon: "mdi-account-group" },
+    { text: "Games", icon: "mdi-soccer" },
+    { text: "Seasons", icon: "mdi-medal-outline" },
+    { text: "Leages", icon: "mdi-trophy" },
     {
       text: "New team",
       icon: "mdi-account-multiple-plus",
-      to: "/NewTeamPage",
+      to: "/NewTeamPage"
     }
   ]
 };
@@ -143,7 +120,7 @@ var coachMenu = {
   children: [
     {
       text: "New team",
-      to: "/NewTeamPage",
+      to: "/NewTeamPage"
     }
   ]
 };
@@ -156,7 +133,7 @@ var refereeMenu = {
   children: [
     {
       text: "Manage Ongoing Game",
-      to: "/GameManagePage",
+      to: "/GameManagePage"
     }
   ]
 };
@@ -168,8 +145,7 @@ var playerMenu = {
   hidden: true,
   children: [
     {
-      text: "New team",
-      to: "/NewTeamPage",
+      text: "Profile",
     }
   ]
 };
@@ -181,8 +157,12 @@ var assRepMenu = {
   hidden: true,
   children: [
     {
-      text: "Leage Options",
-      to: "/LeagueOptionsPage",
+      text: "Leagues' Options",
+      to: "/LeagueOptionsPage"
+    },
+    {
+      text: "Team Owners' requests",
+      to: "/TeamOwnerRequestsPage"
     }
   ]
 };
@@ -195,7 +175,7 @@ var teamManagerMenu = {
   children: [
     {
       text: "New team",
-      to: "/NewTeamPage",
+      to: "/NewTeamPage"
     }
   ]
 };
@@ -214,8 +194,8 @@ var teamOwnerMenu = {
     { text: "Appoint new manager" },
     { text: "Remove manager" },
     {
-      text: "New team",
-      to: "/NewTeamPage",
+      text: "Submit Team",
+      to: "/SubmitTeamPage"
     },
     { text: "Reopen team" },
     { text: "Close team" }
@@ -227,21 +207,19 @@ var adminMenu = {
   text: "Admin",
   model: false,
   hidden: true,
-  children: [
-    { text: "Add/remove users" }
-  ]
+  children: [{ text: "Add/remove users" }]
 };
 var menus = [];
-  menus['FAN']= fanMenu;
-  menus['PLAYER']= playerMenu;
-  menus['COACH']= coachMenu;
-  menus['REFEREE']= refereeMenu;
-  menus['TEAMMANAGER']= teamManagerMenu;
-  menus['TEAMOWNER']= teamOwnerMenu;
-  menus['ASSOCIATIONREPRESENTITIVE']= assRepMenu;
-  menus['ADMIN']= adminMenu;
+menus["FAN"] = fanMenu;
+menus["PLAYER"] = playerMenu;
+menus["COACH"] = coachMenu;
+menus["REFEREE"] = refereeMenu;
+menus["TEAM_MANAGER"] = teamManagerMenu;
+menus["TEAM_OWNER"] = teamOwnerMenu;
+menus["ASSOCIATION_REP"] = assRepMenu;
+menus["ADMIN"] = adminMenu;
 var menu = [
-  { icon: "mdi-home", text: "\t Home", to:"/Home"},
+  { icon: "mdi-home", text: "\t Home", to: "/HomePage" },
   // {
   //   icon: "mdi-chevron-up",
   //   "icon-alt": "mdi-chevron-down",
@@ -262,24 +240,30 @@ var menu = [
   teamManagerMenu,
   teamOwnerMenu,
   assRepMenu,
-  { icon: "mdi-cog", text: "\t Settings", to: "/Settings"},
-  {
-  text: "\t Switch Accounts",
-  icon: "mdi-account-convert",
-  to: "/LoginPage"
-  },{
-  text: "\t Logout",
-  icon: "mdi-logout",
-  to: "/logout"
-  }
+  { icon: "mdi-cog", text: "\t Settings", to: "/Settings" }
 ];
 export default {
+
+  mounted() {
+    this.$root.$on("loginChangeMenu", (roles) => {
+      this.loginChangeMenu(roles);
+    });
+    this.$root.$on("SetNotification", (numberOfNotifications) => {
+      this.notificationCount = numberOfNotifications;
+    })
+    this.$root.baseURL = 'localhost:8081:9000';
+    document.getElementById('logoutButton').style.display = 'none';
+  },
   props: {
     source: String
   },
+
   data: () => ({
     drawer: null,
-    items: menu
+    registerButton: null,
+    logoutButton: null,
+    items: menu,
+    notificationCount:0,
   }),
   methods: {
     remove: function(arr) {
@@ -294,20 +278,85 @@ export default {
         }
       }
     },
-    toggleAuthorisation: function(){authorised = !authorised; window.alert(authorised)},
-    setMenu: function(roles){
-      if(!authorised) return;
+    count()
+    {
+      return this.$root.notificationCount.value
+    },
+    loginChangeMenu: function(roles) {
+      document.getElementById('loginButton').style.display = 'none';
+      document.getElementById('registerButton').style.display = 'none';
+      document.getElementById('logoutButton').style.display = 'block';
+      console.log(roles);
       //hide every menu
-      menus['PLAYER'].hidden = true;
-      menus['COACH'].hidden = true;
-      menus['REFEREE'].hidden = true;
-      menus['TEAMMANAGER'].hidden = true;
-      menus['TEAMOWNER'].hidden = true;
-      menus['ASSOCIATIONREPRESENTITIVE'].hidden = true;
-      menus['ADMIN'].hidden = true;
-     // while(allRoles!=null){alert(allRoles);menus[allRoles].hidden=true; allRoles.next()}
+      menus["PLAYER"].hidden = true;
+      menus["COACH"].hidden = true;
+      menus["REFEREE"].hidden = true;
+      menus["TEAM_MANAGER"].hidden = true;
+      menus["TEAM_OWNER"].hidden = true;
+      menus["ASSOCIATION_REP"].hidden = true;
+      menus["ADMIN"].hidden = true;
       //show only the relevent menus
-      roles.forEach(role => {menus[role].hidden=false});
+      roles.forEach(role => {
+        menus[role].hidden = false;
+      });
+    },
+    Logout() {
+      fetch("http://localhost:8081/api/logout/" + this.$root.userToken, {
+        method: "GET",
+        headers: {
+          accept: "*/*"
+        }
+      })
+        .then(response => {
+          if (response.ok) {
+            this.$root.userToken = "";
+            this.$root.roles = [];
+            this.$root.memberID = -1;
+            alert("logged out");
+            document.getElementById('loginButton').style.display = 'block';
+            document.getElementById('registerButton').style.display = 'block';
+            document.getElementById('logoutButton').style.display = 'none';
+            window.location.href = 'WelcomePage'
+            //this.$router.push("/WelcomePage");
+          } else {
+            alert(
+              "There was an error while logging out: " +
+                response.status +
+                " : " +
+                response.statusText
+            );
+          }
+        })
+        .catch(err => console.error(err));
+    },
+    ForceLogout() {
+      fetch("http://localhost:8081/api/logout/42", {
+        method: "GET",
+        headers: {
+          accept: "*/*"
+        }
+      })
+        .then(response => {
+          if (response.ok) {
+            this.$root.userToken = "";
+            this.$root.roles = [];
+            this.$root.memberID = -1;
+            alert("forcing all-user logged out");
+            document.getElementById('loginButton').style.display = 'block';
+            document.getElementById('registerButton').style.display = 'block';
+            document.getElementById('logoutButton').style.display = 'none';
+            window.location.href = 'WelcomePage'
+            //this.$router.push("/WelcomePage");
+          } else {
+            alert(
+              "There was an error while all-user logging out: " +
+                response.status +
+                " : " +
+                response.statusText
+            );
+          }
+        })
+        .catch(err => console.error(err));
     }
   }
 };

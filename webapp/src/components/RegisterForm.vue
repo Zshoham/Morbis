@@ -5,12 +5,13 @@
     </div>
 
     <div align="center">
-      <v-form ref="form" v-model="valid" :lazy-validation="lazy">
+      <v-form ref="form" v-model="valid">
         <v-text-field
           class="mx-5"
           outlined
           v-model="username"
           :prepend-icon="'mdi-account'"
+          :rules="usernameRules"
           label="Username"
           required
         ></v-text-field>
@@ -22,6 +23,7 @@
           :append-icon="passwordVisable ? 'mdi-eye' : 'mdi-eye-off'"
           @click:append="passwordVisable = !passwordVisable"
           :type="passwordVisable ? 'text' : 'password'"
+          :rules="passwordRules"
           label="Password"
           required
         ></v-text-field>
@@ -49,7 +51,6 @@
           <v-icon right>mdi-check-circle</v-icon>
         </v-btn>
       </v-form>
-      {{info}}
     </div>
     <v-spacer></v-spacer>
   </v-card>
@@ -59,32 +60,59 @@
 export default {
   name: "RegisterForm",
   data: () => ({
+    valid: false,
+    username: "",
+    password: "",
+    name: "",
+    email: "",
+    usernameRules: [
+      v =>
+        !v ||
+        /[a-zA-Z][a-zA-Z0-9_.@]{3,}/.test(v) ||
+        "Username must be alphanumeric, at least 4 letters and start with a letter"
+    ],
+    passwordRules: [
+      v =>
+        !v ||
+        (/(.*[a-z].*)/.test(v) &&
+          /(.*[A-Z].*)/.test(v) &&
+          /(.*[0-9].*)/.test(v) &&
+          /(.{8,20})/.test(v)) ||
+        "Password must contain: numbers, 8-20 letters long and big and small letters"
+    ],
+    nameRules: [
+      v =>
+        !v ||
+        /( ?[a-zA-Z]{3,}$)+/.test(v) ||
+        "Name must contain 3 letters and alphabet only"
+    ],
     emailRules: [
       v =>
         !v ||
-        /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(v) ||
+        /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}$/.test(v) ||
         "Invalid E-mail"
     ],
     date: null,
     menu: false,
-    passwordVisable: false,
+    passwordVisable: false
   }),
   methods: {
-    emailRules: [
-      v =>
-        !v ||
-        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
-        "E-mail must be valid"
-    ],
     save(date) {
       this.$refs.menu.save(date);
     },
     register() {
-      /* need to check here the validation of the inputs */
-      fetch('http://dev.morbis.xyz/api/register', {
-        method: 'POST',
-        headers:{
-          'Content-Type': 'application/json',          
+      if(this.username == null || this.password == null || this.name == null || this.email == null) {
+        alert("Please fill every cell before registering");
+        return;
+      }
+      if(!this.valid) {
+        alert("You have errors in the form");
+        return;
+      }
+      fetch("http://localhost:8081/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           username: this.username,
@@ -94,13 +122,13 @@ export default {
         })
       })
         .then(async response => {
-          alert(response.status);
           if (response.ok) {
-            response => (this.info = response);
+            alert("Registered Successfully !");
+              this.$router.push("/LoginPage");
           } else {
-            alert(
-              "Server returned " + response.status + " : " + response.statusText
-            );
+            response.json().then(json => {
+                alert(response.status + ": " + json.message);
+            });
           }
         })
         .catch(err => console.error(err));
