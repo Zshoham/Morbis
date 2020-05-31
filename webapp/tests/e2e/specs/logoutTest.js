@@ -1,6 +1,6 @@
 describe('Logout Test', () => {
     it('logs in and then logs out', () => {
-      cy.visit("localhost:8080")
+      cy.visit("localhost:8081:8080")
       cy.contains('span', 'Login').click()//click on Login button
       cy.get('input').eq(1).click({force:true}).type('representative')//insert username 
       cy.get('input').eq(2).click({force:true}).type('Password123')//insert password

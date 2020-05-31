@@ -109,7 +109,7 @@ export default {
         alert("You have errors in the form");
         return;
       }
-      fetch("http://" + this.$root.baseURL + "/api/register", {
+      fetch("http://localhost:8081/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

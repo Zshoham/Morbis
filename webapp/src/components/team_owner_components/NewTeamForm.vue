@@ -5,9 +5,8 @@
     </div>
 
     <div align="center">
-      If you want to create a team you should send a 'New Team Request'<br><br>
+      Before creating a team, you must ask for a permission to be a Team Owner<br><br>
       <v-form ref="form" width=80%>
-        <v-text-field id="teamNameText" class="mx-5" outlined :prepend-icon="'mdi-account-group'" label="Team Name:" required></v-text-field>
 <!-- 
         <v-select
           v-model="e7"
@@ -54,9 +53,6 @@
           persistent-hint
         ></v-select>
          -->
-         Pressing 'Send' will create a 'New Team Request'. after <br>
-         its aprroval you will be able to set the New Team
-         <!-- TODO: add click function -->
         <v-btn color="success" @click="createTeam" block>
           Send Request
         </v-btn>
@@ -74,13 +70,12 @@
       }),
       methods:{ 
         createTeam() { 
-          fetch('http://" + this.$root.baseURL + "/api/fan/' + this.$root.memberID + '/requestRegisterAsTeamOwner', {
+          fetch('http://localhost:8081/api/fan/' + this.$root.memberID + '/requestRegisterAsTeamOwner', {
           method: 'POST',
           headers:{
             'Content-Type': 'application/json', 
             'authorization': this.$root.userToken        
           },
-          body: JSON.stringify(document.getElementById("teamNameText").value)
         })
           .then(async response => {
             alert(response.status);

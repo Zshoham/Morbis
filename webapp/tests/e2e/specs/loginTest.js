@@ -6,14 +6,14 @@
 //email: real@username.com
 describe('Login button Test', () => {
     it('test the Login button', () => {
-        cy.visit("localhost:8080")//enetr the site on loaclhost
+        cy.visit("localhost:8081:8080")//enetr the site on loaclhost
         cy.contains('span', 'Login').click()//click on Login button
         cy.url().should('include','LoginPage')//check if the redireciotn is correct (to LoginPage)
     })
   })
 describe('Bad Login Test', () => {
     it('types bad values in login form', () => {
-        cy.visit("localhost:8080")//enter the site in localhost
+        cy.visit("localhost:8081:8080")//enter the site in localhost:8081
         cy.contains('span', 'Login').click()//click on Login button
         cy.get('input').eq(1).click({force:true}).type('USERNAME').should('have.value','USERNAME')//insert username
         cy.get('input').eq(2).click({force:true}).type('PASSWORD').should('have.value',"PASSWORD")//insert password
@@ -26,7 +26,7 @@ describe('Bad Login Test', () => {
 
 describe('Good Login Test', () => {
   it('types good values in login form', () => {
-    cy.visit("localhost:8080")//enter the site in localhost
+    cy.visit("localhost:8081:8080")//enter the site in localhost:8081
     cy.contains('span', 'Login').click()//click the Login button
     cy.get('input').eq(1).click({force:true}).type('representative')//insert username
     cy.get('input').eq(2).click({force:true}).type('Password123')//insert password

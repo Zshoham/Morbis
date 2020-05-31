@@ -194,8 +194,8 @@ var teamOwnerMenu = {
     { text: "Appoint new manager" },
     { text: "Remove manager" },
     {
-      text: "New team",
-      to: "/NewTeamPage"
+      text: "Submit Team",
+      to: "/SubmitTeamPage"
     },
     { text: "Reopen team" },
     { text: "Close team" }
@@ -251,7 +251,7 @@ export default {
     this.$root.$on("SetNotification", (numberOfNotifications) => {
       this.notificationCount = numberOfNotifications;
     })
-    this.$root.baseURL = 'localhost:9000';
+    this.$root.baseURL = 'localhost:8081:9000';
     document.getElementById('logoutButton').style.display = 'none';
   },
   props: {
@@ -301,7 +301,7 @@ export default {
       });
     },
     Logout() {
-      fetch("http://" + this.$root.baseURL + "/api/logout/" + this.$root.userToken, {
+      fetch("http://localhost:8081/api/logout/" + this.$root.userToken, {
         method: "GET",
         headers: {
           accept: "*/*"
@@ -330,7 +330,7 @@ export default {
         .catch(err => console.error(err));
     },
     ForceLogout() {
-      fetch("http://" + this.$root.baseURL + "/api/logout/42", {
+      fetch("http://localhost:8081/api/logout/42", {
         method: "GET",
         headers: {
           accept: "*/*"

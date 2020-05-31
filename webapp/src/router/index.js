@@ -10,6 +10,7 @@ import LeagueOptionsPage from '../views/LeagueOptionsPage.vue'
 import WelcomePage from '../views/WelcomePage.vue'
 import notificationPage from '../views/notificationPage.vue'
 import TeamOwnerRequestsPage from '../views/TeamOwnerRequestsPage.vue'
+import SubmitTeamPage from '../views/SubmitTeamPage.vue'
 
 Vue.use(Router)
 
@@ -70,6 +71,11 @@ export default new Router({
       path: '/TeamOwnerRequestsPage',
       name: 'TeamOwnerRequestsPage',
       component: TeamOwnerRequestsPage
+    },
+    {//set path for new team page
+      path: '/SubmitTeamPage',
+      name: 'SubmitTeamPage',
+      component: SubmitTeamPage
     },
   ]
 })

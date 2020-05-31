@@ -4,7 +4,7 @@
 //alert : *massage matching the response status
 describe('New Team Page Test', () => {
     it('test the navigation to New Team Page (unlogged)', () => {
-        cy.visit("localhost:8080")//enter the site on the localhost
+        cy.visit("localhost:8081:8080")//enter the site on the localhost:8081
         cy.get('button').eq(0).click()//open menu
         cy.contains('div', 'My Account').click({force:true})//click on My Account menu
         cy.contains('div', 'New team').click({force:true})//click on New Team button
@@ -13,7 +13,7 @@ describe('New Team Page Test', () => {
   })
 describe('New Team Page Test', () => {
     it('sends a new team request', () => {
-        cy.visit("localhost:8080")//enter the site on localhost
+        cy.visit("localhost:8081:8080")//enter the site on localhost:8081
         //login
         cy.contains('span', 'Login').click()//click on login button
         cy.get('input').eq(1).click({force:true}).type('representative')//insert user name

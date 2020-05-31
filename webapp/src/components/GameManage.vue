@@ -75,8 +75,8 @@ export default {
   methods: {
     connectToServer() {
       console.log("connecting to server");
-      // const url = "http://" + this.$root.baseURL + "";
-      // //const url = "http://localhost:8081";
+      // const url = "http://localhost:8081";
+      // //const url = "http://localhost:8081:8081";
       // let socket = new SockJS(url + "/api/websocket");
       // this.stompClient = Stomp.over(socket);
       // this.stompClient.connect({}, function(frame) {
@@ -104,7 +104,7 @@ export default {
     },
     getOngoingGameEvents() {
       fetch(
-        "http://" + this.$root.baseURL + "/api/referee/" +
+        "http://localhost:8081/api/referee/" +
           this.$root.memberID +
           "/game-events-ongoing",
         {
@@ -144,7 +144,7 @@ export default {
     },
     getOngoingGame() {
       fetch(
-        "http://" + this.$root.baseURL + "/api/referee/" +
+        "http://localhost:8081/api/referee/" +
           this.$root.memberID +
           "/game-ongoing",
         {
