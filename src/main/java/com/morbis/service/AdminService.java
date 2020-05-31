@@ -8,24 +8,28 @@ import com.morbis.model.team.entity.Team;
 import com.morbis.model.team.entity.TeamStatus;
 import com.morbis.model.team.repository.TeamRepository;
 import com.morbis.service.notification.EmailService;
-import lombok.extern.java.Log;
 
 import java.io.IOException;
-import java.nio.file.*;;
+import java.nio.file.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Service
+@Transactional
 public class AdminService {
-    private TeamRepository teamRepository;
-    private MemberRepository memberRepository;
-    private MemberComplaintRepository memberComplaintRepository;
-    private EmailService emailService;
-    private Logger logger;
+    private final TeamRepository teamRepository;
+    private final MemberRepository memberRepository;
+    private final MemberComplaintRepository memberComplaintRepository;
+    private final EmailService emailService;
+    private final Logger logger;
 
     @Value("${logging.file")
     private String logFilePath;
@@ -44,23 +48,23 @@ public class AdminService {
      * in addition, send's notifications to the owners and managers of the team
      */
     public void deleteTeam(int teamID) {
-        logger.trace("called function: AdminService->deleteTeam.");
+        logger.trace("called function: AdminService->deleteTeam. with the TeamID of: " + teamID + ".");
         //verify Team exists
         Optional<Team> team = teamRepository.findById(teamID);
         if (team.isEmpty()) {
-            logger.warn("the team ID not belongs to any team");
+            logger.warn("called function: AdminService->deleteTeam. teamID: " + teamID + " not belongs to any team.");
             return;
         }
         try {
             emailService.closeTeam(team.get());
         } catch (MessagingException e) {
-            logger.error("Error: email messages to the team owners and managers");
+            logger.error("Error: teamID: " + teamID + " email messages to the team owners and managers.");
             return;
         }
 
         //Terminate the Team:
         team.get().setTeamStatus(TeamStatus.PERMANENTLY_CLOSED);
-        logger.info("Team " + team.get().getName() + " has been Terminated");
+        logger.info("Team " + team.get().getName() + " with the ID of: " + teamID + " has been Terminated.");
     }
 
     /**
@@ -68,6 +72,7 @@ public class AdminService {
      * @return true if the member has been deleted, false if not.
      */
     public void deleteMember(int memberID) {
+        logger.trace("called function: AdminService->deleteMember. with the ID of:" + memberID + ".");
         this.memberRepository.deleteById(memberID);
     }
 
@@ -75,6 +80,7 @@ public class AdminService {
      * @return list of member complaints.
      */
     public List<MemberComplaint> getComplaints() {
+        logger.trace("called function: AdminService->getComplaints.");
         return this.memberComplaintRepository.findAll();
     }
 
@@ -84,12 +90,10 @@ public class AdminService {
      * @return
      */
     public boolean sendFeedback(int memberID, String feedback, MemberComplaint complaint) {
-        //didn't finished
-        logger.trace("called function: AdminService->sendFeedback.");
-
+        logger.trace("called function: AdminService->sendFeedback. with the memberID: " + memberID);
         Optional<Member> targetMember = this.memberRepository.findById(memberID);
         if (targetMember.isEmpty()) {
-            logger.warn("the target member ID not belongs to any member.");
+            logger.warn("the target memberID" + memberID + " not belongs to any member.");
             return false;
         }
         try {
@@ -99,17 +103,17 @@ public class AdminService {
             logger.error("Error: feedback from Admin to Member.");
             return false;
         }
-        logger.info("feedback(mail) from Admin To: " + targetMember.get().getName() + " has been sent.");
+        logger.info("feedback(mail) from Admin To: " + targetMember.get().getName() + " with the ID of: " + memberID + " has been sent.");
         return true;
     }
 
-    public String showLogFile(){
+    public String showLogFile() {
         logger.trace("called function: AdminService->showLogFile.");
-        String data ="";
+        String data = "";
         try {
             data = new String(Files.readAllBytes(Paths.get(logFilePath)));
         } catch (IOException e) {
-           logger.error("Error: showLogFile.");
+            logger.error("Error: showLogFile.");
         }
         return data;
     }

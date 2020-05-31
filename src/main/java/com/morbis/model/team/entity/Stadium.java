@@ -1,7 +1,6 @@
 package com.morbis.model.team.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,7 +29,7 @@ public class Stadium {
     @NotBlank
     private String name;
 
-    @OneToOne(targetEntity = Team.class, cascade = CascadeType.ALL)
+    @OneToOne(targetEntity = Team.class)
     @JsonBackReference
     private Team team;
 

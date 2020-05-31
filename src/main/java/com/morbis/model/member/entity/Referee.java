@@ -3,7 +3,6 @@ package com.morbis.model.member.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.morbis.model.game.entity.Game;
 import com.morbis.model.league.entity.Season;
-import com.morbis.model.team.entity.Team;
 import lombok.*;
 
 import javax.persistence.*;
@@ -31,11 +30,11 @@ public class Referee extends Member {
     @NotNull
     private String qualification;
 
-    @OneToMany(targetEntity = Game.class, cascade = CascadeType.MERGE)
+    @OneToMany(targetEntity = Game.class)
     @JsonBackReference
     private List<Game> mainGames;
 
-    @ManyToMany(targetEntity = Game.class, cascade = CascadeType.MERGE)
+    @ManyToMany(targetEntity = Game.class)
     @JsonBackReference
     private List<Game> supportGames;
 

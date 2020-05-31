@@ -4,7 +4,6 @@ import com.morbis.model.member.entity.Member;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity

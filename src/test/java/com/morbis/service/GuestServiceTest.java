@@ -4,7 +4,6 @@ import com.morbis.model.game.entity.Game;
 import com.morbis.model.game.repository.GameRepository;
 import com.morbis.model.league.repository.LeagueRepository;
 import com.morbis.model.league.repository.SeasonRepository;
-import com.morbis.model.member.entity.Fan;
 import com.morbis.model.member.repository.*;
 import com.morbis.model.team.repository.StadiumRepository;
 import com.morbis.model.team.repository.TeamRepository;
@@ -51,22 +50,7 @@ public class GuestServiceTest {
     @MockBean private StadiumRepository stadiumRepository;
     @MockBean private TeamRepository teamRepository;
 
-    @Test
-    public void register() {
-        // setup mock
-        Fan testMember = new Fan(1, "user", "pass", "name", "email");
-        when(memberRepository.findDistinctByUsername("user")).thenReturn(Optional.of(testMember));
 
-        // test duplicate register
-        guestService.register(testMember);
-        // verifies that the method call "save(memberTest)" never does not occur.
-        verify(memberRepository, never()).save(testMember);
-
-        // test first register
-        testMember.setUsername("NotUser");
-        guestService.register(testMember);
-        verify(memberRepository, times(1)).save(testMember);
-    }
 
 
     private void setUpSearchMock() {
@@ -97,7 +81,7 @@ public class GuestServiceTest {
         when(gameRepository.findAllContainingQuery("name"))
                 .thenReturn(Collections.singletonList(game));
 
-        when(seasonRepository.findAllByYearContaining(2020))
+        when(seasonRepository.findAllByYear(2020))
                 .thenReturn(Collections.singletonList(season));
 
         when(leagueRepository.findAllByNameContaining("name"))

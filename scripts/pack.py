@@ -44,7 +44,7 @@ def clean():
     else:
         subprocess.run(["./gradlew", "clean"])
 
-    shutil.rmtree("release")
+    shutil.rmtree("release", ignore_errors=True)
 
 if __name__ == '__main__':
     args = parser.parse_args()

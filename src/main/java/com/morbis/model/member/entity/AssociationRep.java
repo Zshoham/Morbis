@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 public class AssociationRep extends Member {
 
     public AssociationRep(int id, String username, String password, String name, String email) {

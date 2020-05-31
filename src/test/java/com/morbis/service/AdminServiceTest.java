@@ -1,7 +1,7 @@
 package com.morbis.service;
 
 import com.morbis.data.ViewableEntitySource;
-import com.morbis.model.member.entity.*;
+import com.morbis.model.member.entity.MemberComplaint;
 import com.morbis.model.member.repository.MemberComplaintRepository;
 import com.morbis.model.member.repository.MemberRepository;
 import com.morbis.model.poster.entity.Post;
@@ -12,44 +12,38 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.mail.MessagingException;
-import javax.swing.text.html.Option;
-
 import java.util.Optional;
-import java.util.logging.Logger;
 
+import static com.morbis.data.ViewableEntitySource.home;
+import static com.morbis.data.ViewableEntitySource.homePlayer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-import static com.morbis.data.ViewableEntitySource.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration(classes = AdminService.class)
 public class AdminServiceTest {
 
-
-
     @Autowired
     private AdminService adminService;
 
     @MockBean
     private MemberRepository memberRepository;
+
     @MockBean
     private TeamRepository teamRepository;
+
     @MockBean
     private MemberComplaintRepository memberComplaintRepository;
+
     @MockBean
     private EmailService emailService;
-    @MockBean
-    private Logger logger;
 
     @Before
     public void setUp() {
