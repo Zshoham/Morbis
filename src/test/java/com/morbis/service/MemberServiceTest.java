@@ -276,7 +276,6 @@ public class MemberServiceTest {
     @Test
     public void registerAsTeamOwner() {
         memberService.registerAsTeamOwner(simpleMember.getId());
-        verify(memberRepository).save(simpleMember);
         verify(teamOwnerRepository, times(1)).save(any(TeamOwner.class));
     }
 }
