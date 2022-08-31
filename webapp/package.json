@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.4",
-    "cypress": "^4.7.0",
+    "cypress": "^4.12.1",
     "sockjs-client": "^1.4.0",
     "vue": "^2.6.11",
     "vue-router": "^3.1.6",
@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.3.0",
-    "@vue/cli-plugin-e2e-cypress": "~4.3.0",
+    "@vue/cli-plugin-e2e-cypress": "~5.0.8",
     "@vue/cli-plugin-eslint": "~4.3.0",
     "@vue/cli-plugin-router": "~4.3.0",
     "@vue/cli-plugin-unit-jest": "~4.3.0",
